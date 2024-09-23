@@ -11,7 +11,6 @@
              (in ?p - person ?a - aircraft))
 (:functions (fuel ?a - aircraft)
             (distance ?c1 - city ?c2 - city)
-            (slow-burn ?a - aircraft)
             (fast-burn ?a - aircraft)
             (capacity ?a - aircraft)
             (total-fuel-used)
@@ -36,18 +35,6 @@
  :effect (and (not (in ?p ?a))
               (located ?p ?c)
 		(decrease (onboard ?a) 1)))
-
-(:action fly-slow
- :parameters (?a - aircraft ?c1 ?c2 - city)
- :precondition (and (located ?a ?c1)
-                 (>= (fuel ?a)
-                         (* (distance ?c1 ?c2) (slow-burn ?a))))
- :effect (and (not (located ?a ?c1))
-              (located ?a ?c2)
-              (increase (total-fuel-used)
-                         (* (distance ?c1 ?c2) (slow-burn ?a)))
-              (decrease (fuel ?a)
-                         (* (distance ?c1 ?c2) (slow-burn ?a)))))
 
 (:action fly-fast
  :parameters (?a - aircraft ?c1 ?c2 - city)
