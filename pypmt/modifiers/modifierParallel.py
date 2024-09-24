@@ -6,6 +6,9 @@ from unified_planning.model.walkers.free_vars import FreeVarsExtractor
 from pypmt.utilities import log
 from pypmt.modifiers.base import Modifier
 
+import networkx as nx
+import matplotlib.pyplot as plt
+
 class ParallelModifier(Modifier):
     """
     Parallel modifier, contains method to implement parallel execution semantics.
@@ -82,44 +85,66 @@ class ParallelModifier(Modifier):
         start_time = time.time()
         mutexes = set()
         actions = encoder.task.actions
-        graph = {}
-
+        graph = nx.DiGraph()
         def add_edge(action1, action2):
             a1 = encoder.get_action_var(action1.name, 0)
             a2 = encoder.get_action_var(action2.name, 0)
-            if a1 not in graph:
-                graph[a1] = []
-            if a2 not in graph:
-                graph[a2] = []
-            graph[a1].append(a2)
+            graph.add_edge(a1, a2)
 
+        # Iterate over actions to identify mutex pairs
         for i, action_1 in enumerate(actions):
             for action_2 in actions[i+1:]:
                 add_a1, del_a1, num_1, pre_1 = data_actions[action_1]
                 add_a2, del_a2, num_2, pre_2 = data_actions[action_2]
 
-                # Condition 1: can a1 prohibit the execution of a2 or vice-versa?
+                # Condition 1: Can a1 prohibit the execution of a2 or vice-versa?
                 if len(pre_2.intersection(set.union(*[add_a1, del_a1, num_1]))) > 0:
                     mutexes.add(mutex(action_1, action_2))
-                    add_edge(action_2, action_1)
+                    add_edge(action_1, action_2)
                 if len(pre_1.intersection(set.union(*[add_a2, del_a2, num_2]))) > 0:
                     mutexes.add(mutex(action_1, action_2))
-                    add_edge(action_1, action_2)
+                    add_edge(action_2, action_1)
                     continue
 
-                # Condition 2 - Do the effects of a1 and a2 interfere?
+                # Condition 2: Do the effects of a1 and a2 interfere?
                 if len(add_a1.intersection(del_a2)) > 0 or \
-                   len(add_a2.intersection(del_a1)) > 0 or \
-                   len(num_1.intersection(num_2)) > 0:
+                        len(add_a2.intersection(del_a1)) > 0 or \
+                        len(num_1.intersection(num_2)) > 0:
                     mutexes.add(mutex(action_1, action_2))
                     add_edge(action_1, action_2)
                     add_edge(action_2, action_1)
                     continue
 
+        for_all_mutexes = set()
+        exists_mutexes = set()
 
-        print(mutexes)
-        for v, e in graph.items():
-            print(f"{v} -> {e}")
+        for edge in graph.edges():
+            a1, a2 = edge
+            m1 = z3.Not(z3.And(a1, a2))
+            m2 = z3.Not(z3.And(a2, a1))
+            if m1 not in for_all_mutexes and m2 not in for_all_mutexes:
+                for_all_mutexes.add(m1)
+
+        components = nx.strongly_connected_components(graph)
+        for c in components:
+            numbers = {}
+            for i, a in enumerate(c):
+                numbers[a] = i
+            subgraph = graph.subgraph(c)
+            for edge in subgraph.edges():
+                a1, a2 = edge
+                if numbers[a1] >= numbers[a2]:
+                    m1 = z3.Not(z3.And(a1, a2))
+                    m2 = z3.Not(z3.And(a2, a1))
+                    if m1 not in exists_mutexes and m2 not in exists_mutexes:
+                        exists_mutexes.add(m1)
+
+
+        plt.figure(figsize=(20, 20))
+        nx.draw(graph, node_size=1500, font_size=10, with_labels=True)
+        plt.show()
+        print(len(exists_mutexes))
+        print(len(for_all_mutexes))
         end_time = time.time()
         log(f'computed {len(mutexes)} mutexes took {end_time-start_time:.2f}s', 2)
         return mutexes

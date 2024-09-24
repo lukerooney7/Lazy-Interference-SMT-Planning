@@ -119,7 +119,7 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
-    # Parse planner args
+    # Parse planner arg
     parser = create_parser()
     args = parser.parse_args(args)
     # if this gets more complex might be beneficial to implement a git-like approach
@@ -132,5 +132,4 @@ def main(args=None):
         solve_problem(args.domain, args.problem, configuration)
 
 if __name__ == '__main__':
-    # main(["--domain", "../domain.pddl", "--problem", "../problem.pddl", "--forall", "--verbose", "4"])
-    main(["--domain", "../domainCounter.pddl", "--problem", "../problem.pddl", "--forall"])
+    main(["--domain", "../domainZenoSimple.pddl", "--problem", "../problemZenoSimple.pddl", "--forall"])
