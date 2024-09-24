@@ -1,23 +1,25 @@
+;;Setting seed to 1229
 ;; Enrico Scala (enricos83@gmail.com) and Miquel Ramirez (miquel.ramirez@gmail.com)
-(define (problem instance_4_2)
-  (:domain fn-counters)
-  (:objects
-    c0 c1 c2 c3 - counter
-  )
-
+(define (problem instance_2_100_1229_ladder)
+	(:domain farmland)
+	(:objects
+		farm0 farm1  - farm
+	)
   (:init
-    (= (max_int) 8)
-	(= (value c0) 1)
-	(= (value c1) 7)
-	(= (value c2) 0)
-	(= (value c3) 7)
-  )
+		(= (x farm0) 100)
+		(= (x farm1) 1)
 
-  (:goal (and
-(<= (+ (value c0) 1) (value c1))
-(<= (+ (value c1) 1) (value c2))
-(<= (+ (value c2) 1) (value c3))
-  ))
+		(adj farm0 farm1)
+		(adj farm1 farm0)
 
+		(= (cost) 0)
+	)
+	(:goal
+		(and
+			(>= (x farm0) 1)
+			(>= (x farm1) 1)
 
+			(>= (+ (* 1.0 (x farm0))(+ (* 1.7 (x farm1)) 0)) 140.0)
+		)
+	)
 )

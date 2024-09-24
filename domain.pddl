@@ -1,76 +1,31 @@
-;; A transportation problem in which people must embark into planes,
-;; fly and then debark. Planes consumed fuel at different rates according to speed.
+;; Enrico Scala (enricos83@gmail.com) and Miquel Ramirez (miquel.ramirez@gmail.com)
+;; Reference paper: Scala, Enrico, Patrik Haslum, Sylvie Thiébaux, and Miquel Ramirez.
+;;                  "Subgoaling techniques for satisficing and optimal numeric planning."
+;;                  Journal of Artificial Intelligence Research 68 (2020): 691-752.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; The Farmland domain models allocating manpower to farms, with a
+;; hard constraint on a metric measuring benefit. The contribution of
+;; each farm to the benefit is a function of the number of workers assigned
+;; Each farm requires at least one worker
+(define (domain farmland)
+    (:types farm - object)
+    (:predicates (adj ?f1 ?f2 - farm))
+    (:functions
+        (x ?b - farm)
+        (cost)
+    )
 
-;; Originally developed for the IPC-2002
-;; Author unknown
-(define (domain zenotravel)
-;(:requirements :typing :fluents)
-(:types locatable city - object
-	aircraft person - locatable)
-(:predicates (located ?x - locatable  ?c - city)
-             (in ?p - person ?a - aircraft))
-(:functions (fuel ?a - aircraft)
-            (distance ?c1 - city ?c2 - city)
-            (slow-burn ?a - aircraft)
-            (fast-burn ?a - aircraft)
-            (capacity ?a - aircraft)
-            (total-fuel-used)
-	    (onboard ?a - aircraft)
-            (zoom-limit ?a - aircraft)
-            )
+    ;; Move a person from a unit f1 to a unit f2
+    (:action move-fast
+        :parameters (?f1 ?f2 - farm)
+       :precondition (and (not (= ?f1 ?f2)) (>= (x ?f1) 4) (adj ?f1 ?f2) )
+      :effect (and(decrease (x ?f1) 4) (increase (x ?f2) 2) (increase (cost) 1))
+    )
 
-
-(:action board
- :parameters (?p - person ?a - aircraft ?c - city)
- :precondition (and (located ?p ?c)
-                 (located ?a ?c))
- :effect (and (not (located ?p ?c))
-              (in ?p ?a)
-		(increase (onboard ?a) 1)))
-
-
-(:action debark
- :parameters (?p - person ?a - aircraft ?c - city)
- :precondition (and (in ?p ?a)
-                 (located ?a ?c))
- :effect (and (not (in ?p ?a))
-              (located ?p ?c)
-		(decrease (onboard ?a) 1)))
-
-(:action fly-slow
- :parameters (?a - aircraft ?c1 ?c2 - city)
- :precondition (and (located ?a ?c1)
-                 (>= (fuel ?a)
-                         (* (distance ?c1 ?c2) (slow-burn ?a))))
- :effect (and (not (located ?a ?c1))
-              (located ?a ?c2)
-              (increase (total-fuel-used)
-                         (* (distance ?c1 ?c2) (slow-burn ?a)))
-              (decrease (fuel ?a)
-                         (* (distance ?c1 ?c2) (slow-burn ?a)))))
-
-(:action fly-fast
- :parameters (?a - aircraft ?c1 ?c2 - city)
- :precondition (and (located ?a ?c1)
-                 (>= (fuel ?a)
-                         (* (distance ?c1 ?c2) (fast-burn ?a)))
-                 (<= (onboard ?a) (zoom-limit ?a)))
- :effect (and (not (located ?a ?c1))
-              (located ?a ?c2)
-              (increase (total-fuel-used)
-                         (* (distance ?c1 ?c2) (fast-burn ?a)))
-              (decrease (fuel ?a)
-                         (* (distance ?c1 ?c2) (fast-burn ?a)))
-	)
-)
-
-(:action refuel
- :parameters (?a - aircraft)
- :precondition (and (> (capacity ?a) (fuel ?a))
-
-		)
- :effect (and (assign (fuel ?a) (capacity ?a)))
-)
-
+    (:action move-slow
+         :parameters (?f1 ?f2 - farm)
+         :precondition (and (not (= ?f1 ?f2)) (>= (x ?f1) 1) (adj ?f1 ?f2))
+         :effect (and(decrease (x ?f1) 1) (increase (x ?f2) 1))
+    )
 
 )
