@@ -118,33 +118,33 @@ class ParallelModifier(Modifier):
         for_all_mutexes = set()
         exists_mutexes = set()
 
-        for edge in graph.edges():
-            a1, a2 = edge
-            m1 = z3.Not(z3.And(a1, a2))
-            m2 = z3.Not(z3.And(a2, a1))
-            if m1 not in for_all_mutexes and m2 not in for_all_mutexes:
-                for_all_mutexes.add(m1)
-
-        components = nx.strongly_connected_components(graph)
-        for c in components:
-            numbers = {}
-            for i, a in enumerate(c):
-                numbers[a] = i
-            subgraph = graph.subgraph(c)
-            for edge in subgraph.edges():
+        def generate_for_all():
+            for edge in graph.edges():
                 a1, a2 = edge
-                if numbers[a1] >= numbers[a2]:
-                    m1 = z3.Not(z3.And(a1, a2))
-                    m2 = z3.Not(z3.And(a2, a1))
-                    if m1 not in exists_mutexes and m2 not in exists_mutexes:
-                        exists_mutexes.add(m1)
+                m1 = z3.Not(z3.And(a1, a2))
+                m2 = z3.Not(z3.And(a2, a1))
+                if m1 not in for_all_mutexes and m2 not in for_all_mutexes:
+                    for_all_mutexes.add(m1)
+        def generate_exists():
+            components = nx.strongly_connected_components(graph)
+            for c in components:
+                numbers = {}
+                for i, a in enumerate(c):
+                    numbers[a] = i
+                subgraph = graph.subgraph(c)
+                for edge in subgraph.edges():
+                    a1, a2 = edge
+                    if numbers[a1] < numbers[a2]:
+                        m1 = z3.Not(z3.And(a1, a2))
+                        m2 = z3.Not(z3.And(a2, a1))
+                        if m1 not in exists_mutexes and m2 not in exists_mutexes:
+                            exists_mutexes.add(m1)
 
-
+        generate_exists()
+        generate_for_all()
         plt.figure(figsize=(20, 20))
         nx.draw(graph, node_size=1500, font_size=10, with_labels=True)
         plt.show()
-        print(len(exists_mutexes))
-        print(len(for_all_mutexes))
         end_time = time.time()
         log(f'computed {len(mutexes)} mutexes took {end_time-start_time:.2f}s', 2)
         return mutexes
