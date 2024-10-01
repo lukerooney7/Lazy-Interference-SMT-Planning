@@ -1,8 +1,11 @@
 import time
 
 import z3
+from z3 import UserPropagateBase
 
 from pypmt.planner.utilities import dumpProblem
+from pypmt.propagators.base import BaseUserPropagator
+from pypmt.propagators.lazy import LazyUserPropagator
 from pypmt.utilities import log
 from pypmt.planner.base import Search
 from pypmt.planner.plan.smt_sequential_plan import SMTSequentialPlan
@@ -13,6 +16,7 @@ class SMTSearch(Search):
     """
 
     def search(self):
+
         self.horizon = 0
 
         log(f'Starting to solve', 1)
@@ -23,9 +27,12 @@ class SMTSearch(Search):
             start_time = time.time()
             formula    = self.encoder.encode(self.horizon)
             context    = self.encoder.ctx
+
             if not self.solver:
                 self.solver = z3.Solver(ctx=context) if 'objective' not in formula else z3.Optimize(ctx=context)
-            
+                # BaseUserPropagator(s=self.solver)
+                LazyUserPropagator(s=self.solver)
+
             # deal with the initial state
             if self.horizon == 0:
                 self.solver.add(formula['initial'])
