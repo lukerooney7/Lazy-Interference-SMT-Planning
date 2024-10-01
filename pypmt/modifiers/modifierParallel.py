@@ -83,9 +83,9 @@ class ParallelModifier(Modifier):
 
         # main body of the function
         start_time = time.time()
-        mutexes = set()
         actions = encoder.task.actions
         graph = nx.DiGraph()
+
         def add_edge(action1, action2):
             a1 = encoder.get_action_var(action1.name, 0)
             a2 = encoder.get_action_var(action2.name, 0)
@@ -99,10 +99,8 @@ class ParallelModifier(Modifier):
 
                 # Condition 1: Can a1 prohibit the execution of a2 or vice-versa?
                 if len(pre_2.intersection(set.union(*[add_a1, del_a1, num_1]))) > 0:
-                    mutexes.add(mutex(action_1, action_2))
                     add_edge(action_1, action_2)
                 if len(pre_1.intersection(set.union(*[add_a2, del_a2, num_2]))) > 0:
-                    mutexes.add(mutex(action_1, action_2))
                     add_edge(action_2, action_1)
                     continue
 
@@ -110,21 +108,18 @@ class ParallelModifier(Modifier):
                 if len(add_a1.intersection(del_a2)) > 0 or \
                         len(add_a2.intersection(del_a1)) > 0 or \
                         len(num_1.intersection(num_2)) > 0:
-                    mutexes.add(mutex(action_1, action_2))
                     add_edge(action_1, action_2)
                     add_edge(action_2, action_1)
                     continue
 
-        for_all_mutexes = set()
-        exists_mutexes = set()
-
+        mutexes = set()
         def generate_for_all():
             for edge in graph.edges():
                 a1, a2 = edge
                 m1 = z3.Not(z3.And(a1, a2))
                 m2 = z3.Not(z3.And(a2, a1))
-                if m1 not in for_all_mutexes and m2 not in for_all_mutexes:
-                    for_all_mutexes.add(m1)
+                if m1 not in mutexes and m2 not in mutexes:
+                    mutexes.add(m1)
         def generate_exists():
             components = nx.strongly_connected_components(graph)
             for c in components:
@@ -137,11 +132,11 @@ class ParallelModifier(Modifier):
                     if numbers[a1] < numbers[a2]:
                         m1 = z3.Not(z3.And(a1, a2))
                         m2 = z3.Not(z3.And(a2, a1))
-                        if m1 not in exists_mutexes and m2 not in exists_mutexes:
-                            exists_mutexes.add(m1)
+                        if m1 not in mutexes and m2 not in mutexes:
+                            mutexes.add(m1)
 
         generate_exists()
-        generate_for_all()
+        # generate_for_all()
         plt.figure(figsize=(20, 20))
         nx.draw(graph, node_size=1500, font_size=10, with_labels=True)
         plt.show()
