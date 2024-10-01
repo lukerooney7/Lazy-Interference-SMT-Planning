@@ -132,4 +132,4 @@ def main(args=None):
         solve_problem(args.domain, args.problem, configuration)
 
 if __name__ == '__main__':
-    main(["--domain", "../domainZenoSimple.pddl", "--problem", "../problemZenoSimple.pddl", "--forall"])
+    main(["--domain", "../domains/counter.pddl", "--problem", "../problems/problem.pddl", "--forall"])
