@@ -30,8 +30,11 @@ class SMTSearch(Search):
 
             if not self.solver:
                 self.solver = z3.Solver(ctx=context) if 'objective' not in formula else z3.Optimize(ctx=context)
-                # BaseUserPropagator(s=self.solver)
-                LazyUserPropagator(s=self.solver)
+                # p = BaseUserPropagator(s=self.solver)
+                p = LazyUserPropagator(s=self.solver, e=self.encoder)
+
+                for a in self.encoder.modifier.graph.nodes():
+                    p.add(a)
 
             # deal with the initial state
             if self.horizon == 0:
