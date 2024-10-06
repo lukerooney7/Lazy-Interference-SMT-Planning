@@ -15,6 +15,7 @@ class ParallelModifier(Modifier):
     """
     def __init__(self):
         super().__init__("ParallelModifier")
+        self.graph = nx.DiGraph()
     
     def encode(self, encoder, actions):
         """!
@@ -84,12 +85,11 @@ class ParallelModifier(Modifier):
         # main body of the function
         start_time = time.time()
         actions = encoder.task.actions
-        graph = nx.DiGraph()
 
         def add_edge(action1, action2):
             a1 = encoder.get_action_var(action1.name, 0)
             a2 = encoder.get_action_var(action2.name, 0)
-            graph.add_edge(a1, a2)
+            self.graph.add_edge(a1, a2)
 
         # Iterate over actions to identify mutex pairs
         for i, action_1 in enumerate(actions):
@@ -114,19 +114,19 @@ class ParallelModifier(Modifier):
 
         mutexes = set()
         def generate_for_all():
-            for edge in graph.edges():
+            for edge in self.graph.edges():
                 a1, a2 = edge
                 m1 = z3.Not(z3.And(a1, a2))
                 m2 = z3.Not(z3.And(a2, a1))
                 if m1 not in mutexes and m2 not in mutexes:
                     mutexes.add(m1)
         def generate_exists():
-            components = nx.strongly_connected_components(graph)
+            components = nx.strongly_connected_components(self.graph)
             for c in components:
                 numbers = {}
                 for i, a in enumerate(c):
                     numbers[a] = i
-                subgraph = graph.subgraph(c)
+                subgraph = self.graph.subgraph(c)
                 for edge in subgraph.edges():
                     a1, a2 = edge
                     if numbers[a1] < numbers[a2]:
@@ -135,11 +135,11 @@ class ParallelModifier(Modifier):
                         if m1 not in mutexes and m2 not in mutexes:
                             mutexes.add(m1)
 
-        generate_exists()
+        # generate_exists()
         # generate_for_all()
-        plt.figure(figsize=(20, 20))
-        nx.draw(graph, node_size=1500, font_size=10, with_labels=True)
-        plt.show()
+        # plt.figure(figsize=(20, 20))
+        # nx.draw(self.graph, node_size=1500, font_size=10, with_labels=True)
+        # plt.show()
         end_time = time.time()
         log(f'computed {len(mutexes)} mutexes took {end_time-start_time:.2f}s', 2)
         return mutexes
