@@ -1,7 +1,6 @@
 import networkx as nx
 import z3
-from networkx.utils import UnionFind
-from pip._internal.req import constructors
+from pypmt.utilities import log
 
 
 class LazyUserPropagator(z3.UserPropagateBase):
@@ -22,17 +21,15 @@ class LazyUserPropagator(z3.UserPropagateBase):
         self.stack = []
 
     def push(self):
-        # print("push")
+        log("Push", 5)
         self.stack.append(self.current.copy())
-        # print(self.current)
 
     def pop(self, n):
-        # print("pop")
+        log("Pop", 5)
         self.current = self.stack.pop()
-        # print(self.current)
 
     def _final(self):
-        print("Final")
+        log("Final", 5)
 
     def check_forAll(self):
         for edge in self.current.edges():

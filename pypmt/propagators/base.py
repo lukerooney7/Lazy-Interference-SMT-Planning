@@ -1,5 +1,5 @@
 import z3
-from networkx.utils import UnionFind
+from pypmt.utilities import log
 from pip._internal.req import constructors
 
 
@@ -7,31 +7,29 @@ class BaseUserPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None):
         # Need to understand what all of this does!
         z3.UserPropagateBase.__init__(self, s, ctx)
-        self.trail = []
-        self.lim = []
-        # self.add_fixed(lambda x, v: self._fixed(x, v))
-        # self.add_final(lambda: self._final())
-        # self.add_eq(lambda x, y: self._eq(x, y))
-        # self.add_created(lambda t: self._created(t))
-        self.first = True
+        self.add_fixed(lambda x, v: self._fixed(x, v))
+        self.add_final(lambda: self._final())
+        self.add_eq(lambda x, y: self._eq(x, y))
+        self.add_created(lambda t: self._created(t))
 
-    # def push(self):
-    #     print("push")
-    #
-    # def pop(self, n):
-        # print("pop")
+    def push(self):
+        log("Push", 5)
 
-    # def _fixed(self, x, v):
-        # print("fixed: ", x, " := ", v)
+    def pop(self, n):
+        log("Pop", 5)
 
-    # def _fixed_trail(selfs):
-        # print("fixed trail")
+    def _fixed(self, x, v):
+        log(f'fixed: {x}, := , {v}', 5)
 
-    # def _created(self, t):
-        # print("Created", t)
+    def _fixed_trail(selfs):
+        log("fixed trail", 5)
 
-    # def _eq(self, x, y):
-        # print(x, " = ", y)
+    def _created(self, t):
+        log(f'created: {t}', 5)
 
-    # def _final(self):
-        # print("Final")
+    def _eq(self, x, y):
+        log(f'{x} = {y}', 5)
+        print(x, " = ", y)
+
+    def _final(self):
+        log("Final", 5)
