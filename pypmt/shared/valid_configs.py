@@ -1,6 +1,6 @@
 from unified_planning.shortcuts import CompilationKind
 from pypmt.encoders.R2E import EncoderRelaxed2Exists
-from pypmt.encoders.basic import EncoderForall, EncoderSequential
+from pypmt.encoders.basic import EncoderForall, EncoderSequential, EncoderExists
 from pypmt.encoders.SequentialLifted import EncoderSequentialLifted
 from pypmt.encoders.SequentialQFUF import EncoderSequentialQFUF
 from pypmt.encoders.OMT import EncoderSequentialOMT
@@ -23,6 +23,7 @@ lifted_encoders_default_compilation_list = []
 valid_configs = {
     "seq":     (EncoderSequential, SMTSearch, grounded_encoders_default_compilation_list),
     "forall":  (EncoderForall, SMTSearch, grounded_encoders_default_compilation_list),
+    "exists":  (EncoderExists, SMTSearch, grounded_encoders_default_compilation_list),
     "r2e":     (EncoderRelaxed2Exists, SMTSearch,  grounded_encoders_default_compilation_list),
     "uf":      (EncoderSequentialLifted, LiftedSearch, lifted_encoders_default_compilation_list), # TODO: has to be tested and too slow
     "qfuf":    (EncoderSequentialQFUF, QFUFSearch, lifted_encoders_default_compilation_list),

@@ -44,6 +44,7 @@ def create_parser():
     # Optional arguments. process_arguments forces one of the encodings to be true.
     parser.add_argument('--seq', action='store_true', help='Use the sequential SMT encoding.')
     parser.add_argument('--forall', action='store_true', help='Use the parallel SMT encoding with forall-step semantics.')
+    parser.add_argument('--exists', action='store_true', help='Use the parallel SMT encoding with exists-step semantics.')
     parser.add_argument('--r2e', action='store_true', help='Use the R2E encoding.')
     parser.add_argument('--uf', action='store_true',  help='Use the lifted encoding with quantifiers.')
     parser.add_argument('--qfuf', action='store_true',  help='Use the quantifier-free lifted encoding.')
@@ -79,6 +80,8 @@ def process_arguments(args):
         configuration = "seq"
     elif args.forall:
         configuration = "forall"
+    elif args.exists:
+        configuration = "exists"
     elif args.r2e:
         configuration = "r2e"
     elif args.uf:
@@ -132,4 +135,4 @@ def main(args=None):
         solve_problem(args.domain, args.problem, configuration)
 
 if __name__ == '__main__':
-    main(["--domain", "../domains/counter.pddl", "--problem", "../problems/problem.pddl", "--forall"])
+    main(["--domain", "../domains/zeno.pddl", "--problem", "../problems/zeno5.pddl", "--exists", "--verbose", "4"])

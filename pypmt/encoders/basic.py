@@ -386,4 +386,9 @@ class EncoderForall(EncoderGrounded):
     in Kautz & Selman 1996 
     """
     def __init__(self, task):
-        super().__init__("seqForall", task, ParallelModifier())
+        super().__init__("seqForall", task, ParallelModifier(True))
+
+
+class EncoderExists(EncoderGrounded):
+    def __init__(self, task):
+        super().__init__("seqExists", task, ParallelModifier(False))

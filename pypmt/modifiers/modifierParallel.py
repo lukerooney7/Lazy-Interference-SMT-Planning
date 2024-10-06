@@ -13,9 +13,10 @@ class ParallelModifier(Modifier):
     """
     Parallel modifier, contains method to implement parallel execution semantics.
     """
-    def __init__(self):
+    def __init__(self, forAll):
         super().__init__("ParallelModifier")
         self.graph = nx.DiGraph()
+        self.forAll = forAll
     
     def encode(self, encoder, actions):
         """!
@@ -135,8 +136,11 @@ class ParallelModifier(Modifier):
                         if m1 not in mutexes and m2 not in mutexes:
                             mutexes.add(m1)
 
-        # generate_exists()
-        # generate_for_all()
+        if self.forAll:
+            generate_for_all()
+        else:
+            generate_exists()
+
         # plt.figure(figsize=(20, 20))
         # nx.draw(self.graph, node_size=1500, font_size=10, with_labels=True)
         # plt.show()
