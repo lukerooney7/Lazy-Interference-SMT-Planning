@@ -2,6 +2,7 @@ import z3
 import time
 
 from unified_planning.model.walkers.free_vars import FreeVarsExtractor
+from z3 import BoolVal
 
 from pypmt.utilities import log
 from pypmt.modifiers.base import Modifier
@@ -13,10 +14,11 @@ class ParallelModifier(Modifier):
     """
     Parallel modifier, contains method to implement parallel execution semantics.
     """
-    def __init__(self, forAll):
+    def __init__(self, forAll, lazy):
         super().__init__("ParallelModifier")
         self.graph = nx.DiGraph()
         self.forAll = forAll
+        self.lazy = lazy
     
     def encode(self, encoder, actions):
         """!
@@ -136,14 +138,17 @@ class ParallelModifier(Modifier):
                         if m1 not in mutexes and m2 not in mutexes:
                             mutexes.add(m1)
 
+        # plt.figure(figsize=(20, 20))
+        # nx.draw(self.graph, node_size=1500, font_size=10, with_labels=True)
+        # plt.show()
+
+        if self.lazy:
+            return
+
         if self.forAll:
             generate_for_all()
         else:
             generate_exists()
-
-        # plt.figure(figsize=(20, 20))
-        # nx.draw(self.graph, node_size=1500, font_size=10, with_labels=True)
-        # plt.show()
         end_time = time.time()
         log(f'computed {len(mutexes)} mutexes took {end_time-start_time:.2f}s', 2)
         return mutexes

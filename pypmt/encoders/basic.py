@@ -35,10 +35,11 @@ class EncoderGrounded(Encoder):
         planning of the original work in Kautz & Selman 1996 
     """
 
-    def __init__(self, name, task, modifier):
+    def __init__(self, name, task, lazy, modifier):
         self.task = task # The UP problem
         self.name = name
         self.modifier = modifier
+        self.lazy = lazy
         self.ctx = z3.Context() # The context where we will store the problem
 
         # cache all fluents in the problem.
@@ -155,7 +156,8 @@ class EncoderGrounded(Encoder):
         encoded_formula['goal']    = z3.substitute(self.formula['goal'], list_substitutions_fluents)
         encoded_formula['actions'] = z3.substitute(self.formula['actions'], list_substitutions_fluents + list_substitutions_actions)
         encoded_formula['frame']   = z3.substitute(self.formula['frame'], list_substitutions_fluents + list_substitutions_actions)
-        encoded_formula['sem']     = z3.substitute(self.formula['sem'], list_substitutions_actions)
+        if not self.lazy:
+            encoded_formula['sem']     = z3.substitute(self.formula['sem'], list_substitutions_actions)
         return encoded_formula
 
     def base_encode(self):
@@ -173,7 +175,8 @@ class EncoderGrounded(Encoder):
         self.formula['goal']    = z3.And(self.encode_goal_state(0))  # Encode goal state axioms
         self.formula['actions'] = z3.And(self.encode_actions(0))  # Encode universal axioms
         self.formula['frame']   = z3.And(self.encode_frame(0))  # Encode explanatory frame axioms
-        self.formula['sem']     = z3.And(self.encode_execution_semantics())  # Encode execution semantics (lin/par)
+        if not self.lazy:
+            self.formula['sem']     = z3.And(self.encode_execution_semantics())  # Encode execution semantics (lin/par)
 
     def encode_execution_semantics(self):
         """!
@@ -386,9 +389,9 @@ class EncoderForall(EncoderGrounded):
     in Kautz & Selman 1996 
     """
     def __init__(self, task):
-        super().__init__("seqForall", task, ParallelModifier(True))
+        super().__init__("seqForall", task, True, ParallelModifier(True, True))
 
 
 class EncoderExists(EncoderGrounded):
     def __init__(self, task):
-        super().__init__("seqExists", task, ParallelModifier(False))
+        super().__init__("seqExists", task, False, ParallelModifier(False, True))
