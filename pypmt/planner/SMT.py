@@ -1,8 +1,6 @@
 import time
 
 import z3
-from z3 import UserPropagateBase
-
 from pypmt.planner.utilities import dumpProblem
 from pypmt.propagators.base import BaseUserPropagator
 from pypmt.propagators.lazy import LazyUserPropagator
@@ -16,13 +14,11 @@ class SMTSearch(Search):
     """
 
     def search(self):
-
         self.horizon = 0
-
         log(f'Starting to solve', 1)
         total_time = 0
         for horizon in self.scheduler:
-            self.horizon  = horizon
+            self.horizon = horizon
 
             start_time = time.time()
             formula    = self.encoder.encode(self.horizon)
@@ -30,11 +26,19 @@ class SMTSearch(Search):
 
             if not self.solver:
                 self.solver = z3.Solver(ctx=context) if 'objective' not in formula else z3.Optimize(ctx=context)
-                # p = BaseUserPropagator(s=self.solver)
-                p = LazyUserPropagator(s=self.solver, e=self.encoder)
+            if not self.propagator:
+                if self.encoder.lazy:
+                    self.propagator = LazyUserPropagator(s=self.solver, e=self.encoder)
+                else:
+                    self.propagator = BaseUserPropagator(s=self.solver)
 
-                for a in self.encoder.modifier.graph.nodes():
-                    p.add(a)
+                for a in self.encoder.task.actions:
+                    action = self.encoder.get_action_var(a.name, 0)
+                    self.propagator.add(action)
+            else:
+                for a in self.encoder.task.actions:
+                    action = self.encoder.get_action_var(a.name, horizon)
+                    self.propagator.add(action)
 
             # deal with the initial state
             if self.horizon == 0:
@@ -71,6 +75,7 @@ class SMTSearch(Search):
                 log(f'Z3 statistics:\n{self.solver.statistics()}', 4)
                 self.solution = self.encoder.extract_plan(self.solver.model(), self.horizon)
                 break
+        # plt.show()
         return self.solution
 
     def dump_smtlib_to_file(self, t, path):

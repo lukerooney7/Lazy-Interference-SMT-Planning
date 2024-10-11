@@ -8,7 +8,7 @@ from pypmt.utilities import log
 from pypmt.modifiers.base import Modifier
 
 import networkx as nx
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 class ParallelModifier(Modifier):
     """
@@ -90,9 +90,7 @@ class ParallelModifier(Modifier):
         actions = encoder.task.actions
 
         def add_edge(action1, action2):
-            a1 = encoder.get_action_var(action1.name, 0)
-            a2 = encoder.get_action_var(action2.name, 0)
-            self.graph.add_edge(a1, a2)
+            self.graph.add_edge(action1.name, action2.name)
 
         # Iterate over actions to identify mutex pairs
         for i, action_1 in enumerate(actions):
@@ -119,6 +117,8 @@ class ParallelModifier(Modifier):
         def generate_for_all():
             for edge in self.graph.edges():
                 a1, a2 = edge
+                a1 = encoder.get_action_var(a1, 0)
+                a2 = encoder.get_action_var(a2, 0)
                 m1 = z3.Not(z3.And(a1, a2))
                 m2 = z3.Not(z3.And(a2, a1))
                 if m1 not in mutexes and m2 not in mutexes:
@@ -132,6 +132,8 @@ class ParallelModifier(Modifier):
                 subgraph = self.graph.subgraph(c)
                 for edge in subgraph.edges():
                     a1, a2 = edge
+                    a1 = encoder.get_action_var(a1, 0)
+                    a2 = encoder.get_action_var(a2, 0)
                     if numbers[a1] < numbers[a2]:
                         m1 = z3.Not(z3.And(a1, a2))
                         m2 = z3.Not(z3.And(a2, a1))
@@ -143,7 +145,12 @@ class ParallelModifier(Modifier):
         # plt.show()
 
         if self.lazy:
-            return
+            for edge in self.graph.edges():
+                a1, a2 = edge
+                mutexes.add(z3.Or(encoder.get_action_var(a1, 0), z3.Not(encoder.get_action_var(a1, 0))))
+                break
+            return mutexes
+            # return
 
         if self.forAll:
             generate_for_all()

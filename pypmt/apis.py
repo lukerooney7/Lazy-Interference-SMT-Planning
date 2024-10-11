@@ -13,7 +13,7 @@ from pypmt.encoders.SequentialLifted import EncoderSequentialLifted
 from pypmt.encoders.SequentialQFUF import EncoderSequentialQFUF
 from pypmt.encoders.OMT import EncoderSequentialOMT
 from pypmt.encoders.R2E import EncoderRelaxed2Exists
-from pypmt.encoders.basic import EncoderForall, EncoderSequential, EncoderExists
+from pypmt.encoders.basic import EncoderForall, EncoderSequential, EncoderExists, EncoderLazyForall, EncoderLazyExists
 
 
 from pypmt.planner.SMT import SMTSearch
@@ -94,7 +94,9 @@ def generate_schedule_for(encoder, upperbound):
                    EncoderSequentialQFUF, \
                    EncoderSequential,\
                    EncoderForall,\
-                   EncoderExists,\
+                   EncoderExists, \
+                   EncoderLazyForall, \
+                   EncoderLazyExists, \
                    EncoderRelaxed2Exists,\
                    EncoderSequentialOMT]:
         schedule = list(range(0, upperbound))

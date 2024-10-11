@@ -45,6 +45,8 @@ def create_parser():
     parser.add_argument('--seq', action='store_true', help='Use the sequential SMT encoding.')
     parser.add_argument('--forall', action='store_true', help='Use the parallel SMT encoding with forall-step semantics.')
     parser.add_argument('--exists', action='store_true', help='Use the parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--lazyForall', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--lazyExists', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
     parser.add_argument('--r2e', action='store_true', help='Use the R2E encoding.')
     parser.add_argument('--uf', action='store_true',  help='Use the lifted encoding with quantifiers.')
     parser.add_argument('--qfuf', action='store_true',  help='Use the quantifier-free lifted encoding.')
@@ -82,6 +84,10 @@ def process_arguments(args):
         configuration = "forall"
     elif args.exists:
         configuration = "exists"
+    elif args.lazyForall:
+        configuration = "lazyForall"
+    elif args.lazyExists:
+        configuration = "lazyExists"
     elif args.r2e:
         configuration = "r2e"
     elif args.uf:
@@ -135,4 +141,4 @@ def main(args=None):
         solve_problem(args.domain, args.problem, configuration)
 
 if __name__ == '__main__':
-    main(["--domain", "../domains/zeno.pddl", "--problem", "../problems/zeno5.pddl", "--exists", "--verbose", "4"])
+    main(["--domain", "../domains/zeno.pddl", "--problem", "../problems/zenoDemo.pddl", "--lazyForall", "--verbose", "4"])
