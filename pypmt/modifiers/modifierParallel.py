@@ -14,10 +14,10 @@ class ParallelModifier(Modifier):
     """
     Parallel modifier, contains method to implement parallel execution semantics.
     """
-    def __init__(self, forAll, lazy):
+    def __init__(self, forall, lazy):
         super().__init__("ParallelModifier")
         self.graph = nx.DiGraph()
-        self.forAll = forAll
+        self.forall = forall
         self.lazy = lazy
     
     def encode(self, encoder, actions):
@@ -113,7 +113,9 @@ class ParallelModifier(Modifier):
                     add_edge(action_2, action_1)
                     continue
 
+
         mutexes = set()
+        exists_mutexes = set()
         def generate_for_all():
             for edge in self.graph.edges():
                 a1, a2 = edge
@@ -126,22 +128,19 @@ class ParallelModifier(Modifier):
         def generate_exists():
             components = nx.strongly_connected_components(self.graph)
             for c in components:
-                numbers = {}
-                for i, a in enumerate(c):
-                    numbers[a] = i
+                numbers = {a: i for i, a in enumerate(self.graph)}
                 subgraph = self.graph.subgraph(c)
                 for edge in subgraph.edges():
-                    a1, a2 = edge
-                    a1 = encoder.get_action_var(a1, 0)
-                    a2 = encoder.get_action_var(a2, 0)
-                    if numbers[a1] < numbers[a2]:
+                    act_1, act_2 = edge
+                    a1 = encoder.get_action_var(act_1, 0)
+                    a2 = encoder.get_action_var(act_2, 0)
+                    if numbers[act_1] <= numbers[act_2]:
                         m1 = z3.Not(z3.And(a1, a2))
                         m2 = z3.Not(z3.And(a2, a1))
                         if m1 not in mutexes and m2 not in mutexes:
                             mutexes.add(m1)
-
         # plt.figure(figsize=(20, 20))
-        # nx.draw(self.graph, node_size=1500, font_size=10, with_labels=True)
+        # nx.draw(self.graph, node_size=1500, font_size=20, with_labels=True)
         # plt.show()
 
         if self.lazy:
@@ -152,7 +151,7 @@ class ParallelModifier(Modifier):
             return mutexes
             # return
 
-        if self.forAll:
+        if self.forall:
             generate_for_all()
         else:
             generate_exists()

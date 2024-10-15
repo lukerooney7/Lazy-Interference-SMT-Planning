@@ -1,4 +1,3 @@
-import networkx
 import networkx as nx
 import z3
 # from matplotlib import pyplot as plt
@@ -24,9 +23,10 @@ class LazyUserPropagator(z3.UserPropagateBase):
         self.stack = []
 
     def push(self):
-        # log("Push", 5)
-        # print("push")
-        self.stack.append(copy.deepcopy(self.current))
+        new = []
+        for graph in self.current:
+            new.append(graph.copy())
+        self.stack.append(new)
 
     def pop(self, n):
         # log(f'pop {n} times', 3)
@@ -34,13 +34,9 @@ class LazyUserPropagator(z3.UserPropagateBase):
             self.current = self.stack.pop()
 
     def _final(self):
-        # plt.figure(figsize=(20, 20))
-        # nx.draw(self.current, node_size=1500, font_size=10, with_labels=True)
-        # plt.show()
         log("Final", 5)
 
     def _fixed(self, action, value):
-        # log(f'fixed: {action} :=  {value}', 3)
         if value:
             step = int(str(action).split('_')[-1])
             action_name = '_'.join(str(action).split('_')[:-1])
@@ -48,20 +44,24 @@ class LazyUserPropagator(z3.UserPropagateBase):
                 self.current.append(nx.DiGraph())
             literals = []
             self.current[step].add_node(action_name)
-            for e in self.graph.edges(action_name):
-                a1, a2 = e
-                if a2 in self.current[step] and a1 in self.current[step]:
-                    self.current[step].add_edge(a1, a2)
-                    literals.append(self.encoder.get_action_var(a1, step))
-                    literals.append(self.encoder.get_action_var(a2, step))
-            # plt.figure(figsize=(20, 20))
-            # for i in self.current:
-            #     if i:
-            #         nx.draw(i, node_size=1500, font_size=10, with_labels=True)
-            #         plt.show()
+            edges = list(self.graph.edges(action_name)) + list(self.graph.in_edges(action_name))
+            if self.encoder.modifier.forall:
+                for e in edges:
+                    a1, a2 = e
+                    if a2 in self.current[step] and a1 in self.current[step]:
+                        self.current[step].add_edge(a1, a2)
+                        literals.append(self.encoder.get_action_var(a1, step))
+                        literals.append(self.encoder.get_action_var(a2, step))
+            else:
+                for e in edges:
+                    a1, a2 = e
+                    if a2 in self.current[step] and a1 in self.current[step]:
+                        self.current[step].add_edge(a1, a2)
+                        if sum(1 for _ in nx.strongly_connected_components(self.graph)) > 0:
+                            literals.append(self.encoder.get_action_var(a1, step))
+                            literals.append(self.encoder.get_action_var(a2, step))
+                            break
             if literals:
                 literals.append(action)
+                literals = list(dict.fromkeys(literals))
                 self.conflict(deps=literals, eqs=[])
-            # else:
-            #     plt.figure(figsize=(20, 20))
-            #     nx.draw(self.current, node_size=1500, font_size=10, with_labels=True)

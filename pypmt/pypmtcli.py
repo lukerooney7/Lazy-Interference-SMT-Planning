@@ -141,4 +141,4 @@ def main(args=None):
         solve_problem(args.domain, args.problem, configuration)
 
 if __name__ == '__main__':
-    main(["--domain", "../domains/zeno.pddl", "--problem", "../problems/zenoDemo.pddl", "--lazyForall", "--verbose", "4"])
+    main(["--domain", "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/domain.pddl", "--problem", "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/p04.pddl", "--lazyExists", "--verbose", "4"])
