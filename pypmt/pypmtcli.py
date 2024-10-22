@@ -45,8 +45,17 @@ def create_parser():
     parser.add_argument('--seq', action='store_true', help='Use the sequential SMT encoding.')
     parser.add_argument('--forall', action='store_true', help='Use the parallel SMT encoding with forall-step semantics.')
     parser.add_argument('--exists', action='store_true', help='Use the parallel SMT encoding with exists-step semantics.')
-    parser.add_argument('--lazyForall', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
-    parser.add_argument('--lazyExists', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--forallNoProp', action='store_true', help='Use the parallel SMT encoding with forall-step semantics.')
+    parser.add_argument('--existsNoProp', action='store_true', help='Use the parallel SMT encoding with forall-step semantics.')
+    parser.add_argument('--forallLazy', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--forallLazyStepShare', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--forallLazyEdgeCache', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--forallLazyNoGraph', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--forallLazyNeighbours', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--forallLazyOptimal', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--existsLazy', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--existsLazyPath', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--existsLazyStepShare', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
     parser.add_argument('--r2e', action='store_true', help='Use the R2E encoding.')
     parser.add_argument('--uf', action='store_true',  help='Use the lifted encoding with quantifiers.')
     parser.add_argument('--qfuf', action='store_true',  help='Use the quantifier-free lifted encoding.')
@@ -84,10 +93,28 @@ def process_arguments(args):
         configuration = "forall"
     elif args.exists:
         configuration = "exists"
-    elif args.lazyForall:
-        configuration = "lazyForall"
-    elif args.lazyExists:
-        configuration = "lazyExists"
+    elif args.forallNoProp:
+        configuration = "forall-noprop"
+    elif args.existsNoProp:
+        configuration = "exists-noprop"
+    elif args.forallLazy:
+        configuration = "forall-lazy"
+    elif args.forallLazyStepShare:
+        configuration = "forall-lazy-stepshare"
+    elif args.forallLazyEdgeCache:
+        configuration = "forall-lazy-edgecache"
+    elif args.forallLazyNoGraph:
+        configuration = "forall-lazy-nograph"
+    elif args.forallLazyNeighbours:
+        configuration = "forall-lazy-neighbours"
+    elif args.forallLazyOptimal:
+        configuration = "forall-lazy-optimal"
+    elif args.existsLazy:
+        configuration = "exists-lazy"
+    elif args.existsLazyStepShare:
+        configuration = "exists-lazy-stepshare"
+    elif args.existsLazyPath:
+        configuration = "exists-lazy-path"
     elif args.r2e:
         configuration = "r2e"
     elif args.uf:
@@ -141,4 +168,10 @@ def main(args=None):
         solve_problem(args.domain, args.problem, configuration)
 
 if __name__ == '__main__':
-    main(["--domain", "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/domain.pddl", "--problem", "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/p04.pddl", "--lazyExists", "--verbose", "4"])
+    main(["--domain",
+          "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/domain.pddl",
+          "--problem",
+          "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/p05.pddl",
+          "--forallLazyOptimal",
+          "--verbose",
+          "4"])

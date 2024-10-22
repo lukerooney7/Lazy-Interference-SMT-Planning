@@ -3,10 +3,16 @@ import time
 import z3
 from pypmt.planner.utilities import dumpProblem
 from pypmt.propagators.base import BaseUserPropagator
-from pypmt.propagators.lazy import LazyUserPropagator
+from pypmt.propagators.existsBasic import ExistsBasicUserPropagator
+from pypmt.propagators.existsPath import ExistsPathUserPropagator
+from pypmt.propagators.forallBasic import ForallBasicUserPropagator
+from pypmt.propagators.forallEdgeCache import ForallEdgeCacheUserPropagator
+from pypmt.propagators.forallNeighbours import ForallNeighboursUserPropagator
+from pypmt.propagators.forallNoGraph import ForallNoGraphUserPropagator
+from pypmt.propagators.forallOptimal import ForallOptimalUserPropagator
+from pypmt.propagators.forallStepShare import ForallStepShareUserPropagator
 from pypmt.utilities import log
 from pypmt.planner.base import Search
-from pypmt.planner.plan.smt_sequential_plan import SMTSequentialPlan
 
 class SMTSearch(Search):
     """
@@ -26,19 +32,36 @@ class SMTSearch(Search):
 
             if not self.solver:
                 self.solver = z3.Solver(ctx=context) if 'objective' not in formula else z3.Optimize(ctx=context)
-            if not self.propagator:
-                if self.encoder.lazy:
-                    self.propagator = LazyUserPropagator(s=self.solver, e=self.encoder)
+            if not self.encoder.type == "forall-noprop" or not self.encoder.type == "exists-noprop":
+                if not self.propagator:
+                    if self.encoder.type == "forall" or self.encoder.type == "exists":
+                        self.propagator = BaseUserPropagator(s=self.solver)
+                    elif self.encoder.type == "forall-lazy":
+                        self.propagator = ForallBasicUserPropagator(s=self.solver, e=self.encoder)
+                    elif self.encoder.type == "forall-lazy-stepshare":
+                        self.propagator = ForallStepShareUserPropagator(s=self.solver, e=self.encoder)
+                    elif self.encoder.type == "forall-lazy-edgecache":
+                        self.propagator = ForallEdgeCacheUserPropagator(s=self.solver, e=self.encoder)
+                    elif self.encoder.type == "forall-lazy-nograph":
+                        self.propagator = ForallNoGraphUserPropagator(s=self.solver, e=self.encoder)
+                    elif self.encoder.type == "forall-lazy-neighbours":
+                        self.propagator = ForallNeighboursUserPropagator(s=self.solver, e=self.encoder)
+                    elif self.encoder.type == "forall-lazy-optimal":
+                        self.propagator = ForallOptimalUserPropagator(s=self.solver, e=self.encoder)
+                    elif self.encoder.type == "exists-lazy":
+                        self.propagator = ExistsBasicUserPropagator(s=self.solver, e=self.encoder)
+                    elif self.encoder.type == "exists-lazy-stepshare":
+                        self.propagator = ExistsBasicUserPropagator(s=self.solver, e=self.encoder)
+                    elif self.encoder.type == "exists-lazy-path":
+                        self.propagator = ExistsPathUserPropagator(s=self.solver, e=self.encoder)
+                    if self.propagator:
+                        for a in self.encoder.task.actions:
+                            action = self.encoder.get_action_var(a.name, 0)
+                            self.propagator.add(action)
                 else:
-                    self.propagator = BaseUserPropagator(s=self.solver)
-
-                for a in self.encoder.task.actions:
-                    action = self.encoder.get_action_var(a.name, 0)
-                    self.propagator.add(action)
-            else:
-                for a in self.encoder.task.actions:
-                    action = self.encoder.get_action_var(a.name, horizon)
-                    self.propagator.add(action)
+                    for a in self.encoder.task.actions:
+                        action = self.encoder.get_action_var(a.name, horizon)
+                        self.propagator.add(action)
 
             # deal with the initial state
             if self.horizon == 0:

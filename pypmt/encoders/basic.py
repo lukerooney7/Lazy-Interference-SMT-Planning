@@ -35,11 +35,11 @@ class EncoderGrounded(Encoder):
         planning of the original work in Kautz & Selman 1996 
     """
 
-    def __init__(self, name, task, lazy, modifier):
+    def __init__(self, name, task, type, modifier):
         self.task = task # The UP problem
         self.name = name
         self.modifier = modifier
-        self.lazy = lazy
+        self.type = type
         self.ctx = z3.Context() # The context where we will store the problem
 
         # cache all fluents in the problem.
@@ -389,23 +389,85 @@ class EncoderForall(EncoderGrounded):
     in Kautz & Selman 1996 
     """
     def __init__(self, task):
-        super().__init__("seqForall", task, False, ParallelModifier(True, False))
+        super().__init__("seqForall", task, "forall", ParallelModifier(True, False))
 
-
-class EncoderLazyForall(EncoderGrounded):
+class EncoderForallNoProp(EncoderGrounded):
     """
     Implementation of a generalisation for numeric planning of the original work
     in Kautz & Selman 1996
     """
     def __init__(self, task):
-        super().__init__("seqLazyForall", task, True, ParallelModifier(True, True))
+        super().__init__("seqForall", task, "forall-noprop", ParallelModifier(True, False))
 
+
+class EncoderForallLazy(EncoderGrounded):
+    """
+    Implementation of a generalisation for numeric planning of the original work
+    in Kautz & Selman 1996
+    """
+    def __init__(self, task):
+        super().__init__("seqLazyForall", task, "forall-lazy", ParallelModifier(True, True))
+
+class EncoderForallLazyStepShare(EncoderGrounded):
+    """
+    Implementation of a generalisation for numeric planning of the original work
+    in Kautz & Selman 1996
+    """
+    def __init__(self, task):
+        super().__init__("seqLazyForallStepShare", task, "forall-lazy-stepshare", ParallelModifier(True, True))
+
+class EncoderForallLazyEdgeCache(EncoderGrounded):
+    """
+    Implementation of a generalisation for numeric planning of the original work
+    in Kautz & Selman 1996
+    """
+    def __init__(self, task):
+        super().__init__("seqLazyForallEdgeCache", task, "forall-lazy-edgecache", ParallelModifier(True, True))
+
+class EncoderForallLazyNoGraph(EncoderGrounded):
+    """
+    Implementation of a generalisation for numeric planning of the original work
+    in Kautz & Selman 1996
+    """
+    def __init__(self, task):
+        super().__init__("seqLazyForallNoGraph", task, "forall-lazy-nograph", ParallelModifier(True, True))
+
+class EncoderForallLazyNeighbours(EncoderGrounded):
+    """
+    Implementation of a generalisation for numeric planning of the original work
+    in Kautz & Selman 1996
+    """
+    def __init__(self, task):
+        super().__init__("seqLazyForallNeighbours", task, "forall-lazy-neighbours", ParallelModifier(True, True))
+
+class EncoderForallLazyOptimal(EncoderGrounded):
+    """
+    Implementation of a generalisation for numeric planning of the original work
+    in Kautz & Selman 1996
+    """
+    def __init__(self, task):
+        super().__init__("seqLazyForallOptimal", task, "forall-lazy-optimal", ParallelModifier(True, True))
 
 class EncoderExists(EncoderGrounded):
     def __init__(self, task):
-        super().__init__("seqExists", task, False, ParallelModifier(False, False))
+        super().__init__("seqExists", task, "exists", ParallelModifier(False, False))
 
 
-class EncoderLazyExists(EncoderGrounded):
+class EncoderExistsNoProp(EncoderGrounded):
     def __init__(self, task):
-        super().__init__("seqLazyExists", task, True, ParallelModifier(False, True))
+        super().__init__("seqExists", task, "exists-noprop", ParallelModifier(False, False))
+
+
+class EncoderExistsLazy(EncoderGrounded):
+    def __init__(self, task):
+        super().__init__("seqLazyExists", task, "exists-lazy", ParallelModifier(False, True))
+
+
+class EncoderExistsLazyStepShare(EncoderGrounded):
+    def __init__(self, task):
+        super().__init__("seqLazyExistsStepShare", task, "exists-lazy-stepshare", ParallelModifier(False, True))
+
+
+class EncoderExistsLazyPath(EncoderGrounded):
+    def __init__(self, task):
+        super().__init__("seqLazyExistsPath", task, "exists-lazy-path", ParallelModifier(False, True))

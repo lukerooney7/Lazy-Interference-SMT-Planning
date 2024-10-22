@@ -115,7 +115,6 @@ class ParallelModifier(Modifier):
 
 
         mutexes = set()
-        exists_mutexes = set()
         def generate_for_all():
             for edge in self.graph.edges():
                 a1, a2 = edge
@@ -149,7 +148,6 @@ class ParallelModifier(Modifier):
                 mutexes.add(z3.Or(encoder.get_action_var(a1, 0), z3.Not(encoder.get_action_var(a1, 0))))
                 break
             return mutexes
-            # return
 
         if self.forall:
             generate_for_all()
