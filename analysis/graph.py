@@ -41,17 +41,26 @@ def get_data():
     df.sort_values(by='instance', inplace=True)
     return df
 
-def cactus_plot(df, domain):
+
+def cactus_plot(df, domain, encoding, log, min_instance, max_instance):
     df = df[df['domain'] == domain]
+    # df = df[df['planner_tag'].str.contains(encoding, na=False)]
+    df = df[df['status'] == "SOLVED_SATISFICING"]
+
+    # Filter the instances between min_instance and max_instance
+    df = df[(df['instance'] >= min_instance) & (df['instance'] <= max_instance)]
+
     plt.figure(figsize=(12, 8))
-    plt.yscale('log')
+
+    if log:
+        plt.yscale('log')
 
     for planner_tag in df['planner_tag'].unique():
         planner_data = df[df['planner_tag'] == planner_tag]
         plt.plot(planner_data['instance'], planner_data['planning_time'],
                  label=planner_tag, marker='o', markersize=8, linestyle='-', linewidth=2)
 
-    plt.title('Planning Time Comparison for Rovers Domain Encodings', fontsize=18)
+    plt.title(f'Planning Time Comparison for {domain} Domain Encodings', fontsize=18)
     plt.xlabel('Instance', fontsize=14)
     plt.ylabel('Planning Time (s)', fontsize=14)
     plt.legend(title='Planner Tag', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12)
@@ -60,7 +69,6 @@ def cactus_plot(df, domain):
     plt.gca().set_aspect('auto')
     plt.tight_layout()
     plt.show()
-
 
 
 def scatter_plot(df, domain, x, y):
@@ -90,6 +98,6 @@ def scatter_plot(df, domain, x, y):
 
 
 df = get_data()
-scatter_plot(df, "rovers", "ForallSMT-tag", "LazyForallSMT-tag")
-# cactus_plot(df, "rovers")
+# scatter_plot(df, "rovers", "ForallSMT-tag", "LazyForallSMT-tag")
+cactus_plot(df, "rovers", "exists", True, 0, 100)
 
