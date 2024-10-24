@@ -1,0 +1,45 @@
+{
+    "task-info": {
+        "domain": "rovers",
+        "instance": 9,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "forall-lazy-optimal",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "forall-lazy-optimal",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 2.044344902038574,
+            "planning-time": 1111.5524525642395
+        },
+        "summary": {
+            "status": "UNSOLVABLE_INCOMPLETELY",
+            "log_messages": [
+                "failure reason No plan or task provided."
+            ]
+        },
+        "plan": []
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/Documents/parallel-sat-test/classical-domains/classical/rovers/domain.pddl",
+        "problem-file": "/home/lr225/Documents/parallel-sat-test/classical-domains/classical/rovers/p09.pddl"
+    }
+}

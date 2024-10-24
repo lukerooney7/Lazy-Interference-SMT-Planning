@@ -1,0 +1,61 @@
+{
+    "task-info": {
+        "domain": "zenotravel-numeric",
+        "instance": 6,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "forall",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "forall",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.8354976177215576,
+            "planning-time": 40.01652193069458
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(board person5 plane1 city2)",
+            "(refuel plane1)",
+            "(refuel plane2)",
+            "(board person4 plane2 city1)",
+            "(fly-slow plane1 city2 city0)",
+            "(board person2 plane1 city0)",
+            "(fly-fast plane2 city1 city0)",
+            "(board person1 plane2 city0)",
+            "(fly-slow plane1 city0 city1)",
+            "(refuel plane2)",
+            "(debark person5 plane1 city1)",
+            "(fly-fast plane2 city0 city3)",
+            "(debark person2 plane1 city1)",
+            "(debark person4 plane2 city3)",
+            "(refuel plane1)",
+            "(debark person1 plane2 city3)",
+            "(refuel plane2)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/cs/home/lr225/Documents/parallel-sat-test/numeric-domains/zenotravel/domain.pddl",
+        "problem-file": "/cs/home/lr225/Documents/parallel-sat-test/numeric-domains/zenotravel/instances/pfile6.pddl"
+    }
+}

@@ -1,0 +1,73 @@
+{
+    "task-info": {
+        "domain": "zenotravel-numeric",
+        "instance": 7,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "forall-lazy-neighbours",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "forall-lazy-neighbours",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.7610809803009033,
+            "planning-time": 32.24935555458069
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(fly-slow plane2 city1 city3)",
+            "(refuel plane2)",
+            "(board person1 plane2 city3)",
+            "(board person5 plane2 city3)",
+            "(fly-slow plane1 city2 city3)",
+            "(fly-slow plane2 city3 city2)",
+            "(refuel plane2)",
+            "(fly-fast plane2 city2 city1)",
+            "(refuel plane2)",
+            "(fly-slow plane2 city1 city3)",
+            "(fly-slow plane2 city3 city0)",
+            "(board person6 plane2 city0)",
+            "(refuel plane2)",
+            "(fly-slow plane2 city0 city1)",
+            "(fly-slow plane2 city1 city3)",
+            "(fly-slow plane2 city3 city2)",
+            "(refuel plane1)",
+            "(fly-slow plane1 city3 city1)",
+            "(board person4 plane1 city1)",
+            "(fly-slow plane1 city1 city3)",
+            "(debark person4 plane1 city3)",
+            "(refuel plane1)",
+            "(debark person5 plane2 city2)",
+            "(debark person6 plane2 city2)",
+            "(debark person1 plane2 city2)",
+            "(fly-slow plane1 city3 city0)",
+            "(refuel plane2)",
+            "(fly-slow plane2 city2 city1)",
+            "(refuel plane1)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/cs/home/lr225/Documents/parallel-sat-test/numeric-domains/zenotravel/domain.pddl",
+        "problem-file": "/cs/home/lr225/Documents/parallel-sat-test/numeric-domains/zenotravel/instances/pfile7.pddl"
+    }
+}

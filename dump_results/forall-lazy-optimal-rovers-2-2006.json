@@ -1,0 +1,57 @@
+{
+    "task-info": {
+        "domain": "rovers",
+        "instance": 2,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "forall-lazy-optimal",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "forall-lazy-optimal",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 1.3544409275054932,
+            "planning-time": 11.659254312515259
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(sample_soil rover0 rover0store waypoint0)",
+            "(calibrate rover0 camera0 objective0 waypoint0)",
+            "(drop rover0 rover0store)",
+            "(take_image rover0 waypoint0 objective1 camera0 low_res)",
+            "(sample_rock rover0 rover0store waypoint0)",
+            "(calibrate rover0 camera0 objective0 waypoint0)",
+            "(calibrate rover0 camera1 objective1 waypoint0)",
+            "(communicate_image_data rover0 general objective1 low_res waypoint0 waypoint1)",
+            "(take_image rover0 waypoint0 objective0 camera0 low_res)",
+            "(take_image rover0 waypoint0 objective1 camera1 high_res)",
+            "(communicate_rock_data rover0 general waypoint0 waypoint0 waypoint1)",
+            "(drop rover0 rover0store)",
+            "(communicate_soil_data rover0 general waypoint0 waypoint0 waypoint1)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/Documents/parallel-sat-test/classical-domains/classical/rovers/domain.pddl",
+        "problem-file": "/home/lr225/Documents/parallel-sat-test/classical-domains/classical/rovers/p02.pddl"
+    }
+}

@@ -1,0 +1,58 @@
+{
+    "task-info": {
+        "domain": "zenotravel-numeric",
+        "instance": 3,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "forall-lazy",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "forall-lazy",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 1.0975830554962158,
+            "planning-time": 6.967965602874756
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(fly-slow plane2 city2 city0)",
+            "(refuel plane1)",
+            "(board person1 plane2 city0)",
+            "(fly-fast plane1 city0 city1)",
+            "(refuel plane2)",
+            "(board person3 plane1 city1)",
+            "(fly-fast plane2 city0 city1)",
+            "(refuel plane1)",
+            "(debark person1 plane2 city1)",
+            "(fly-fast plane1 city1 city0)",
+            "(refuel plane2)",
+            "(debark person3 plane1 city0)",
+            "(fly-slow plane2 city1 city2)",
+            "(refuel plane1)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/cs/home/lr225/Documents/parallel-sat-test/numeric-domains/zenotravel/domain.pddl",
+        "problem-file": "/cs/home/lr225/Documents/parallel-sat-test/numeric-domains/zenotravel/instances/pfile3.pddl"
+    }
+}
