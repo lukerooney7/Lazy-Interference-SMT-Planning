@@ -2,7 +2,9 @@ import os
 import json
 import pandas as pd
 from matplotlib import pyplot as plt
+import seaborn as sns
 
+# folder_path = '/Users/lukeroooney/Desktop/Dissertation/parallelSAT/dump_results'
 folder_path = '/Users/lukeroooney/developer/pyPMTEvalToolkit/sandbox-dir/dump_results'
 
 def get_data():
@@ -96,8 +98,46 @@ def scatter_plot(df, domain, x, y):
     plt.tight_layout()
     plt.show()
 
+def compare_pars(df, domain, max_instance, timeout, par):
+    df = df[df['domain'] == domain]
+    timeout_penalty = timeout * par * 60
+    total_times = {}
+
+    for planner_tag in df['planner_tag'].unique():
+        planner_data = df[df['planner_tag'] == planner_tag]
+        total_time = 0
+
+        for instance in range(1, max_instance + 1):
+            instance_time = planner_data[planner_data['instance'] == instance]['planning_time']
+
+            if not instance_time.empty:
+                total_time += instance_time.iloc[0]
+            else:
+                total_time += timeout_penalty
+
+        total_times[planner_tag] = total_time
+
+    total_times_series = pd.Series(total_times).sort_values()
+
+    sns.set_theme(style="whitegrid")
+    plt.figure(figsize=(10, 6))
+    ax = total_times_series.plot(kind='barh', color='steelblue', edgecolor='black')
+
+    ax.set_title(f'{domain} Par {par} comparison for {timeout}m Time Limit', fontsize=16, fontweight='bold',
+                 pad=20)
+    ax.set_xlabel('Total Planning Time (seconds)', fontsize=14, labelpad=10)
+    ax.set_ylabel('Planner Tag', fontsize=14, labelpad=10)
+    ax.tick_params(axis='both', which='major', labelsize=12)
+    for i, (value, label) in enumerate(zip(total_times_series, total_times_series.index)):
+        ax.text(value + max(total_times_series) * 0.01, i, f'{value:.2f}', ha='left', va='center', fontsize=10,
+                color='black')
+
+    plt.grid(visible=True, which='both', axis='x', linestyle='--', linewidth=0.5)
+    plt.tight_layout()
+    plt.show()
+
 
 df = get_data()
 # scatter_plot(df, "rovers", "ForallSMT-tag", "LazyForallSMT-tag")
-cactus_plot(df, "rovers", "exists", True, 0, 100)
-
+# cactus_plot(df, "zenotravel-numeric", "exists", False, 0, 100)
+compare_pars(df, "zenotravel-numeric",2, 10, 2)
