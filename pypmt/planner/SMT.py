@@ -2,16 +2,16 @@ import time
 
 import z3
 from pypmt.planner.utilities import dumpProblem
-from pypmt.propagators.atest import TestUserPropagator
+from pypmt.propagators.test import TestUserPropagator
 from pypmt.propagators.base import BaseUserPropagator
-from pypmt.propagators.existsBasic import ExistsBasicUserPropagator
-from pypmt.propagators.existsPath import ExistsPathUserPropagator
-from pypmt.propagators.forallBasic import ForallBasicUserPropagator
-from pypmt.propagators.forallEdgeCache import ForallEdgeCacheUserPropagator
-from pypmt.propagators.forallNeighbours import ForallNeighboursUserPropagator
-from pypmt.propagators.forallNoGraph import ForallNoGraphUserPropagator
-from pypmt.propagators.forallOptimal import ForallOptimalUserPropagator
-from pypmt.propagators.forallStepShare import ForallStepShareUserPropagator
+from pypmt.propagators.exists.existsBasic import ExistsBasicUserPropagator
+from pypmt.propagators.exists.existsPath import ExistsPathUserPropagator
+from pypmt.propagators.forall.forallBasic import ForallBasicUserPropagator
+from pypmt.propagators.forall.forallEdgeCache import ForallEdgeCacheUserPropagator
+from pypmt.propagators.forall.forallNeighbours import ForallNeighboursUserPropagator
+from pypmt.propagators.forall.forallNoGraph import ForallNoGraphUserPropagator
+from pypmt.propagators.forall.forallOptimal import ForallOptimalUserPropagator
+from pypmt.propagators.forall.forallStepShare import ForallStepShareUserPropagator
 from pypmt.utilities import log
 from pypmt.planner.base import Search
 

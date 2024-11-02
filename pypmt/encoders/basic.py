@@ -397,7 +397,7 @@ class EncoderTest(EncoderGrounded):
     in Kautz & Selman 1996
     """
     def __init__(self, task):
-        super().__init__("seqForall", task, "test", ParallelModifier(True, True))
+        super().__init__("seqForall", task, "test", ParallelModifier(False, True))
 
 
 

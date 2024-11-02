@@ -38,4 +38,3 @@ class ExistsPathUserPropagator(z3.UserPropagateBase):
                         literals.add(self.encoder.get_action_var(source, step))
                         literals.add(self.encoder.get_action_var(target, step))
                         self.conflict(deps=list(literals), eqs=[])
-                        break
