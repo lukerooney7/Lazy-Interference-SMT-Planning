@@ -45,6 +45,7 @@ def create_parser():
     parser.add_argument('--seq', action='store_true', help='Use the sequential SMT encoding.')
     parser.add_argument('--forall', action='store_true', help='Use the parallel SMT encoding with forall-step semantics.')
     parser.add_argument('--exists', action='store_true', help='Use the parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--test', action='store_true', help='Use the parallel SMT encoding with exists-step semantics.')
     parser.add_argument('--forallNoProp', action='store_true', help='Use the parallel SMT encoding with forall-step semantics.')
     parser.add_argument('--existsNoProp', action='store_true', help='Use the parallel SMT encoding with forall-step semantics.')
     parser.add_argument('--forallLazy', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
@@ -93,6 +94,8 @@ def process_arguments(args):
         configuration = "forall"
     elif args.exists:
         configuration = "exists"
+    elif args.test:
+        configuration = "test"
     elif args.forallNoProp:
         configuration = "forall-noprop"
     elif args.existsNoProp:
@@ -171,7 +174,7 @@ if __name__ == '__main__':
     main(["--domain",
           "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/domain.pddl",
           "--problem",
-          "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/p05.pddl",
-          "--forallLazyOptimal",
+          "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/p03.pddl",
+          "--test",
           "--verbose",
           "4"])

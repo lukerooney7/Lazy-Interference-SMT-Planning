@@ -3,7 +3,7 @@ from pypmt.encoders.R2E import EncoderRelaxed2Exists
 from pypmt.encoders.basic import EncoderForall, EncoderSequential, EncoderExists, EncoderExistsNoProp, \
     EncoderForallNoProp, EncoderForallLazy, EncoderForallLazyStepShare, EncoderExistsLazy, EncoderExistsLazyStepShare, \
     EncoderExistsLazyPath, EncoderForallLazyEdgeCache, EncoderForallLazyNoGraph, EncoderForallLazyNeighbours, \
-    EncoderForallLazyOptimal
+    EncoderForallLazyOptimal, EncoderTest
 from pypmt.encoders.SequentialLifted import EncoderSequentialLifted
 from pypmt.encoders.SequentialQFUF import EncoderSequentialQFUF
 from pypmt.encoders.OMT import EncoderSequentialOMT
@@ -27,6 +27,7 @@ valid_configs = {
     "seq":     (EncoderSequential, SMTSearch, grounded_encoders_default_compilation_list),
     "forall":  (EncoderForall, SMTSearch, grounded_encoders_default_compilation_list),
     "exists":  (EncoderExists, SMTSearch, grounded_encoders_default_compilation_list),
+    "test":  (EncoderTest, SMTSearch, grounded_encoders_default_compilation_list),
     "forall-noprop":  (EncoderForallNoProp, SMTSearch, grounded_encoders_default_compilation_list),
     "exists-noprop":  (EncoderExistsNoProp, SMTSearch, grounded_encoders_default_compilation_list),
     "forall-lazy":  (EncoderForallLazy, SMTSearch, grounded_encoders_default_compilation_list),

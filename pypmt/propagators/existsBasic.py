@@ -10,11 +10,9 @@ class ExistsBasicUserPropagator(z3.UserPropagateBase):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.encoder = e
-        self.add_final(lambda : self._final())
         self.graph = self.encoder.modifier.graph
         self.current = [nx.DiGraph()]
         self.stack = []
-        # self.numbers = {a: i for i, a in enumerate(self.graph)}
 
     def push(self):
         log("push",1)
@@ -29,15 +27,6 @@ class ExistsBasicUserPropagator(z3.UserPropagateBase):
         log("pop", 1)
         for _ in range(n):
             self.current = self.stack.pop()
-
-    def _final(self):
-        for graph in self.current:
-            if len(list(nx.simple_cycles(graph))) > 0:
-                print("FINISHED WITH CYCLE")
-        for s in self.stack:
-            for graph in s:
-                if len(list(nx.simple_cycles(graph))) > 0:
-                    print("FINISHED WITH CYCLE")
 
     def _fixed(self, action, value):
 

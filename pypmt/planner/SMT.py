@@ -2,6 +2,7 @@ import time
 
 import z3
 from pypmt.planner.utilities import dumpProblem
+from pypmt.propagators.atest import TestUserPropagator
 from pypmt.propagators.base import BaseUserPropagator
 from pypmt.propagators.existsBasic import ExistsBasicUserPropagator
 from pypmt.propagators.existsPath import ExistsPathUserPropagator
@@ -54,6 +55,8 @@ class SMTSearch(Search):
                         self.propagator = ExistsBasicUserPropagator(s=self.solver, e=self.encoder)
                     elif self.encoder.type == "exists-lazy-path":
                         self.propagator = ExistsPathUserPropagator(s=self.solver, e=self.encoder)
+                    elif self.encoder.type == "test":
+                        self.propagator = TestUserPropagator(s=self.solver, e=self.encoder)
                     if self.propagator:
                         for a in self.encoder.task.actions:
                             action = self.encoder.get_action_var(a.name, 0)
@@ -96,7 +99,7 @@ class SMTSearch(Search):
             if res == z3.sat:
                 log(f'Satisfiable model found. Took:{total_time:.2f}s', 3)
                 log(f'Z3 statistics:\n{self.solver.statistics()}', 4)
-                self.solution = self.encoder.extract_plan(self.solver.model(), self.horizon)
+                self.solution = self.encoder.extract_plan(self.propagator, self.solver.model(), self.horizon)
                 break
         # plt.show()
         return self.solution

@@ -41,7 +41,6 @@ class ForallEdgeCacheUserPropagator(z3.UserPropagateBase):
                     self.current[step].add_edge(a1, a2)
                     literals.add(self.encoder.get_action_var(a1, step))
                     literals.add(self.encoder.get_action_var(a2, step))
-
             if literals:
                 literals.add(action)
                 self.conflict(deps=list(literals), eqs=[])
