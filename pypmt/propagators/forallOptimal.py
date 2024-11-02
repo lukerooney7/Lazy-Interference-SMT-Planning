@@ -1,5 +1,4 @@
 import z3
-from pypmt.utilities import log
 
 
 class ForallOptimalUserPropagator(z3.UserPropagateBase):
@@ -12,19 +11,16 @@ class ForallOptimalUserPropagator(z3.UserPropagateBase):
         self.stack = []
 
     def push(self):
-        log(f"push", 1)
         new = []
         for graph in self.current:
             new.append(graph.copy())
         self.stack.append(new)
 
     def pop(self, n):
-        log(f"pop {n} times", 1)
         for _ in range(n):
             self.current = self.stack.pop()
 
     def _fixed(self, action, value):
-        log(f"fixed", 1)
         if value:
             actions = str(action).split('_')
             step = int(actions[-1])
@@ -54,7 +50,6 @@ class ForallOptimalUserPropagator(z3.UserPropagateBase):
                     else:
                         disallowed_actions.add(self.encoder.get_action_var(a1, step))
             if literals:
-                log("conflict", 1)
                 self.solver.add(new_mutexes)
                 literals.add(action)
                 self.conflict(deps=list(literals), eqs=[])
