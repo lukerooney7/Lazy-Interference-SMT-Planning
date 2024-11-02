@@ -35,8 +35,6 @@ class ExistsPathUserPropagator(z3.UserPropagateBase):
                 if source in self.current[step] and target in self.current[step]:
                     self.current[step].add_edge(source, target)
                     if nx.has_path(self.current[step], target, source):
-                        # if not nx.has_path(self.current[step], a2, a1):
-                        #     print("missed")
                         literals.add(self.encoder.get_action_var(source, step))
                         literals.add(self.encoder.get_action_var(target, step))
                         self.conflict(deps=list(literals), eqs=[])
