@@ -36,7 +36,7 @@ class SMTSearch(Search):
             if not self.encoder.type == "forall-noprop" or not self.encoder.type == "exists-noprop":
                 if not self.propagator:
                     if self.encoder.type == "forall" or self.encoder.type == "exists":
-                        self.propagator = BaseUserPropagator(s=self.solver)
+                        self.propagator = BaseUserPropagator(s=self.solver, e = self.encoder)
                     elif self.encoder.type == "forall-lazy":
                         self.propagator = ForallBasicUserPropagator(s=self.solver, e=self.encoder)
                     elif self.encoder.type == "forall-lazy-stepshare":

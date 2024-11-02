@@ -119,7 +119,7 @@ class EncoderGrounded(Encoder):
         """
         plan = SequentialPlan([])
         if not model: return plan
-        if propagator and not propagator.encoder.modifier.forall:
+        if propagator and not propagator.encoder.modifier.forall and self.modifier.lazy:
             interference_graphs = propagator.stack.pop()
             action_map = {action.name: action for action in self}
             for t in range(0, horizon + 1):
