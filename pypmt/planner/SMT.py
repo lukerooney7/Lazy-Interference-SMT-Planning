@@ -4,14 +4,14 @@ import z3
 from pypmt.planner.utilities import dumpProblem
 from pypmt.propagators.test import TestUserPropagator
 from pypmt.propagators.base import BaseUserPropagator
-from pypmt.propagators.exists.existsBasic import ExistsBasicUserPropagator
-from pypmt.propagators.exists.existsPath import ExistsPathUserPropagator
-from pypmt.propagators.forall.forallBasic import ForallBasicUserPropagator
-from pypmt.propagators.forall.forallEdgeCache import ForallEdgeCacheUserPropagator
-from pypmt.propagators.forall.forallNeighbours import ForallNeighboursUserPropagator
-from pypmt.propagators.forall.forallNoGraph import ForallNoGraphUserPropagator
-from pypmt.propagators.forall.forallOptimal import ForallOptimalUserPropagator
-from pypmt.propagators.forall.forallStepShare import ForallStepShareUserPropagator
+from pypmt.propagators.exists.basic import ExistsBasicUserPropagator
+from pypmt.propagators.exists.path import ExistsPathUserPropagator
+from pypmt.propagators.forall.basic import ForallBasicUserPropagator
+from pypmt.propagators.forall.edgeCache import ForallEdgeCacheUserPropagator
+from pypmt.propagators.forall.neighbours import ForallNeighboursUserPropagator
+from pypmt.propagators.forall.noGraph import ForallNoGraphUserPropagator
+from pypmt.propagators.forall.optimal import ForallOptimalUserPropagator
+from pypmt.propagators.forall.stepShare import ForallStepShareUserPropagator
 from pypmt.utilities import log
 from pypmt.planner.base import Search
 
@@ -95,7 +95,7 @@ class SMTSearch(Search):
             end_time = time.time()
             solving_time = end_time - start_time
             total_time = total_time + solving_time + encoding_time
-            log(f'Step {horizon+1}/{(self.scheduler[-1]+1)} encoding: {encoding_time:.2f}s, solving: {solving_time:.2f}s', 2)
+            log(f'Step {horizon+1}/{(self.scheduler[-1]+1)} encoding: {encoding_time:.2f}s, solving: {solving_time:.2f}s', 3)
             if res == z3.sat:
                 log(f'Satisfiable model found. Took:{total_time:.2f}s', 3)
                 log(f'Z3 statistics:\n{self.solver.statistics()}', 4)

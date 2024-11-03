@@ -1,8 +1,5 @@
 import networkx as nx
 import z3
-from z3 import BoolVal
-
-from pypmt.utilities import log
 
 
 class ForallNeighboursUserPropagator(z3.UserPropagateBase):
