@@ -120,7 +120,7 @@ class EncoderGrounded(Encoder):
         plan = SequentialPlan([])
         if not model: return plan
         if propagator and not propagator.encoder.modifier.forall and self.modifier.lazy:
-            interference_graphs = propagator.stack.pop()
+            interference_graphs = propagator.current
             action_map = {action.name: action for action in self}
             for t in range(0, horizon + 1):
                 sorted_action_names = list(nx.topological_sort(interference_graphs[t]))[::-1]
