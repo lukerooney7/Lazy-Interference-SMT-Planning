@@ -23,6 +23,7 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
         self.stack.append(new)
         self.stackA.append(self.A.copy())
         self.stackD.append(self.D.copy())
+        self.consistent = True
 
     def pop(self, n):
         for _ in range(n):
@@ -32,7 +33,7 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
         self.consistent = True
 
     def _fixed(self, action, value):
-        if value and not self.consistent:
+        if value and self.consistent:
             actions = str(action).split('_')
             step = int(actions[-1])
             action_name = '_'.join(actions[:-1])
@@ -51,7 +52,7 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                         if u == w or w in self.A[u]:
                             self.conflict(deps=[self.encoder.get_action_var(u, step),
                                                 self.encoder.get_action_var(v, step)], eqs=[])
-                            self.consistent = False
+                            self.consistent = True
                             break
                         elif u in self.A[w]:
                             pass
