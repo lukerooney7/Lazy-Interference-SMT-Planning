@@ -16,7 +16,7 @@ from pypmt.encoders.R2E import EncoderRelaxed2Exists
 from pypmt.encoders.basic import EncoderForall, EncoderSequential, EncoderExists, EncoderForallNoProp, \
     EncoderExistsNoProp, EncoderForallLazy, EncoderForallLazyStepShare, EncoderExistsLazy, EncoderExistsLazyStepShare, \
     EncoderExistsLazyPath, EncoderForallLazyEdgeCache, EncoderForallLazyNoGraph, EncoderForallLazyNeighbours, \
-    EncoderForallLazyOptimal, EncoderTest
+    EncoderForallLazyOptimal, EncoderTest, EncoderExistsLazyOptimal
 
 from pypmt.planner.SMT import SMTSearch
 from pypmt.planner.lifted import LiftedSearch
@@ -109,6 +109,7 @@ def generate_schedule_for(encoder, upperbound):
                    EncoderExistsLazy, \
                    EncoderExistsLazyStepShare, \
                    EncoderExistsLazyPath, \
+                   EncoderExistsLazyOptimal, \
                    EncoderRelaxed2Exists,\
                    EncoderSequentialOMT]:
         schedule = list(range(0, upperbound))

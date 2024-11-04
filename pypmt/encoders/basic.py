@@ -489,3 +489,7 @@ class EncoderExistsLazyStepShare(EncoderGrounded):
 class EncoderExistsLazyPath(EncoderGrounded):
     def __init__(self, task):
         super().__init__("seqLazyExistsPath", task, "exists-lazy-path", ParallelModifier(False, True))
+
+class EncoderExistsLazyOptimal(EncoderGrounded):
+    def __init__(self, task):
+        super().__init__("seqLazyExistsPath", task, "exists-lazy-optimal", ParallelModifier(False, True))

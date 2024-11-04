@@ -2,7 +2,7 @@ import networkx as nx
 import z3
 
 
-class ExistsOptimalUserPropagator(z3.UserPropagateBase):
+class ExistsGhostNodeUserPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
@@ -14,7 +14,6 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
         self.stackA = []
         self.stackD = []
         self.stack = []
-        self.consistent = True
 
     def push(self):
         new = []
@@ -29,10 +28,9 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
             self.current = self.stack.pop()
             self.A = self.stackA.pop()
             self.D = self.stackD.pop()
-        self.consistent = True
 
     def _fixed(self, action, value):
-        if value and not self.consistent:
+        if value:
             actions = str(action).split('_')
             step = int(actions[-1])
             action_name = '_'.join(actions[:-1])
@@ -51,7 +49,6 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                         if u == w or w in self.A[u]:
                             self.conflict(deps=[self.encoder.get_action_var(u, step),
                                                 self.encoder.get_action_var(v, step)], eqs=[])
-                            self.consistent = False
                             break
                         elif u in self.A[w]:
                             pass
@@ -79,7 +76,6 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                         if u == w or w in self.A[u]:
                             self.conflict(deps=[self.encoder.get_action_var(u, step),
                                                 self.encoder.get_action_var(v, step)], eqs=[])
-                            self.consistent = False
                             break
                         elif u in self.A[w]:
                             pass
@@ -91,9 +87,10 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                             for w, z in self.current[step].edges:
                                 to_explore.append(z)
                 else:
+                    clause = set()
                     for node in self.graph.neighbors(v):
                         if node in self.A[u]:
-                            self.propagate(e=z3.Not(self.encoder.get_action_var(v, step)), ids=[], eqs=[])
+                            clause.add(z3.Not(self.encoder.get_action_var(v, step)))
                             break
-
+                    self.propagate(e=z3.And(clause), ids=[], eqs=[])
 

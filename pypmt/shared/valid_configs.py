@@ -3,7 +3,7 @@ from pypmt.encoders.R2E import EncoderRelaxed2Exists
 from pypmt.encoders.basic import EncoderForall, EncoderSequential, EncoderExists, EncoderExistsNoProp, \
     EncoderForallNoProp, EncoderForallLazy, EncoderForallLazyStepShare, EncoderExistsLazy, EncoderExistsLazyStepShare, \
     EncoderExistsLazyPath, EncoderForallLazyEdgeCache, EncoderForallLazyNoGraph, EncoderForallLazyNeighbours, \
-    EncoderForallLazyOptimal, EncoderTest
+    EncoderForallLazyOptimal, EncoderTest, EncoderExistsLazyOptimal
 from pypmt.encoders.SequentialLifted import EncoderSequentialLifted
 from pypmt.encoders.SequentialQFUF import EncoderSequentialQFUF
 from pypmt.encoders.OMT import EncoderSequentialOMT
@@ -39,6 +39,7 @@ valid_configs = {
     "exists-lazy":  (EncoderExistsLazy, SMTSearch, grounded_encoders_default_compilation_list),
     "exists-lazy-stepshare":  (EncoderExistsLazyStepShare, SMTSearch, grounded_encoders_default_compilation_list),
     "exists-lazy-path":  (EncoderExistsLazyPath, SMTSearch, grounded_encoders_default_compilation_list),
+    "exists-lazy-optimal":  (EncoderExistsLazyOptimal, SMTSearch, grounded_encoders_default_compilation_list),
     "r2e":     (EncoderRelaxed2Exists, SMTSearch,  grounded_encoders_default_compilation_list),
     "uf":      (EncoderSequentialLifted, LiftedSearch, lifted_encoders_default_compilation_list), # TODO: has to be tested and too slow
     "qfuf":    (EncoderSequentialQFUF, QFUFSearch, lifted_encoders_default_compilation_list),

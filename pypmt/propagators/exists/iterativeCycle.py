@@ -2,7 +2,7 @@ import networkx as nx
 import z3
 
 
-class TestUserPropagator(z3.UserPropagateBase):
+class ExistsIterativeCycleUserPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))

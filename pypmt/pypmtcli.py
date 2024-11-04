@@ -57,6 +57,7 @@ def create_parser():
     parser.add_argument('--existsLazy', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
     parser.add_argument('--existsLazyPath', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
     parser.add_argument('--existsLazyStepShare', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
+    parser.add_argument('--existsLazyOptimal', action='store_true', help='Use the lazy parallel SMT encoding with exists-step semantics.')
     parser.add_argument('--r2e', action='store_true', help='Use the R2E encoding.')
     parser.add_argument('--uf', action='store_true',  help='Use the lifted encoding with quantifiers.')
     parser.add_argument('--qfuf', action='store_true',  help='Use the quantifier-free lifted encoding.')
@@ -118,6 +119,8 @@ def process_arguments(args):
         configuration = "exists-lazy-stepshare"
     elif args.existsLazyPath:
         configuration = "exists-lazy-path"
+    elif args.existsLazyOptimal:
+        configuration = "exists-lazy-optimal"
     elif args.r2e:
         configuration = "r2e"
     elif args.uf:
@@ -174,7 +177,7 @@ if __name__ == '__main__':
     main(["--domain",
           "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/domain.pddl",
           "--problem",
-          "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/p03.pddl",
-          "--test",
+          "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/p05.pddl",
+          "--existsLazyOptimal",
           "--verbose",
-          "4"])
+          "2"])

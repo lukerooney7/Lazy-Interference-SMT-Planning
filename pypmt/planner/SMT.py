@@ -2,6 +2,7 @@ import time
 
 import z3
 from pypmt.planner.utilities import dumpProblem
+from pypmt.propagators.exists.optimal import ExistsOptimalUserPropagator
 from pypmt.propagators.test import TestUserPropagator
 from pypmt.propagators.base import BaseUserPropagator
 from pypmt.propagators.exists.basic import ExistsBasicUserPropagator
@@ -55,6 +56,8 @@ class SMTSearch(Search):
                         self.propagator = ExistsBasicUserPropagator(s=self.solver, e=self.encoder)
                     elif self.encoder.type == "exists-lazy-path":
                         self.propagator = ExistsPathUserPropagator(s=self.solver, e=self.encoder)
+                    elif self.encoder.type == "exists-lazy-optimal":
+                        self.propagator = ExistsOptimalUserPropagator(s=self.solver, e=self.encoder)
                     elif self.encoder.type == "test":
                         self.propagator = TestUserPropagator(s=self.solver, e=self.encoder)
                     if self.propagator:
