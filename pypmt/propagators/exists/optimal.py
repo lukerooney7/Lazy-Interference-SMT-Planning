@@ -57,7 +57,7 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                             self.D[u].add(w)
                             for w, z in self.current[step].edges:
                                 to_explore.append(z)
-                elif set(self.graph.predecessors(u)) & self.D[v]:
+                elif set(self.graph.predecessors(u)) & self.D[v] or u in set(self.graph.neighbors(v)):
                     self.propagate(e=z3.Not(self.encoder.get_action_var(u, step)), ids=[], eqs=[])
 
             for u, v in self.graph.edges(action_name):
@@ -79,5 +79,5 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                             self.D[u].add(w)
                             for w, z in self.current[step].edges:
                                 to_explore.append(z)
-                elif set(self.graph.neighbors(v)) & self.A[u]:
+                elif set(self.graph.neighbors(v)) & self.A[u] or u in set(self.graph.neighbors(v)):
                     self.propagate(e=z3.Not(self.encoder.get_action_var(v, step)), ids=[], eqs=[])
