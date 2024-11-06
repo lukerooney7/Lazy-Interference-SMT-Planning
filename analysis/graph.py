@@ -44,12 +44,10 @@ def get_data():
     return df
 
 
-def cactus_plot(df, domain, encoding, log, min_instance, max_instance):
+def cactus_plot(df, domain, encoding, log, min_instance, max_instance, timeout, par):
     df = df[df['domain'] == domain]
     # df = df[df['planner_tag'].str.contains(encoding, na=False)]
     df = df[df['status'] == "SOLVED_SATISFICING"]
-
-    # Filter the instances between min_instance and max_instance
     df = df[(df['instance'] >= min_instance) & (df['instance'] <= max_instance)]
 
     plt.figure(figsize=(12, 8))
@@ -59,14 +57,21 @@ def cactus_plot(df, domain, encoding, log, min_instance, max_instance):
 
     for planner_tag in df['planner_tag'].unique():
         planner_data = df[df['planner_tag'] == planner_tag]
-        plt.plot(planner_data['instance'], planner_data['planning_time'],
-                 label=planner_tag, marker='o', markersize=8, linestyle='-', linewidth=2)
+        instances = []
+        times = []
+        for instance in range(1, max_instance + 1):
+            if instance in planner_data['instance'].values:
+                time = planner_data.loc[planner_data['instance'] == instance, 'planning_time'].values[0]
+            else:
+                time = timeout
 
+            instances.append(instance)
+            times.append(time)
+        plt.plot(instances, times, label=planner_tag, marker='o', markersize=8, linestyle='-', linewidth=2)
     plt.title(f'Planning Time Comparison for {domain} Domain Encodings', fontsize=18)
     plt.xlabel('Instance', fontsize=14)
     plt.ylabel('Planning Time (s)', fontsize=14)
     plt.legend(title='Planner Tag', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12)
-
     plt.grid(which='both', linestyle='--', linewidth=0.5)
     plt.gca().set_aspect('auto')
     plt.tight_layout()
@@ -113,7 +118,7 @@ def compare_pars(df, domain, max_instance, timeout, par):
             if not instance_time.empty:
                 total_time += instance_time.iloc[0]
             else:
-                total_time += timeout_penalty
+                total_time += timeout_penalty*par
 
         total_times[planner_tag] = total_time
 
@@ -137,7 +142,12 @@ def compare_pars(df, domain, max_instance, timeout, par):
     plt.show()
 
 
+
+
+def display_data(df):
+    # scatter_plot(df, "rovers", "test", "exists-lazy-optimal")
+    cactus_plot(df, "rovers", "exists", True, 0, 10, 60 * 30, 2)
+    # compare_pars(df, "rovers",8, 5, 2)
+
 df = get_data()
-# scatter_plot(df, "rovers", "ForallSMT-tag", "LazyForallSMT-tag")
-# cactus_plot(df, "zenotravel-numeric", "exists", False, 0, 100)
-compare_pars(df, "zenotravel-numeric",2, 10, 2)
+display_data(df)
