@@ -46,11 +46,14 @@ def get_data():
 
 def cactus_plot(df, domain, encoding, log, min_instance, max_instance, timeout, par):
     df = df[df['domain'] == domain]
+    timeout_penalty = timeout * 60 * par
     # df = df[df['planner_tag'].str.contains(encoding, na=False)]
     df = df[df['status'] == "SOLVED_SATISFICING"]
     df = df[(df['instance'] >= min_instance) & (df['instance'] <= max_instance)]
 
+
     plt.figure(figsize=(12, 8))
+    plt.hlines(timeout_penalty, xmin=1, xmax=max_instance, colors='red', linestyles='--', label='Timeout Threshold', linewidth=2)
 
     if log:
         plt.yscale('log')
@@ -63,11 +66,12 @@ def cactus_plot(df, domain, encoding, log, min_instance, max_instance, timeout, 
             if instance in planner_data['instance'].values:
                 time = planner_data.loc[planner_data['instance'] == instance, 'planning_time'].values[0]
             else:
-                time = timeout
+                time = timeout_penalty
 
             instances.append(instance)
             times.append(time)
         plt.plot(instances, times, label=planner_tag, marker='o', markersize=8, linestyle='-', linewidth=2)
+
     plt.title(f'Planning Time Comparison for {domain} Domain Encodings', fontsize=18)
     plt.xlabel('Instance', fontsize=14)
     plt.ylabel('Planning Time (s)', fontsize=14)
@@ -118,7 +122,7 @@ def compare_pars(df, domain, max_instance, timeout, par):
             if not instance_time.empty:
                 total_time += instance_time.iloc[0]
             else:
-                total_time += timeout_penalty*par
+                total_time += timeout_penalty
 
         total_times[planner_tag] = total_time
 
@@ -146,7 +150,7 @@ def compare_pars(df, domain, max_instance, timeout, par):
 
 def display_data(df):
     # scatter_plot(df, "rovers", "test", "exists-lazy-optimal")
-    cactus_plot(df, "rovers", "exists", True, 0, 10, 60 * 30, 2)
+    cactus_plot(df, "rovers", "exists", True, 0, 10, 5, 4)
     # compare_pars(df, "rovers",8, 5, 2)
 
 df = get_data()
