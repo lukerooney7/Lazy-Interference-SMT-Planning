@@ -139,18 +139,11 @@ class ParallelModifier(Modifier):
                             m2 = z3.Not(z3.And(a2, a1))
                             if m1 not in mutexes and m2 not in mutexes:
                                 mutexes.add(m1)
-
-        if self.lazy:
-            for edge in self.graph.edges():
-                a1, a2 = edge
-                mutexes.add(z3.Or(encoder.get_action_var(a1, 0), z3.Not(encoder.get_action_var(a1, 0))))
-                break
-            return mutexes
-
-        if self.forall:
-            generate_for_all()
-        else:
-            generate_exists()
+        if not self.lazy:
+            if self.forall:
+                generate_for_all()
+            else:
+                generate_exists()
         end_time = time.time()
-        log(f'computed {len(mutexes)} mutexes took {end_time-start_time:.2f}s', 2)
+        log(f'computed {len(mutexes)} mutexes took {end_time - start_time:.2f}s', 2)
         return mutexes
