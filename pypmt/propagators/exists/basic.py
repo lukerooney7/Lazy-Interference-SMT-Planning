@@ -24,24 +24,27 @@ class ExistsBasicUserPropagator(z3.UserPropagateBase):
 
     def _fixed(self, action, value):
         if value:
+            # Parse action name and step
             actions = str(action).split('_')
             step = int(actions[-1])
             action_name = '_'.join(actions[:-1])
             while step >= len(self.current):
                 self.current.append(nx.DiGraph())
             literals = set()
+            # Add all in and out edges to graph
             self.current[step].add_node(action_name)
             edges = list(self.graph.in_edges(action_name)) + list(self.graph.edges(action_name))
-            for a1, a2 in edges:
-                if a2 in self.current[step] and a1 in self.current[step]:
-                    self.current[step].add_edge(a1, a2)
+            for source, dest in edges:
+                if source in self.current[step] and dest in self.current[step]:
+                    self.current[step].add_edge(source, dest)
             try:
                 cycle = nx.find_cycle(G=self.current[step], source=action_name)
+                # If a cycle is found, throw conflict for all nodes in cycle
                 if cycle:
-                    for a, b in cycle:
-                        literals.add(self.encoder.get_action_var(a, step))
-                        literals.add(self.encoder.get_action_var(b, step))
+                    for source, _ in cycle:
+                        literals.add(self.encoder.get_action_var(source, step))
             except NetworkXNoCycle:
                 pass
+            # If interference throw conflict
             if literals:
                 self.conflict(deps=list(literals), eqs=[])

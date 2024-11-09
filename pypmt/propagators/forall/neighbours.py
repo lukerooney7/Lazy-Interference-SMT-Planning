@@ -23,6 +23,7 @@ class ForallNeighboursUserPropagator(z3.UserPropagateBase):
 
     def _fixed(self, action, value):
         if value:
+            # Parse action name and step
             actions = str(action).split('_')
             step = int(actions[-1])
             action_name = '_'.join(actions[:-1])
@@ -31,26 +32,30 @@ class ForallNeighboursUserPropagator(z3.UserPropagateBase):
             literals = set()
             self.current[step].add_node(action_name)
             disallowed_actions = set()
-            for a1, a2 in list(self.graph.edges(action_name)):
-                action_2 = self.encoder.get_action_var(a2, step)
-                if a2 in self.current[step]:
-                    self.current[step].add_edge(a1, a2)
-                    literals.add(action_2)
+            # Check out edges
+            for source, dest in list(self.graph.edges(action_name)):
+                if dest in self.current[step]:
+                    self.current[step].add_edge(source, dest)
+                    literals.add(self.encoder.get_action_var(dest, step))
                 else:
-                    disallowed_actions.add(action_2)
-            for a1, a2 in list(self.graph.in_edges(action_name)):
-                action_1 = self.encoder.get_action_var(a1, step)
-                if a1 in self.current[step]:
-                    self.current[step].add_edge(a1, a2)
-                    literals.add(self.encoder.get_action_var(a1, step))
+                    # Neighbouring actions must be false
+                    disallowed_actions.add(self.encoder.get_action_var(dest, step))
+            # Check in edges
+            for source, dest in list(self.graph.in_edges(action_name)):
+                if source in self.current[step]:
+                    self.current[step].add_edge(source, dest)
+                    literals.add(self.encoder.get_action_var(source, step))
                 else:
-                    disallowed_actions.add(action_1)
+                    # Neighbouring actions must be false
+                    disallowed_actions.add(self.encoder.get_action_var(source, step))
+            # Check if anything has caused interference
             if literals:
                 literals.add(action)
                 self.conflict(deps=list(literals), eqs=[])
             else:
+                # Propagate neighbouring nodes to false
                 clause = set()
                 for a in disallowed_actions:
                     if not a == action:
                         clause.add(z3.Not(a))
-                self.propagate(e=z3.And(clause),ids=[], eqs = [])
+                self.propagate(e=z3.And(clause), ids=[], eqs=[])

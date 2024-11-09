@@ -30,25 +30,25 @@ class ForallOptimalUserPropagator(z3.UserPropagateBase):
             literals = set()
             disallowed_actions = set()
             new_mutexes = set()
-            for a1, a2 in list(self.graph.edges(action_name)):
-                if a2 in self.current[step]:
-                    literals.add(self.encoder.get_action_var(a2, step))
+            for source, dest in list(self.graph.edges(action_name)):
+                if dest in self.current[step]:
+                    literals.add(self.encoder.get_action_var(dest, step))
                     for i in range(0, len(self.current)):
-                        new_mutexes.add(z3.Not(z3.And(self.encoder.get_action_var(a1, i),
-                                                      self.encoder.get_action_var(a2, i))))
+                        new_mutexes.add(z3.Not(z3.And(self.encoder.get_action_var(source, i),
+                                                      self.encoder.get_action_var(dest, i))))
                     break
                 else:
-                    disallowed_actions.add(self.encoder.get_action_var(a2, step))
+                    disallowed_actions.add(self.encoder.get_action_var(dest, step))
             if not literals:
-                for a1, a2 in list(self.graph.in_edges(action_name)):
-                    if a1 in self.current[step]:
-                        literals.add(self.encoder.get_action_var(a1, step))
+                for source, dest in list(self.graph.in_edges(action_name)):
+                    if source in self.current[step]:
+                        literals.add(self.encoder.get_action_var(source, step))
                         for i in range(0, len(self.current)):
-                            new_mutexes.add(z3.Not(z3.And(self.encoder.get_action_var(a1, i),
-                                                          self.encoder.get_action_var(a2, i))))
+                            new_mutexes.add(z3.Not(z3.And(self.encoder.get_action_var(source, i),
+                                                          self.encoder.get_action_var(dest, i))))
                         break
                     else:
-                        disallowed_actions.add(self.encoder.get_action_var(a1, step))
+                        disallowed_actions.add(self.encoder.get_action_var(source, step))
             if literals:
                 self.solver.add(new_mutexes)
                 literals.add(action)

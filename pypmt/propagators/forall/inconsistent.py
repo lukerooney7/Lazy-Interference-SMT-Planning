@@ -1,6 +1,5 @@
 import networkx as nx
 import z3
-# from matplotlib import pyplot as plt
 
 
 class ForallBasicUserPropagator(z3.UserPropagateBase):
@@ -8,11 +7,10 @@ class ForallBasicUserPropagator(z3.UserPropagateBase):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.encoder = e
-        self.add_final(lambda: self._final())
         self.graph = self.encoder.modifier.graph
         self.current = [nx.DiGraph()]
         self.stack = []
-        self.inconsistent = False
+        self.inconsistent = False  # Tracks if we have a valid assigment
 
     def push(self):
         new = []
@@ -25,20 +23,6 @@ class ForallBasicUserPropagator(z3.UserPropagateBase):
         for _ in range(n):
             self.current = self.stack.pop()
         self.inconsistent = False
-
-    def _final(self):
-        # for graph in self.current:
-        #     if len(list(nx.simple_cycles(graph))) > 0:
-        #         print("FINISHED WITH CYCLE")
-        # for s in self.stack:
-        #     for graph in s:
-        #         if len(list(nx.simple_cycles(graph))) > 0:
-        #             print("FINISHED WITH CYCLE")
-        for graph in self.stack.pop():
-            # pos = nx.spring_layout(graph)
-            nx.draw(graph, with_labels=True, node_size=700, node_color='skyblue', font_size=10, font_color='black',
-                    font_weight='bold', arrows=True)
-            plt.show()
 
     def _fixed(self, action, value):
         if value and not self.inconsistent:
@@ -56,13 +40,11 @@ class ForallBasicUserPropagator(z3.UserPropagateBase):
                 if a2 in self.current[step]:
                     self.current[step].add_edge(a1, a2)
                     literals.add(action_2)
-                    # self.conflict(deps=[action_2, action], eqs=[])
             for a1, a2 in list(self.graph.in_edges(action_name)):
                 action_1 = self.encoder.get_action_var(a1, step)
                 if a1 in self.current[step]:
                     self.current[step].add_edge(a1, a2)
                     literals.add(action_1)
-                    # self.conflict(deps=list([action_1, action]), eqs=[])
             if literals:
                 self.inconsistent = True
                 literals.add(action)

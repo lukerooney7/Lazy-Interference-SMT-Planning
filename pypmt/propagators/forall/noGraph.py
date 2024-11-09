@@ -7,7 +7,7 @@ class ForallNoGraphUserPropagator(z3.UserPropagateBase):
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.encoder = e
         self.graph = self.encoder.modifier.graph
-        self.current = [set()]
+        self.current = [set()]  # Use a set instead of a NetworkX graph
         self.stack = []
 
     def push(self):
@@ -20,6 +20,7 @@ class ForallNoGraphUserPropagator(z3.UserPropagateBase):
 
     def _fixed(self, action, value):
         if value:
+            # Parse action name and step
             actions = str(action).split('_')
             step = int(actions[-1])
             action_name = '_'.join(actions[:-1])
@@ -27,12 +28,15 @@ class ForallNoGraphUserPropagator(z3.UserPropagateBase):
                 self.current.append(set())
             literals = set()
             self.current[step].add(action_name)
-            edges = list(self.graph.edges(action_name)) + list(self.graph.in_edges(action_name))
-            current_step = self.current[step]
-            for a1, a2 in edges:
-                if a2 in current_step and a1 in current_step:
-                    literals.add(self.encoder.get_action_var(a1, step))
-                    literals.add(self.encoder.get_action_var(a2, step))
-
+            # Checking and adding out nodes
+            for source, dest in list(self.graph.edges(action_name)):
+                if dest in self.current[step]:
+                    literals.add(self.encoder.get_action_var(dest, step))
+            # Checking and adding in nodes
+            for source, dest in list(self.graph.in_edges(action_name)):
+                if source in self.current[step]:
+                    literals.add(self.encoder.get_action_var(source, step))
+            # Check if anything has caused interference
             if literals:
+                literals.add(action)  # New action itself is only added once
                 self.conflict(deps=list(literals), eqs=[])

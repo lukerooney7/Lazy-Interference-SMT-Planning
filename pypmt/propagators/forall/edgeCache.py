@@ -25,6 +25,7 @@ class ForallEdgeCacheUserPropagator(z3.UserPropagateBase):
 
     def _fixed(self, action, value):
         if value:
+            # Parse action name and step
             actions = str(action).split('_')
             step = int(actions[-1])
             action_name = '_'.join(actions[:-1])
@@ -32,15 +33,16 @@ class ForallEdgeCacheUserPropagator(z3.UserPropagateBase):
                 self.current.append(nx.DiGraph())
             literals = set()
             self.current[step].add_node(action_name)
+            # Retrieve edges from cache or add them if not cached yet
             edges = self.edges.get(action_name)
             if edges is None:
                 edges = list(self.graph.edges(action_name)) + list(self.graph.in_edges(action_name))
                 self.edges[action_name] = edges
-            for a1, a2 in edges:
-                if a2 in self.current[step] and a1 in self.current[step]:
-                    self.current[step].add_edge(a1, a2)
-                    literals.add(self.encoder.get_action_var(a1, step))
-                    literals.add(self.encoder.get_action_var(a2, step))
+            # Check all edges
+            for source, dest in edges:
+                if source in self.current[step] and dest in self.current[step]:
+                    self.current[step].add_edge(source, dest)
+                    literals.add(self.encoder.get_action_var(source, step))
+                    literals.add(self.encoder.get_action_var(dest, step))
             if literals:
-                literals.add(action)
                 self.conflict(deps=list(literals), eqs=[])

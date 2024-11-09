@@ -31,16 +31,17 @@ class ExistsBasicUserPropagator(z3.UserPropagateBase):
                 self.current.append(nx.DiGraph())
             literals = set()
             self.current[step].add_node(action_name)
-            edges = list(self.graph.in_edges(action_name)) + list(self.graph.edges(action_name))
-            for a1, a2 in edges:
-                if a2 in self.current[step] and a1 in self.current[step]:
-                    self.current[step].add_edge(a1, a2)
+            for source, dest in list(self.graph.in_edges(action_name)):
+                if dest in self.current[step]:
+                    self.current[step].add_edge(source, dest)
+            for source, dest in list(self.graph.edges(action_name)):
+                if source in self.current[step]:
+                    self.current[step].add_edge(source, dest)
             try:
                 cycle = nx.find_cycle(G=self.current[step], source=action_name)
                 if cycle:
-                    for a, b in cycle:
-                        literals.add(self.encoder.get_action_var(a, step))
-                        literals.add(self.encoder.get_action_var(b, step))
+                    for source, _ in cycle:
+                        literals.add(self.encoder.get_action_var(source, step))
             except NetworkXNoCycle:
                 pass
             if literals:

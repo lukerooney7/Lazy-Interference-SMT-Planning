@@ -1,6 +1,5 @@
 import networkx as nx
 import z3
-from pypmt.utilities import log
 
 
 class ForallStepShareUserPropagator(z3.UserPropagateBase):
@@ -34,23 +33,33 @@ class ForallStepShareUserPropagator(z3.UserPropagateBase):
             literals = set()
             graph = self.current[step]
             graph.add_node(action_name)
-            if action_name in self.edge_map:
-                edges = self.edge_map[action_name]
-            else:
-                edges = list(self.graph.edges(action_name)) + list(self.graph.in_edges(action_name))
-                self.edge_map[action_name] = edges
-            for a1, a2 in edges:
-                if a2 in graph and a1 in graph:
-                    graph.add_edge(a1, a2)
-                    literals.add(self.encoder.get_action_var(a1, step))
-                    literals.add(self.encoder.get_action_var(a2, step))
-                    if (a1, a2) not in self.mutexes and (a2, a1) not in self.mutexes:
+            # Checking and adding in edges
+            for source, dest in list(self.graph.edges(action_name)):
+                if dest in graph:
+                    graph.add_edge(source, dest)
+                    literals.add(self.encoder.get_action_var(dest, step))
+                    if (source, dest) not in self.mutexes and (dest, source) not in self.mutexes:
                         new_mutexes = set()
+                        # Add mutexes for this interference for all seen steps
                         for i in range(0, len(self.current)):
-                            new_mutexes.add(z3.Not(z3.And(self.encoder.get_action_var(a1, i),
-                                                          self.encoder.get_action_var(a2, step))))
+                            new_mutexes.add(z3.Not(z3.And(self.encoder.get_action_var(source, i),
+                                                          self.encoder.get_action_var(dest, step))))
                         self.solver.add(new_mutexes)
-                        self.mutexes.add((a1, a2))
+                        self.mutexes.add((source, dest))
+            # Checking and adding out edges
+            for source, dest in list(self.graph.in_edges(action_name)):
+                if source in graph:
+                    graph.add_edge(source, dest)
+                    literals.add(self.encoder.get_action_var(source, step))
+                    if (source, dest) not in self.mutexes and (dest, source) not in self.mutexes:
+                        new_mutexes = set()
+                        # Add mutexes for this interference for all seen steps
+                        for i in range(0, len(self.current)):
+                            new_mutexes.add(z3.Not(z3.And(self.encoder.get_action_var(source, i),
+                                                          self.encoder.get_action_var(dest, step))))
+                        self.solver.add(new_mutexes)
+                        self.mutexes.add((source, dest))
+            # Check if anything has caused interference
             if literals:
-                literals.add(action)
+                literals.add(action)  # New action itself is only added once
                 self.conflict(deps=list(literals), eqs=[])
