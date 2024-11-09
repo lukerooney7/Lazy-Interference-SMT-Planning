@@ -53,14 +53,15 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                             break
                         elif source in self.ancestors[node]:
                             pass
-                        elif not len(self.ancestors[source]) == len(self.ancestors[dest]) and not len(self.descendants[source]) == len(self.descendants[dest]):
+                        elif (len(self.ancestors[source]) != len(self.ancestors[dest])
+                              and len(self.descendants[source]) != len(self.descendants[dest])):
                             pass
                         else:
                             self.ancestors[node].add(source)
                             self.descendants[source].add(node)
-                            for node, neighbour in self.current[step].edges:
-                                to_explore.append(neighbour)
-                elif set(self.graph.predecessors(source)) & self.descendants[dest] or source in set(self.graph.neighbors(dest)):
+                            to_explore.extend(neighbour for _, neighbour in self.current[step].edges)
+                elif (set(self.graph.predecessors(source)) & self.descendants[dest]
+                      or source in set(self.graph.neighbors(dest))):
                     self.propagate(e=z3.Not(self.encoder.get_action_var(source, step)), ids=[], eqs=[])
             # Incremental cycle detection for out edges
             for source, dest in self.graph.edges(action_name):
@@ -75,12 +76,13 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                             break
                         elif source in self.ancestors[node]:
                             pass
-                        elif not len(self.ancestors[source]) == len(self.ancestors[dest]) and not len(self.descendants[source]) == len(self.descendants[dest]):
+                        elif (len(self.ancestors[source]) != len(self.ancestors[dest])
+                              and len(self.descendants[source]) != len(self.descendants[dest])):
                             pass
                         else:
                             self.ancestors[node].add(source)
                             self.descendants[source].add(node)
-                            for node, neighbour in self.current[step].edges:
-                                to_explore.append(neighbour)
-                elif set(self.graph.neighbors(dest)) & self.ancestors[source] or source in set(self.graph.neighbors(dest)):
+                            to_explore.extend(neighbour for _, neighbour in self.current[step].edges)
+                elif (set(self.graph.neighbors(dest)) & self.ancestors[source]
+                      or source in set(self.graph.neighbors(dest))):
                     self.propagate(e=z3.Not(self.encoder.get_action_var(dest, step)), ids=[], eqs=[])
