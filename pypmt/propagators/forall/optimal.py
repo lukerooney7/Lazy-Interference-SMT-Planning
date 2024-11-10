@@ -28,7 +28,6 @@ class ForallOptimalUserPropagator(z3.UserPropagateBase):
             while step >= len(self.current):
                 self.current.append(set())
             literals = set()
-            disallowed_actions = set()
             new_mutexes = set()
             for source, dest in list(self.graph.edges(action_name)):
                 if dest in self.current[step]:
@@ -38,7 +37,7 @@ class ForallOptimalUserPropagator(z3.UserPropagateBase):
                                                       self.encoder.get_action_var(dest, i))))
                     break
                 else:
-                    disallowed_actions.add(self.encoder.get_action_var(dest, step))
+                    self.propagate(e=z3.Not(self.encoder.get_action_var(dest, step)), ids=[], eqs=[])
             if not literals:
                 for source, dest in list(self.graph.in_edges(action_name)):
                     if source in self.current[step]:
@@ -48,14 +47,10 @@ class ForallOptimalUserPropagator(z3.UserPropagateBase):
                                                           self.encoder.get_action_var(dest, i))))
                         break
                     else:
-                        disallowed_actions.add(self.encoder.get_action_var(source, step))
+                        self.propagate(e=z3.Not(self.encoder.get_action_var(source, step)), ids=[], eqs=[])
             if literals:
                 self.solver.add(new_mutexes)
                 literals.add(action)
                 self.conflict(deps=list(literals), eqs=[])
             else:
                 self.current[step].add(action_name)
-                clause = set()
-                for a in disallowed_actions:
-                    clause.add(z3.Not(a))
-                self.propagate(e=z3.And(clause), ids=[], eqs=[])
