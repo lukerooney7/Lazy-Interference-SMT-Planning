@@ -2,7 +2,7 @@ import networkx as nx
 import z3
 from collections import defaultdict
 
-class ExistsOptimalUserPropagator(z3.UserPropagateBase):
+class TestUserPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
@@ -63,9 +63,12 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                             to_explore.extend(neighbour for _, neighbour in self.current[step].edges)
                 elif (set(self.graph.predecessors(source)) & self.descendants[dest]
                       or source in set(self.graph.neighbors(dest))):
-                    if source not in self.nots[step]:
-                        self.nots[step][source] = z3.Not(self.encoder.get_action_var(source, step))
-                    self.propagate(e=self.nots[step][source], ids=[], eqs=[])
+                    if source in self.nots[step]:
+                        n = self.nots[step][source]
+                    else:
+                        n = z3.Not(self.encoder.get_action_var(source, step))
+                        self.nots[step][source] = n
+                    self.propagate(e=n, ids=[], eqs=[])
             # Incremental cycle detection for out edges
             for source, dest in self.graph.edges(action_name):
                 if dest in self.current[step]:
@@ -88,6 +91,9 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                             to_explore.extend(neighbour for _, neighbour in self.current[step].edges)
                 elif (set(self.graph.neighbors(dest)) & self.ancestors[source]
                       or source in set(self.graph.neighbors(dest))):
-                    if dest not in self.nots[step]:
-                        self.nots[step][dest] = z3.Not(self.encoder.get_action_var(dest, step))
-                    self.propagate(e=self.nots[step][dest], ids=[], eqs=[])
+                    if dest in self.nots[step]:
+                        n = self.nots[step][dest]
+                    else:
+                        n = z3.Not(self.encoder.get_action_var(dest, step))
+                        self.nots[step][dest] = n
+                    self.propagate(e=n, ids=[], eqs=[])
