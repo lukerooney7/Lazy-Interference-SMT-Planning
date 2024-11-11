@@ -118,13 +118,24 @@ class EncoderGrounded(Encoder):
         """
         plan = SequentialPlan([])
         if not model: return plan
-        if propagator and not self.modifier.forall:
-            interference_graphs = propagator.stack.pop()
+        if not self.modifier.forall:
             action_map = {action.name: action for action in self}
-            for t in range(0, horizon + 1):
-                sorted_action_names = list(nx.topological_sort(interference_graphs[t]))[::-1]
-                for action_name in sorted_action_names:
-                    plan.actions.append(ActionInstance(action_map.get(action_name)))
+            if self.modifier.lazy:
+                interference_graphs = propagator.current
+                for t in range(0, horizon + 1):
+                    sorted_action_names = list(nx.topological_sort(interference_graphs[t]))[::-1]
+                    for action_name in sorted_action_names:
+                        plan.actions.append(ActionInstance(action_map.get(action_name)))
+            else:
+                for t in range(0, horizon + 1):
+                    active_actions = set()
+                    for action in self:
+                        if z3.is_true(model[self.up_actions_to_z3[action.name][t]]):
+                            active_actions.add(action.name)
+                    sorted_action_names = list(nx.topological_sort(self.modifier.graph.subgraph(active_actions)))[::-1]
+                    for action_name in sorted_action_names:
+                        plan.actions.append(ActionInstance(action_map.get(action_name)))
+
         else:
             ## linearize partial-order plan
             for t in range(0, horizon + 1):
