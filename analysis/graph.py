@@ -3,6 +3,7 @@ import json
 import pandas as pd
 from matplotlib import pyplot as plt
 import seaborn as sns
+from matplotlib.lines import Line2D
 
 # folder_path = '/Users/lukeroooney/Desktop/Dissertation/parallelSAT/dump_results'
 folder_path = '/Users/lukeroooney/developer/pyPMTEvalToolkit/sandbox-dir/dump_results'
@@ -81,33 +82,51 @@ def cactus_plot(df, domain, encoding, log, min_instance, max_instance, timeout, 
     plt.tight_layout()
     plt.show()
 
-
-def scatter_plot(df, domain, x, y):
-    df = df[df['domain'] == domain]
-    df_filtered = df[df['planner_tag'].isin([x, y])]
-
-    df_pivot = df_filtered.pivot(index='instance', columns='planner_tag', values='planning_time').reset_index()
-
+def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
+    df_filtered = df[(df['planner_tag'].isin([x, y])) &
+                     (df['instance'] >= min_instance) &
+                     (df['instance'] <= max_instance)]
+    timeout_penalty = timeout * 60
+    unique_domains = df_filtered['domain'].unique()
+    markers = ['o', 's', '^', 'D', 'v', 'p', '*', 'X']  # Extend if needed
+    domain_marker_map = {domain: markers[i % len(markers)] for i, domain in enumerate(unique_domains)}
     plt.figure(figsize=(12, 8))
-    plt.yscale('log')
-    plt.xscale('log')
-    plt.scatter(df_pivot[x], df_pivot[y], s=100, color='blue', edgecolor='black', alpha=0.7, marker='o')
+    if log:
+        plt.yscale('log')
+        plt.xscale('log')
+    for domain in unique_domains:
+        domain_data = df_filtered[df_filtered['domain'] == domain]
 
+        X = domain_data[domain_data['planner_tag'] == x][['instance', 'planning_time']]
+        Y = domain_data[domain_data['planner_tag'] == y][['instance', 'planning_time']]
+
+        merged_data = X.merge(Y, on='instance', how='outer', suffixes=('_x', '_y'))
+
+        graph_data = pd.DataFrame()
+        graph_data['x'] = merged_data['planning_time_x']
+        graph_data['y'] = merged_data['planning_time_y']
+        graph_data['c'] = merged_data['instance']
+        graph_data = graph_data.fillna(timeout_penalty)
+        # print(graph_data)
+        plt.scatter(
+            graph_data['x'], graph_data['y'],
+            s=100, marker=domain_marker_map[domain], c=graph_data['c'],
+            edgecolor='black', alpha=0.7, label=domain
+        )
     plt.title(f'Comparison of {x} and {y} Planning Times', fontsize=16)
     plt.xlabel(f'{x} Planning Time (s)', fontsize=14)
     plt.ylabel(f'{y} Planning Time (s)', fontsize=14)
-
-    min_val = min(df_pivot[x].min(), df_pivot[y].min())
-    max_val = max(df_pivot[x].max(), df_pivot[y].max())
-    plt.plot([min_val, max_val], [min_val, max_val], 'k-', linewidth=2, label='Equal Planning Time')
-
+    plt.plot([0, timeout_penalty], [0, timeout_penalty], 'k-', linewidth=2, label='Equal Planning Time')
     plt.gca().set_aspect('equal', adjustable='box')
-    plt.legend(fontsize=12)
-
+    custom_legend = [Line2D([0], [0], marker=marker, color='w', markerfacecolor='none',
+                            markeredgecolor='black', markersize=10) for marker in markers]
+    plt.legend(custom_legend, unique_domains, title='Domain', fontsize=12)
+    plt.colorbar(label='Instance Number')
     plt.tight_layout()
     plt.show()
 
-def compare_pars(df, domain, max_instance, timeout, par):
+
+def compare_pars(df, domain, min_instance, max_instance, timeout, par):
     df = df[df['domain'] == domain]
     timeout_penalty = timeout * par * 60
     total_times = {}
@@ -149,9 +168,9 @@ def compare_pars(df, domain, max_instance, timeout, par):
 
 
 def display_data(df):
-    # scatter_plot(df, "rovers", "test", "exists-lazy-optimal")
-    cactus_plot(df, "rovers", "exists", True, 0, 10, 5, 4)
-    # compare_pars(df, "rovers",8, 5, 2)
+    # scatter_plot(df, False,"forall-lazy-optimal", "test", 1,8, 3.5)
+    cactus_plot(df, "rovers", "tsp", True, 0, 10, 2, 1)
+    # compare_pars(df, "tsp",0, 10, 10, 2)
 
 df = get_data()
 display_data(df)
