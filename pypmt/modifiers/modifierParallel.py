@@ -127,8 +127,8 @@ class ParallelModifier(Modifier):
         def generate_exists():
             components = nx.strongly_connected_components(self.graph)
             for c in components:
-                if len(c) > 0:
-                    numbers = {a: i for i, a in enumerate(self.graph)}
+                if len(c) > 1:
+                    numbers = {a: i for i, a in enumerate(c)}
                     subgraph = self.graph.subgraph(c)
                     for edge in subgraph.edges():
                         act_1, act_2 = edge
