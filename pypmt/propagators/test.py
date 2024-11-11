@@ -1,9 +1,8 @@
 import networkx as nx
 import z3
-from pypmt.utilities import log
 
 
-class TestUserPropagator(z3.UserPropagateBase):
+class TestPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
