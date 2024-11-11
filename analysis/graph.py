@@ -110,7 +110,7 @@ def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
         # print(graph_data)
         plt.scatter(
             graph_data['x'], graph_data['y'],
-            s=100, marker=domain_marker_map[domain], c=graph_data['c'],
+            s=100, marker=domain_marker_map[domain], c=graph_data['c'], cmap='Blues',
             edgecolor='black', alpha=0.7, label=domain
         )
     plt.title(f'Comparison of {x} and {y} Planning Times', fontsize=16)
@@ -168,8 +168,8 @@ def compare_pars(df, domain, min_instance, max_instance, timeout, par):
 
 
 def display_data(df):
-    # scatter_plot(df, False,"forall-lazy-optimal", "test", 1,8, 3.5)
-    cactus_plot(df, "rovers", "tsp", True, 0, 10, 2, 1)
+    scatter_plot(df, True,"forall-lazy-optimal", "test", 1,8, 3.5)
+    # cactus_plot(df, "rovers", "tsp", True, 0, 10, 2, 1)
     # compare_pars(df, "tsp",0, 10, 10, 2)
 
 df = get_data()
