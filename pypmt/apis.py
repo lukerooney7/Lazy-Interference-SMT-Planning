@@ -139,7 +139,7 @@ def solveUP(task, conf:Config, validate_plan:bool=True):
         return None
     elif plan.isvalid:
         log('The plan is valid', 1)
-        log(plan, 2)
+        # log(plan, 1)
         return plan
     else:
         log('The plan is invalid!', 1)
