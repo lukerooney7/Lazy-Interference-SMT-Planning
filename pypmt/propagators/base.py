@@ -7,12 +7,12 @@ class BasePropagator(z3.UserPropagateBase):
     management.
     """
 
-    def __init__(self, encoder, s=None, ctx=None):
+    def __init__(self, e=None, s=None, ctx=None):
         # We need to call the parent constructor for Z3 to do its magic.
         super().__init__(s, ctx)
 
         # The encoder holds the semantic mappings between UP and Z3 variables.
-        self.encoder = encoder
+        self.encoder = e
 
         # keep track of changes/assignments made during the decision process
         # each entry is an action or change that can be undone.
@@ -27,7 +27,7 @@ class BasePropagator(z3.UserPropagateBase):
         # We add the custom fixed and final methods to the propagator
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.add_final(lambda: self._final())
-        self.encoder = encoder
+        self.encoder = e
 
     # The push and pop methods take care of the trail.
     # For example, this is how it can evolve during the decision process:
