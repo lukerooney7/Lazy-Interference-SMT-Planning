@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import z3
 
 
@@ -9,6 +11,7 @@ class ForallOptimalUserPropagator(z3.UserPropagateBase):
         self.graph = self.encoder.modifier.graph
         self.current = [set()]
         self.stack = []
+        self.nots = defaultdict(dict)
 
     def push(self):
         new = []
@@ -37,7 +40,9 @@ class ForallOptimalUserPropagator(z3.UserPropagateBase):
                                                       self.encoder.get_action_var(dest, i))))
                     break
                 else:
-                    self.propagate(e=z3.Not(self.encoder.get_action_var(dest, step)), ids=[], eqs=[])
+                    if dest not in self.nots[step]:
+                        self.nots[step][dest] = z3.Not(self.encoder.get_action_var(dest, step))
+                    self.propagate(e=self.nots[step][dest], ids=[], eqs=[])
             if not literals:
                 for source, dest in list(self.graph.in_edges(action_name)):
                     if source in self.current[step]:
@@ -47,7 +52,9 @@ class ForallOptimalUserPropagator(z3.UserPropagateBase):
                                                           self.encoder.get_action_var(dest, i))))
                         break
                     else:
-                        self.propagate(e=z3.Not(self.encoder.get_action_var(source, step)), ids=[], eqs=[])
+                        if source not in self.nots[step]:
+                            self.nots[step][source] = z3.Not(self.encoder.get_action_var(source, step))
+                        self.propagate(e=self.nots[step][source], ids=[], eqs=[])
             if literals:
                 self.solver.add(new_mutexes)
                 literals.add(action)
