@@ -2,7 +2,7 @@ import networkx as nx
 import z3
 from collections import defaultdict
 
-class ExistsOptimalUserPropagator(z3.UserPropagateBase):
+class ExistsOptimalPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
@@ -61,8 +61,7 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                             self.ancestors[node].add(source)
                             self.descendants[source].add(node)
                             to_explore.extend(neighbour for _, neighbour in self.current[step].edges)
-                elif (set(self.graph.predecessors(source)) & self.descendants[dest]
-                      or source in set(self.graph.neighbors(dest))):
+                elif set(self.graph.predecessors(source)) & self.descendants[dest]:
                     if source not in self.nots[step]:
                         self.nots[step][source] = z3.Not(self.encoder.get_action_var(source, step))
                     self.propagate(e=self.nots[step][source], ids=[], eqs=[])
@@ -86,8 +85,7 @@ class ExistsOptimalUserPropagator(z3.UserPropagateBase):
                             self.ancestors[node].add(source)
                             self.descendants[source].add(node)
                             to_explore.extend(neighbour for _, neighbour in self.current[step].edges)
-                elif (set(self.graph.neighbors(dest)) & self.ancestors[source]
-                      or source in set(self.graph.neighbors(dest))):
+                elif set(self.graph.neighbors(dest)) & self.ancestors[source]:
                     if dest not in self.nots[step]:
                         self.nots[step][dest] = z3.Not(self.encoder.get_action_var(dest, step))
                     self.propagate(e=self.nots[step][dest], ids=[], eqs=[])

@@ -1,18 +1,7 @@
 import time
-
 import z3
+
 from pypmt.planner.utilities import dumpProblem
-from pypmt.propagators.exists.optimal import ExistsOptimalUserPropagator
-from pypmt.propagators.test import TestUserPropagator
-from pypmt.propagators.base import BaseUserPropagator
-from pypmt.propagators.exists.basic import ExistsBasicUserPropagator
-from pypmt.propagators.exists.path import ExistsPathUserPropagator
-from pypmt.propagators.forall.basic import ForallBasicUserPropagator
-from pypmt.propagators.forall.edgeCache import ForallEdgeCacheUserPropagator
-from pypmt.propagators.forall.neighbours import ForallNeighboursUserPropagator
-from pypmt.propagators.forall.noGraph import ForallNoGraphUserPropagator
-from pypmt.propagators.forall.optimal import ForallOptimalUserPropagator
-from pypmt.propagators.forall.stepShare import ForallStepShareUserPropagator
 from pypmt.utilities import log
 from pypmt.planner.base import Search
 
@@ -23,10 +12,11 @@ class SMTSearch(Search):
 
     def search(self):
         self.horizon = 0
+
         log(f'Starting to solve', 1)
         total_time = 0
         for horizon in self.scheduler:
-            self.horizon = horizon
+            self.horizon  = horizon
 
             start_time = time.time()
             formula    = self.encoder.encode(self.horizon)
@@ -34,41 +24,7 @@ class SMTSearch(Search):
 
             if not self.solver:
                 self.solver = z3.Solver(ctx=context) if 'objective' not in formula else z3.Optimize(ctx=context)
-            if not self.encoder.type == "forall-noprop" or not self.encoder.type == "exists-noprop":
-                if not self.propagator:
-                    if self.encoder.type == "forall" or self.encoder.type == "exists":
-                        self.propagator = BaseUserPropagator(s=self.solver, e = self.encoder)
-                    elif self.encoder.type == "forall-lazy":
-                        self.propagator = ForallBasicUserPropagator(s=self.solver, e=self.encoder)
-                    elif self.encoder.type == "forall-lazy-stepshare":
-                        self.propagator = ForallStepShareUserPropagator(s=self.solver, e=self.encoder)
-                    elif self.encoder.type == "forall-lazy-edgecache":
-                        self.propagator = ForallEdgeCacheUserPropagator(s=self.solver, e=self.encoder)
-                    elif self.encoder.type == "forall-lazy-nograph":
-                        self.propagator = ForallNoGraphUserPropagator(s=self.solver, e=self.encoder)
-                    elif self.encoder.type == "forall-lazy-neighbours":
-                        self.propagator = ForallNeighboursUserPropagator(s=self.solver, e=self.encoder)
-                    elif self.encoder.type == "forall-lazy-optimal":
-                        self.propagator = ForallOptimalUserPropagator(s=self.solver, e=self.encoder)
-                    elif self.encoder.type == "exists-lazy":
-                        self.propagator = ExistsBasicUserPropagator(s=self.solver, e=self.encoder)
-                    elif self.encoder.type == "exists-lazy-stepshare":
-                        self.propagator = ExistsBasicUserPropagator(s=self.solver, e=self.encoder)
-                    elif self.encoder.type == "exists-lazy-path":
-                        self.propagator = ExistsPathUserPropagator(s=self.solver, e=self.encoder)
-                    elif self.encoder.type == "exists-lazy-optimal":
-                        self.propagator = ExistsOptimalUserPropagator(s=self.solver, e=self.encoder)
-                    elif self.encoder.type == "test":
-                        self.propagator = TestUserPropagator(s=self.solver, e=self.encoder)
-                    if self.propagator:
-                        for a in self.encoder.task.actions:
-                            action = self.encoder.get_action_var(a.name, 0)
-                            self.propagator.add(action)
-                else:
-                    for a in self.encoder.task.actions:
-                        action = self.encoder.get_action_var(a.name, horizon)
-                        self.propagator.add(action)
-
+            
             # deal with the initial state
             if self.horizon == 0:
                 self.solver.add(formula['initial'])
@@ -82,7 +38,7 @@ class SMTSearch(Search):
 
             # deal with the objective
             if 'objective' in formula:
-                self.solver.minimize(formula['objective'])
+                self.solver.minimize(formula['objective']) # type: ignore
                 del formula['objective']
 
             # We assert the rest of formulas to the solver
@@ -98,13 +54,12 @@ class SMTSearch(Search):
             end_time = time.time()
             solving_time = end_time - start_time
             total_time = total_time + solving_time + encoding_time
-            log(f'Step {horizon+1}/{(self.scheduler[-1]+1)} encoding: {encoding_time:.2f}s, solving: {solving_time:.2f}s', 3)
+            log(f'Step {horizon+1}/{(self.scheduler[-1]+1)} encoding: {encoding_time:.2f}s, solving: {solving_time:.2f}s', 2)
             if res == z3.sat:
                 log(f'Satisfiable model found. Took:{total_time:.2f}s', 3)
                 log(f'Z3 statistics:\n{self.solver.statistics()}', 4)
-                self.solution = self.encoder.extract_plan(self.propagator, self.solver.model(), self.horizon)
+                self.solution = self.encoder.extract_plan(None, self.solver.model(), self.horizon)
                 break
-        # plt.show()
         return self.solution
 
     def dump_smtlib_to_file(self, t, path):
@@ -132,7 +87,7 @@ class SMTSearch(Search):
 
             # deal with the objective
             if 'objective' in formula:
-                self.solver.minimize(formula['objective'])
+                self.solver.minimize(formula['objective']) # type: ignore
                 del formula['objective']
 
             # We assert the rest of formulas to the solver
@@ -142,6 +97,6 @@ class SMTSearch(Search):
 
         end_time = time.time()
         encoding_time = end_time - start_time
-        self.solver.add(g) # we assert the goal happens in the last step (which would normally be an assumption)
+        self.solver.add(g) # type: ignore # we assert the goal happens in the last step (which would normally be an assumption)
         dumpProblem(self.solver, path, add_check_sat=True)
         log(f'Encoding the formula took: {encoding_time:.2f}s', 2)

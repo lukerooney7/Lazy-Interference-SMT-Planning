@@ -15,7 +15,6 @@ class LiftedSearch(Search):
         total_time = 0
         start_time = time.time()
         formula = self.encoder.encode()
-        print(formula)
 
         if not self.solver:
             self.solver = z3.Solver(ctx=self.encoder.ctx)
@@ -53,7 +52,6 @@ class LiftedSearch(Search):
         log(f'Encoding problem into a SMTLIB file', 1)
         start_time = time.time()
         formula = self.encoder.encode()
-        print(formula)
 
         if not self.solver:
             self.solver = z3.Solver(ctx=self.encoder.ctx)

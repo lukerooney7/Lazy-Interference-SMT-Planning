@@ -36,11 +36,10 @@ class EncoderGrounded(Encoder):
         planning of the original work in Kautz & Selman 1996 
     """
 
-    def __init__(self, name, task, type, modifier):
+    def __init__(self, name, task, modifier):
         self.task = task # The UP problem
         self.name = name
         self.modifier = modifier
-        self.type = type
         self.ctx = z3.Context() # The context where we will store the problem
 
         # cache all fluents in the problem.
@@ -119,29 +118,19 @@ class EncoderGrounded(Encoder):
         """
         plan = SequentialPlan([])
         if not model: return plan
-        if not self.modifier.forall:
+        if propagator and not self.modifier.forall:
+            interference_graphs = propagator.stack.pop()
             action_map = {action.name: action for action in self}
-            if self.modifier.lazy:
-                interference_graphs = propagator.current
-                for t in range(0, horizon + 1):
-                    sorted_action_names = list(nx.topological_sort(interference_graphs[t]))[::-1]
-                    for action_name in sorted_action_names:
-                        plan.actions.append(ActionInstance(action_map.get(action_name)))
-            else:
-                for t in range(0, horizon + 1):
-                    active_actions = set()
-                    for action in self:
-                        if z3.is_true(model[self.up_actions_to_z3[action.name][t]]):
-                            active_actions.add(action.name)
-                    sorted_action_names = list(nx.topological_sort(self.modifier.graph.subgraph(active_actions)))[::-1]
-                    for action_name in sorted_action_names:
-                        plan.actions.append(ActionInstance(action_map.get(action_name)))
+            for t in range(0, horizon + 1):
+                sorted_action_names = list(nx.topological_sort(interference_graphs[t]))[::-1]
+                for action_name in sorted_action_names:
+                    plan.actions.append(ActionInstance(action_map.get(action_name)))
         else:
             ## linearize partial-order plan
-            for t in range(0, horizon+1):
+            for t in range(0, horizon + 1):
                 for action in self:
                     if z3.is_true(model[self.up_actions_to_z3[action.name][t]]):
-                            plan.actions.append(ActionInstance(action))
+                        plan.actions.append(ActionInstance(action))
         return SMTSequentialPlan(plan, self.task)
 
     def encode(self, t):
@@ -203,9 +192,7 @@ class EncoderGrounded(Encoder):
         @returns: axioms that specify execution semantics.
         """
         action_vars = list(map(lambda x: x[0], self.up_actions_to_z3.values()))
-        # print(self.modifier.encode(self, action_vars))
         return self.modifier.encode(self, action_vars)
-
 
     def create_variables(self, t):
         """!
@@ -400,15 +387,6 @@ class EncoderSequential(EncoderGrounded):
     def __init__(self, task):
         super().__init__("seq", task, LinearModifier())
 
-class EncoderTest(EncoderGrounded):
-    """
-    Implementation of a generalisation for numeric planning of the original work
-    in Kautz & Selman 1996
-    """
-    def __init__(self, task):
-        super().__init__("seqForall", task, "test", ParallelModifier(False, True))
-
-
 
 class EncoderForall(EncoderGrounded):
     """
@@ -416,16 +394,7 @@ class EncoderForall(EncoderGrounded):
     in Kautz & Selman 1996 
     """
     def __init__(self, task):
-        super().__init__("seqForall", task, "forall", ParallelModifier(True, False))
-
-class EncoderForallNoProp(EncoderGrounded):
-    """
-    Implementation of a generalisation for numeric planning of the original work
-    in Kautz & Selman 1996
-    """
-    def __init__(self, task):
-        super().__init__("seqForall", task, "forall-noprop", ParallelModifier(True, False))
-
+        super().__init__("seqForall", task, ParallelModifier(True, False))
 
 class EncoderForallLazy(EncoderGrounded):
     """
@@ -433,72 +402,21 @@ class EncoderForallLazy(EncoderGrounded):
     in Kautz & Selman 1996
     """
     def __init__(self, task):
-        super().__init__("seqLazyForall", task, "forall-lazy", ParallelModifier(True, True))
-
-class EncoderForallLazyStepShare(EncoderGrounded):
-    """
-    Implementation of a generalisation for numeric planning of the original work
-    in Kautz & Selman 1996
-    """
-    def __init__(self, task):
-        super().__init__("seqLazyForallStepShare", task, "forall-lazy-stepshare", ParallelModifier(True, True))
-
-class EncoderForallLazyEdgeCache(EncoderGrounded):
-    """
-    Implementation of a generalisation for numeric planning of the original work
-    in Kautz & Selman 1996
-    """
-    def __init__(self, task):
-        super().__init__("seqLazyForallEdgeCache", task, "forall-lazy-edgecache", ParallelModifier(True, True))
-
-class EncoderForallLazyNoGraph(EncoderGrounded):
-    """
-    Implementation of a generalisation for numeric planning of the original work
-    in Kautz & Selman 1996
-    """
-    def __init__(self, task):
-        super().__init__("seqLazyForallNoGraph", task, "forall-lazy-nograph", ParallelModifier(True, True))
-
-class EncoderForallLazyNeighbours(EncoderGrounded):
-    """
-    Implementation of a generalisation for numeric planning of the original work
-    in Kautz & Selman 1996
-    """
-    def __init__(self, task):
-        super().__init__("seqLazyForallNeighbours", task, "forall-lazy-neighbours", ParallelModifier(True, True))
-
-class EncoderForallLazyOptimal(EncoderGrounded):
-    """
-    Implementation of a generalisation for numeric planning of the original work
-    in Kautz & Selman 1996
-    """
-    def __init__(self, task):
-        super().__init__("seqLazyForallOptimal", task, "forall-lazy-optimal", ParallelModifier(True, True))
+        super().__init__("seqLazyForall", task, ParallelModifier(True, True))
 
 class EncoderExists(EncoderGrounded):
+    """
+    Implementation of a generalisation for numeric planning of the original work
+    in Kautz & Selman 1996
+    """
     def __init__(self, task):
-        super().__init__("seqExists", task, "exists", ParallelModifier(False, False))
-
-
-class EncoderExistsNoProp(EncoderGrounded):
-    def __init__(self, task):
-        super().__init__("seqExists", task, "exists-noprop", ParallelModifier(False, False))
-
+        super().__init__("seqForall", task, ParallelModifier(False, False))
 
 class EncoderExistsLazy(EncoderGrounded):
+    """
+    Implementation of a generalisation for numeric planning of the original work
+    in Kautz & Selman 1996
+    """
     def __init__(self, task):
-        super().__init__("seqLazyExists", task, "exists-lazy", ParallelModifier(False, True))
+        super().__init__("seqForall", task, ParallelModifier(False, True))
 
-
-class EncoderExistsLazyStepShare(EncoderGrounded):
-    def __init__(self, task):
-        super().__init__("seqLazyExistsStepShare", task, "exists-lazy-stepshare", ParallelModifier(False, True))
-
-
-class EncoderExistsLazyPath(EncoderGrounded):
-    def __init__(self, task):
-        super().__init__("seqLazyExistsPath", task, "exists-lazy-path", ParallelModifier(False, True))
-
-class EncoderExistsLazyOptimal(EncoderGrounded):
-    def __init__(self, task):
-        super().__init__("seqLazyExistsPath", task, "exists-lazy-optimal", ParallelModifier(False, True))
