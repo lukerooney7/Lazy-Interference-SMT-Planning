@@ -19,6 +19,7 @@ from pypmt.propagators.exists.optimal import ExistsOptimalPropagator
 # from pypmt.propagators.exists.ghostNode import ExistsOptimalUserPropagator
 from pypmt.propagators.forall.basic import ForallBasicPropagator
 from pypmt.propagators.forall.optimal import ForallOptimalPropagator
+from pypmt.propagators.test import TestPropagator
 
 
 class Config:
@@ -74,6 +75,12 @@ class Config:
             "search": SMTSearchActionPropagator,
             "compilationlist": grounded_encoders_default_compilation_list,
             "propagator": BasePropagator
+        },
+        "test": {
+            "encoder": EncoderExistsLazy,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": TestPropagator
         },
         "forall-noprop": {
             "encoder": EncoderForall,
@@ -152,14 +159,15 @@ class Config:
     valid_configs_description = {
         "seq": "Use the sequential SMT encoding",
         "seqProp": "A sequential SMT encoding with the Base propagator",
-        "forall": "Use the parallel SMT encoding with forall-step semantics",
-        "forall-noprop": "Use the parallel SMT encoding with forall-step semantics",
-        "forall-lazy": "Use the parallel SMT encoding with forall-step semantics",
-        "forall-lazy-optimal": "Use the parallel SMT encoding with forall-step semantics",
-        "exists": "Use the parallel SMT encoding with forall-step semantics",
-        "exists-noprop": "Use the parallel SMT encoding with forall-step semantics",
-        "exists-lazy": "Use the parallel SMT encoding with forall-step semantics",
-        "exists-lazy-optimal": "Use the parallel SMT encoding with forall-step semantics",
+        "forall": "Use the eager parallel SMT encoding with forall-step semantics and empty propagator",
+        "forall-noprop": "Use the eager parallel SMT encoding with forall-step semantics without a propagator",
+        "forall-lazy": "Use the lazy original parallel SMT encoding with forall-step semantics",
+        "forall-lazy-optimal": "Use the lazy optimised parallel SMT encoding with forall-step semantics",
+        "exists": "Use the eager parallel SMT encoding with exists-step semantics and empty propagator",
+        "exists-noprop": "Use the eager parallel SMT encoding with exists-step semantics without a propagator",
+        "exists-lazy": "Use the lazy original parallel SMT encoding with exists-step semantics",
+        "exists-lazy-optimal": "Use the lazy optimised parallel SMT encoding with exists-step semantics",
+        "test": "Use propagator for comparing to existing implementations",
         "r2e": "Use the R2E encoding",
         "uf": "Use the lifted encoding with quantifiers",
         "qfuf": "Use the quantifier-free lifted encoding",
