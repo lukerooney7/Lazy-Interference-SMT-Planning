@@ -2,12 +2,13 @@ import os
 import json
 import pandas as pd
 from matplotlib import pyplot as plt
+from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 
 # folder_path = '/Users/lukeroooney/Desktop/Dissertation/parallelSAT/dump_results'
 folder_path = '/Users/lukeroooney/developer/pyPMTEvalToolkit/sandbox-dir/dump_results'
 classical_domains = {"rovers", "tpp", "tsp", "trucks"}
-numerical_domains = {"zenotravel", "satellite", "tpp-numeric", "markettrader", "counters"}
+numerical_domains = {"zenotravel", "satellites", "tpp-numeric", "markettrader", "counters"}
 
 def get_data():
     data_list = []
@@ -121,18 +122,25 @@ def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
     plt.ylabel(f'{y} Planning Time (s)', fontsize=14)
 
     plt.gca().set_aspect('equal', adjustable='box')
-    # custom_legend = [Line2D([0], [0], marker=marker, color='w', markerfacecolor='none',
-    #                         markeredgecolor='black', markersize=10) for marker in markers]
     custom_legend = []
     for domain in unique_domains:
-        # Assign blue or red color to legend marker based on domain set
         color = 'blue' if domain in classical_domains else 'red' if domain in numerical_domains else 'grey'
         marker = domain_marker_map[domain]
         custom_legend.append(Line2D([0], [0], marker=marker, color='w', markerfacecolor=color,
                                     markeredgecolor='black', markersize=10, label=domain))
 
     plt.legend(custom_legend, unique_domains, title='Domain', fontsize=12)
-    plt.colorbar(label='Instance Number')
+    # plt.colorbar(label='Instance Number')
+    sm_blue = plt.cm.ScalarMappable(cmap='Blues', norm=Normalize(vmin=df_filtered['instance'].min(),
+                                                                 vmax=df_filtered['instance'].max()))
+    sm_red = plt.cm.ScalarMappable(cmap='Reds', norm=Normalize(vmin=df_filtered['instance'].min(),
+                                                               vmax=df_filtered['instance'].max()))
+    sm_blue._A = []  # Dummy array for colorbar
+    sm_red._A = []  # Dummy array for colorbar
+    fig = plt.gcf()
+    plt.colorbar(sm_blue, ax=fig.gca(),label='Instance Number (Classical Domains)')
+    plt.colorbar(sm_red, ax=fig.gca(),label='Instance Number (Numerical Domains)')
+
     plt.tight_layout()
     plt.show()
 
