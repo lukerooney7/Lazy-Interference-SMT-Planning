@@ -132,7 +132,10 @@ class EncoderGrounded(Encoder):
                     for action in self:
                         if z3.is_true(model[self.up_actions_to_z3[action.name][t]]):
                             active_actions.add(action.name)
-                    sorted_action_names = list(nx.topological_sort(self.modifier.graph.subgraph(active_actions)))[::-1]
+                    if len(self.modifier.graph.nodes) > 0:
+                        sorted_action_names = list(nx.topological_sort(self.modifier.graph.subgraph(active_actions)))[::-1]
+                    else:
+                        sorted_action_names = active_actions
                     for action_name in sorted_action_names:
                         plan.actions.append(ActionInstance(action_map.get(action_name)))
 
