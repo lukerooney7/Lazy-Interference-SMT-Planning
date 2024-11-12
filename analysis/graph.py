@@ -6,7 +6,7 @@ from matplotlib.lines import Line2D
 
 # folder_path = '/Users/lukeroooney/Desktop/Dissertation/parallelSAT/dump_results'
 folder_path = '/Users/lukeroooney/developer/pyPMTEvalToolkit/sandbox-dir/dump_results'
-classical_domains = {"rovers", "tpp", "tsp"}
+classical_domains = {"rovers", "tpp", "tsp", "trucks"}
 numerical_domains = {"zenotravel", "satellite", "tpp-numeric", "markettrader", "counters"}
 
 def get_data():
@@ -121,8 +121,16 @@ def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
     plt.ylabel(f'{y} Planning Time (s)', fontsize=14)
 
     plt.gca().set_aspect('equal', adjustable='box')
-    custom_legend = [Line2D([0], [0], marker=marker, color='w', markerfacecolor='none',
-                            markeredgecolor='black', markersize=10) for marker in markers]
+    # custom_legend = [Line2D([0], [0], marker=marker, color='w', markerfacecolor='none',
+    #                         markeredgecolor='black', markersize=10) for marker in markers]
+    custom_legend = []
+    for domain in unique_domains:
+        # Assign blue or red color to legend marker based on domain set
+        color = 'blue' if domain in classical_domains else 'red' if domain in numerical_domains else 'grey'
+        marker = domain_marker_map[domain]
+        custom_legend.append(Line2D([0], [0], marker=marker, color='w', markerfacecolor=color,
+                                    markeredgecolor='black', markersize=10, label=domain))
+
     plt.legend(custom_legend, unique_domains, title='Domain', fontsize=12)
     plt.colorbar(label='Instance Number')
     plt.tight_layout()
@@ -150,7 +158,6 @@ def compare_pars(df, domain, min_instance, max_instance, timeout, par):
 
     total_times_series = pd.Series(total_times).sort_values()
 
-    sns.set_theme(style="whitegrid")
     plt.figure(figsize=(10, 6))
     ax = total_times_series.plot(kind='barh', color='steelblue', edgecolor='black')
 
