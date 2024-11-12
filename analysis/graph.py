@@ -2,11 +2,12 @@ import os
 import json
 import pandas as pd
 from matplotlib import pyplot as plt
-import seaborn as sns
 from matplotlib.lines import Line2D
 
 # folder_path = '/Users/lukeroooney/Desktop/Dissertation/parallelSAT/dump_results'
 folder_path = '/Users/lukeroooney/developer/pyPMTEvalToolkit/sandbox-dir/dump_results'
+classical_domains = {"rovers", "tpp", "tsp"}
+numerical_domains = {"zenotravel", "satellite", "tpp-numeric", "markettrader", "counters"}
 
 def get_data():
     data_list = []
@@ -94,6 +95,7 @@ def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
     if log:
         plt.yscale('log')
         plt.xscale('log')
+    plt.plot([0, timeout_penalty], [0, timeout_penalty], 'k-', linewidth=2, label='Equal Planning Time')
     for domain in unique_domains:
         domain_data = df_filtered[df_filtered['domain'] == domain]
 
@@ -107,16 +109,17 @@ def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
         graph_data['y'] = merged_data['planning_time_y']
         graph_data['c'] = merged_data['instance']
         graph_data = graph_data.fillna(timeout_penalty)
+        cmap = 'Blues' if domain in classical_domains else 'Reds' if domain in numerical_domains else 'Greys'
         # print(graph_data)
         plt.scatter(
             graph_data['x'], graph_data['y'],
-            s=100, marker=domain_marker_map[domain], c=graph_data['c'], cmap='Blues',
+            s=100, marker=domain_marker_map[domain], c=graph_data['c'], cmap=cmap,
             edgecolor='black', alpha=0.7, label=domain
         )
     plt.title(f'Comparison of {x} and {y} Planning Times', fontsize=16)
     plt.xlabel(f'{x} Planning Time (s)', fontsize=14)
     plt.ylabel(f'{y} Planning Time (s)', fontsize=14)
-    plt.plot([0, timeout_penalty], [0, timeout_penalty], 'k-', linewidth=2, label='Equal Planning Time')
+
     plt.gca().set_aspect('equal', adjustable='box')
     custom_legend = [Line2D([0], [0], marker=marker, color='w', markerfacecolor='none',
                             markeredgecolor='black', markersize=10) for marker in markers]
@@ -168,9 +171,9 @@ def compare_pars(df, domain, min_instance, max_instance, timeout, par):
 
 
 def display_data(df):
-    scatter_plot(df, True,"forall-lazy-optimal", "test", 1,8, 3.5)
-    # cactus_plot(df, "rovers", "tsp", True, 0, 10, 2, 1)
-    # compare_pars(df, "tsp",0, 10, 10, 2)
+    scatter_plot(df, True,"exists-lazy-optimal", "test", 1,10, 5)
+    # cactus_plot(df, "rovers", "tsp", True, 0, 10, 1, 1)
+    # compare_pars(df, "rovers",0, 10, 10, 2)
 
 df = get_data()
 display_data(df)
