@@ -1,6 +1,7 @@
 import z3
 import time
 
+from matplotlib import pyplot as plt
 from unified_planning.model.walkers.free_vars import FreeVarsExtractor
 from z3 import BoolVal
 
@@ -91,6 +92,9 @@ class ParallelModifier(Modifier):
 
         def add_edge(action1, action2):
             self.graph.add_edge(action1.name, action2.name)
+
+        for action in actions:
+            self.graph.add_node(action.name)
 
         # Iterate over actions to identify mutex pairs
         for i, action_1 in enumerate(actions):
