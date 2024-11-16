@@ -1,0 +1,54 @@
+{
+    "task-info": {
+        "domain": "blocks",
+        "instance": 48,
+        "ipc-year": "2000"
+    },
+    "planner-info": {
+        "planner-tag": "exists",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.048712730407714844,
+            "planning-time": 1.5346567630767822
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(unstack a f)",
+            "(stack a d)",
+            "(pick-up b)",
+            "(stack b a)",
+            "(pick-up c)",
+            "(stack c b)",
+            "(pick-up f)",
+            "(stack f c)",
+            "(pick-up e)",
+            "(stack e f)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/blocks/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/blocks/probBLOCKS-6-1.pddl"
+    }
+}

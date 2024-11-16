@@ -1,0 +1,74 @@
+{
+    "task-info": {
+        "domain": "satellite",
+        "instance": 7,
+        "ipc-year": "2004"
+    },
+    "planner-info": {
+        "planner-tag": "forall-lazy-optimal",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "forall-lazy-optimal",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.12102818489074707,
+            "planning-time": 647.381632566452
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(turn_to satellite1 groundstation4 groundstation0)",
+            "(turn_to satellite2 star1 star6)",
+            "(turn_to satellite3 groundstation4 groundstation2)",
+            "(switch_on instrument3 satellite1)",
+            "(switch_on instrument5 satellite2)",
+            "(switch_on instrument7 satellite3)",
+            "(turn_to satellite0 planet9 star6)",
+            "(turn_to satellite3 groundstation0 groundstation4)",
+            "(calibrate satellite1 instrument3 groundstation4)",
+            "(calibrate satellite2 instrument5 star1)",
+            "(turn_to satellite2 phenomenon5 star1)",
+            "(calibrate satellite3 instrument7 groundstation0)",
+            "(switch_on instrument2 satellite0)",
+            "(turn_to satellite0 groundstation2 planet9)",
+            "(turn_to satellite1 star7 groundstation4)",
+            "(turn_to satellite3 star6 groundstation0)",
+            "(turn_to satellite2 planet11 phenomenon5)",
+            "(calibrate satellite0 instrument2 groundstation2)",
+            "(take_image satellite1 star7 instrument3 image0)",
+            "(turn_to satellite1 planet8 star7)",
+            "(take_image satellite2 planet11 instrument5 image2)",
+            "(take_image satellite1 planet8 instrument3 image0)",
+            "(take_image satellite3 star6 instrument7 image1)",
+            "(turn_to satellite0 planet10 groundstation2)",
+            "(turn_to satellite1 star1 planet8)",
+            "(turn_to satellite2 phenomenon5 planet11)",
+            "(turn_to satellite3 planet9 star6)",
+            "(take_image satellite0 planet10 instrument2 image0)",
+            "(take_image satellite2 phenomenon5 instrument5 image0)",
+            "(take_image satellite3 planet9 instrument7 image3)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/satellite/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/satellite/p07-pfile7.pddl"
+    }
+}

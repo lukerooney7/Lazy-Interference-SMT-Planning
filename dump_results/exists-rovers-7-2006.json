@@ -1,0 +1,71 @@
+{
+    "task-info": {
+        "domain": "rovers",
+        "instance": 7,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "exists",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.19245529174804688,
+            "planning-time": 9.193592548370361
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(calibrate rover0 camera0 objective0 waypoint2)",
+            "(navigate rover0 waypoint2 waypoint1)",
+            "(navigate rover1 waypoint3 waypoint4)",
+            "(sample_soil rover2 rover2store waypoint4)",
+            "(take_image rover0 waypoint1 objective0 camera0 high_res)",
+            "(sample_soil rover0 rover0store waypoint1)",
+            "(sample_rock rover1 rover1store waypoint4)",
+            "(navigate rover0 waypoint1 waypoint2)",
+            "(communicate_soil_data rover2 general waypoint4 waypoint4 waypoint3)",
+            "(drop rover1 rover1store)",
+            "(navigate rover1 waypoint4 waypoint3)",
+            "(drop rover0 rover0store)",
+            "(communicate_soil_data rover0 general waypoint1 waypoint2 waypoint3)",
+            "(sample_rock rover1 rover1store waypoint3)",
+            "(sample_rock rover0 rover0store waypoint2)",
+            "(communicate_image_data rover0 general objective0 high_res waypoint2 waypoint3)",
+            "(navigate rover1 waypoint3 waypoint0)",
+            "(drop rover1 rover1store)",
+            "(drop rover2 rover2store)",
+            "(navigate rover2 waypoint4 waypoint5)",
+            "(communicate_rock_data rover1 general waypoint4 waypoint0 waypoint3)",
+            "(sample_rock rover2 rover2store waypoint5)",
+            "(drop rover0 rover0store)",
+            "(communicate_rock_data rover0 general waypoint2 waypoint2 waypoint3)",
+            "(navigate rover2 waypoint5 waypoint2)",
+            "(communicate_rock_data rover1 general waypoint3 waypoint0 waypoint3)",
+            "(drop rover2 rover2store)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/rovers/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/rovers/p07.pddl"
+    }
+}

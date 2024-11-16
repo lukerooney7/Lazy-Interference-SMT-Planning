@@ -1,0 +1,50 @@
+{
+    "task-info": {
+        "domain": "tpp",
+        "instance": 1,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "exists-lazy-optimal",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists-lazy-optimal",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.0612187385559082,
+            "planning-time": 0.12198948860168457
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(drive truck1 depot1 market1)",
+            "(buy truck1 goods1 market1 level0 level1 level0 level1)",
+            "(load goods1 truck1 market1 level0 level1 level0 level1)",
+            "(drive truck1 market1 depot1)",
+            "(unload goods1 truck1 depot1 level0 level1 level0 level1)",
+            "(drive truck1 depot1 market1)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/tpp/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/tpp/p01.pddl"
+    }
+}

@@ -1,0 +1,72 @@
+{
+    "task-info": {
+        "domain": "trucks",
+        "instance": 5,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "exists",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.16413068771362305,
+            "planning-time": 1124.898493051529
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(load package3 truck1 a2 l2)",
+            "(load package4 truck1 a1 l2)",
+            "(drive truck1 l2 l3 t0 t1)",
+            "(unload package4 truck1 a1 l3)",
+            "(drive truck1 l3 l1 t1 t2)",
+            "(unload package3 truck1 a2 l1)",
+            "(deliver package4 l3 t2 t10)",
+            "(load package1 truck1 a1 l1)",
+            "(drive truck1 l1 l3 t2 t3)",
+            "(deliver package3 l1 t3 t6)",
+            "(unload package1 truck1 a1 l3)",
+            "(load package6 truck1 a2 l3)",
+            "(deliver package1 l3 t3 t3)",
+            "(load package5 truck1 a1 l3)",
+            "(drive truck1 l3 l2 t3 t4)",
+            "(unload package5 truck1 a1 l2)",
+            "(unload package6 truck1 a2 l2)",
+            "(load package7 truck1 a1 l2)",
+            "(drive truck1 l2 l1 t4 t5)",
+            "(unload package7 truck1 a1 l1)",
+            "(deliver package6 l2 t5 t7)",
+            "(load package2 truck1 a1 l1)",
+            "(drive truck1 l1 l2 t5 t6)",
+            "(unload package2 truck1 a1 l2)",
+            "(drive truck1 l2 l3 t6 t7)",
+            "(deliver package7 l1 t7 t10)",
+            "(deliver package5 l2 t7 t9)",
+            "(deliver package2 l2 t7 t11)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/trucks/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/trucks/p05.pddl"
+    }
+}

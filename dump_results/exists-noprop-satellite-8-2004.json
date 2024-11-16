@@ -1,0 +1,85 @@
+{
+    "task-info": {
+        "domain": "satellite",
+        "instance": 8,
+        "ipc-year": "2004"
+    },
+    "planner-info": {
+        "planner-tag": "exists-noprop",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists-noprop",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.13924384117126465,
+            "planning-time": 1271.9338998794556
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(turn_to satellite3 star4 phenomenon5)",
+            "(switch_on instrument7 satellite2)",
+            "(turn_to satellite2 star0 star6)",
+            "(turn_to satellite0 star4 phenomenon14)",
+            "(switch_on instrument9 satellite3)",
+            "(turn_to satellite1 star0 star4)",
+            "(switch_on instrument5 satellite1)",
+            "(calibrate satellite1 instrument5 star0)",
+            "(calibrate satellite3 instrument9 star4)",
+            "(calibrate satellite2 instrument7 star0)",
+            "(turn_to satellite1 star7 star0)",
+            "(turn_to satellite0 phenomenon14 star4)",
+            "(turn_to satellite3 phenomenon12 star4)",
+            "(turn_to satellite2 planet11 star0)",
+            "(take_image satellite1 star7 instrument5 spectrograph3)",
+            "(take_image satellite3 phenomenon12 instrument9 image0)",
+            "(take_image satellite2 planet11 instrument7 thermograph2)",
+            "(turn_to satellite1 star10 star7)",
+            "(turn_to satellite0 star3 phenomenon14)",
+            "(switch_on instrument0 satellite0)",
+            "(turn_to satellite3 star6 phenomenon12)",
+            "(turn_to satellite2 phenomenon13 planet11)",
+            "(take_image satellite3 star6 instrument9 spectrograph3)",
+            "(take_image satellite3 star6 instrument9 thermograph1)",
+            "(take_image satellite3 star6 instrument9 image0)",
+            "(take_image satellite1 star10 instrument5 spectrograph3)",
+            "(take_image satellite2 phenomenon13 instrument7 thermograph1)",
+            "(take_image satellite2 phenomenon13 instrument7 image0)",
+            "(calibrate satellite0 instrument0 star3)",
+            "(turn_to satellite3 phenomenon9 star6)",
+            "(turn_to satellite1 phenomenon5 star10)",
+            "(turn_to satellite2 phenomenon14 phenomenon13)",
+            "(turn_to satellite0 phenomenon8 star3)",
+            "(take_image satellite3 phenomenon9 instrument9 image0)",
+            "(take_image satellite0 phenomenon8 instrument0 thermograph1)",
+            "(take_image satellite0 phenomenon8 instrument0 image0)",
+            "(take_image satellite1 phenomenon5 instrument5 thermograph1)",
+            "(turn_to satellite3 phenomenon5 phenomenon9)",
+            "(take_image satellite2 phenomenon14 instrument7 thermograph2)",
+            "(turn_to satellite0 phenomenon8 phenomenon8)",
+            "(switch_off instrument5 satellite1)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/satellite/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/satellite/p08-pfile8.pddl"
+    }
+}

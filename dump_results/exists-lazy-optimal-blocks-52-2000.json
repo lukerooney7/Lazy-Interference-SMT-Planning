@@ -1,0 +1,64 @@
+{
+    "task-info": {
+        "domain": "blocks",
+        "instance": 52,
+        "ipc-year": "2000"
+    },
+    "planner-info": {
+        "planner-tag": "exists-lazy-optimal",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists-lazy-optimal",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.05034375190734863,
+            "planning-time": 3.844601631164551
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(unstack e g)",
+            "(put-down e)",
+            "(unstack g b)",
+            "(put-down g)",
+            "(unstack b a)",
+            "(stack b g)",
+            "(unstack a f)",
+            "(put-down a)",
+            "(unstack f c)",
+            "(stack f e)",
+            "(unstack c d)",
+            "(stack c f)",
+            "(unstack b g)",
+            "(stack b c)",
+            "(pick-up d)",
+            "(stack d b)",
+            "(pick-up g)",
+            "(stack g d)",
+            "(pick-up a)",
+            "(stack a g)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/blocks/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/blocks/probBLOCKS-7-0.pddl"
+    }
+}

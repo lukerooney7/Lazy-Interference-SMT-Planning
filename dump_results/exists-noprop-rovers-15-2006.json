@@ -1,0 +1,110 @@
+{
+    "task-info": {
+        "domain": "rovers",
+        "instance": 15,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "exists-noprop",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists-noprop",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.26812052726745605,
+            "planning-time": 689.1352953910828
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(calibrate rover1 camera2 objective4 waypoint6)",
+            "(navigate rover0 waypoint4 waypoint2)",
+            "(navigate rover3 waypoint4 waypoint2)",
+            "(navigate rover2 waypoint6 waypoint10)",
+            "(calibrate rover0 camera1 objective4 waypoint2)",
+            "(sample_soil rover0 rover0store waypoint2)",
+            "(take_image rover1 waypoint6 objective4 camera2 high_res)",
+            "(sample_soil rover2 rover2store waypoint10)",
+            "(navigate rover0 waypoint2 waypoint4)",
+            "(navigate rover1 waypoint6 waypoint4)",
+            "(sample_rock rover3 rover3store waypoint2)",
+            "(navigate rover3 waypoint2 waypoint4)",
+            "(communicate_soil_data rover0 general waypoint2 waypoint4 waypoint9)",
+            "(navigate rover2 waypoint10 waypoint6)",
+            "(communicate_rock_data rover3 general waypoint2 waypoint4 waypoint9)",
+            "(drop rover3 rover3store)",
+            "(calibrate rover1 camera3 objective3 waypoint4)",
+            "(navigate rover0 waypoint4 waypoint8)",
+            "(calibrate rover1 camera2 objective4 waypoint4)",
+            "(take_image rover0 waypoint8 objective1 camera1 high_res)",
+            "(take_image rover1 waypoint4 objective1 camera2 low_res)",
+            "(navigate rover3 waypoint4 waypoint1)",
+            "(navigate rover0 waypoint8 waypoint4)",
+            "(navigate rover1 waypoint4 waypoint6)",
+            "(communicate_soil_data rover2 general waypoint10 waypoint6 waypoint9)",
+            "(sample_rock rover3 rover3store waypoint1)",
+            "(drop rover2 rover2store)",
+            "(navigate rover2 waypoint6 waypoint5)",
+            "(communicate_image_data rover0 general objective1 high_res waypoint4 waypoint9)",
+            "(navigate rover3 waypoint1 waypoint4)",
+            "(calibrate rover1 camera2 objective4 waypoint6)",
+            "(calibrate rover0 camera1 objective4 waypoint4)",
+            "(take_image rover0 waypoint4 objective3 camera1 colour)",
+            "(sample_soil rover2 rover2store waypoint5)",
+            "(navigate rover3 waypoint4 waypoint8)",
+            "(drop rover3 rover3store)",
+            "(navigate rover0 waypoint4 waypoint5)",
+            "(take_image rover1 waypoint6 objective4 camera2 low_res)",
+            "(communicate_image_data rover1 general objective1 low_res waypoint6 waypoint9)",
+            "(navigate rover2 waypoint5 waypoint6)",
+            "(calibrate rover0 camera1 objective4 waypoint5)",
+            "(navigate rover0 waypoint5 waypoint4)",
+            "(navigate rover2 waypoint6 waypoint9)",
+            "(navigate rover1 waypoint6 waypoint5)",
+            "(communicate_rock_data rover3 general waypoint1 waypoint8 waypoint9)",
+            "(sample_rock rover3 rover3store waypoint8)",
+            "(drop rover0 rover0store)",
+            "(drop rover2 rover2store)",
+            "(communicate_rock_data rover3 general waypoint8 waypoint8 waypoint9)",
+            "(navigate rover0 waypoint4 waypoint0)",
+            "(navigate rover2 waypoint9 waypoint8)",
+            "(navigate rover1 waypoint5 waypoint6)",
+            "(sample_soil rover2 rover2store waypoint8)",
+            "(communicate_soil_data rover2 general waypoint5 waypoint8 waypoint9)",
+            "(navigate rover1 waypoint6 waypoint2)",
+            "(take_image rover0 waypoint0 objective4 camera1 low_res)",
+            "(sample_soil rover0 rover0store waypoint0)",
+            "(drop rover0 rover0store)",
+            "(navigate rover0 waypoint0 waypoint4)",
+            "(drop rover3 rover3store)",
+            "(navigate rover1 waypoint2 waypoint6)",
+            "(communicate_soil_data rover2 general waypoint8 waypoint8 waypoint9)",
+            "(navigate rover2 waypoint8 waypoint9)",
+            "(navigate rover1 waypoint6 waypoint4)",
+            "(communicate_soil_data rover0 general waypoint0 waypoint4 waypoint9)",
+            "(sample_soil rover0 rover0store waypoint4)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/rovers/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/rovers/p15.pddl"
+    }
+}

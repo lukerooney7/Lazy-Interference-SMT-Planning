@@ -1,0 +1,50 @@
+{
+    "task-info": {
+        "domain": "tsp",
+        "instance": 27,
+        "ipc-year": "None"
+    },
+    "planner-info": {
+        "planner-tag": "exists-lazy-optimal",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists-lazy-optimal",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.034766197204589844,
+            "planning-time": 0.2882826328277588
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(move p1 p6)",
+            "(move p6 p1)",
+            "(move p1 p3)",
+            "(move p3 p2)",
+            "(move p2 p5)",
+            "(move p5 p4)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/tsp/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/tsp/pfile6.pddl"
+    }
+}

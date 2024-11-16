@@ -1,0 +1,62 @@
+{
+    "task-info": {
+        "domain": "satellite",
+        "instance": 3,
+        "ipc-year": "2004"
+    },
+    "planner-info": {
+        "planner-tag": "exists-noprop",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists-noprop",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.09761595726013184,
+            "planning-time": 91.06711554527283
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(switch_on instrument3 satellite1)",
+            "(switch_on instrument0 satellite0)",
+            "(turn_to satellite0 star1 star4)",
+            "(calibrate satellite0 instrument0 star1)",
+            "(calibrate satellite1 instrument3 star0)",
+            "(turn_to satellite0 phenomenon5 star1)",
+            "(turn_to satellite1 star3 star0)",
+            "(take_image satellite1 star3 instrument3 infrared0)",
+            "(take_image satellite0 phenomenon5 instrument0 spectrograph2)",
+            "(turn_to satellite1 star4 star3)",
+            "(turn_to satellite0 phenomenon7 phenomenon5)",
+            "(take_image satellite0 phenomenon7 instrument0 spectrograph2)",
+            "(take_image satellite0 phenomenon7 instrument0 infrared0)",
+            "(take_image satellite1 star4 instrument3 spectrograph2)",
+            "(switch_off instrument0 satellite0)",
+            "(switch_off instrument3 satellite1)",
+            "(turn_to satellite0 phenomenon5 phenomenon7)",
+            "(turn_to satellite1 star0 star4)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/satellite/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/satellite/p03-pfile3.pddl"
+    }
+}

@@ -1,0 +1,74 @@
+{
+    "task-info": {
+        "domain": "satellite",
+        "instance": 4,
+        "ipc-year": "2004"
+    },
+    "planner-info": {
+        "planner-tag": "exists-lazy-optimal",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists-lazy-optimal",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.0731050968170166,
+            "planning-time": 82.49590992927551
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(switch_on instrument0 satellite0)",
+            "(turn_to satellite0 star0 star6)",
+            "(turn_to satellite1 star2 star0)",
+            "(switch_on instrument1 satellite1)",
+            "(calibrate satellite0 instrument0 star0)",
+            "(calibrate satellite1 instrument1 star2)",
+            "(turn_to satellite0 phenomenon9 star0)",
+            "(turn_to satellite1 star4 star2)",
+            "(take_image satellite0 phenomenon9 instrument0 thermograph2)",
+            "(take_image satellite0 phenomenon9 instrument0 infrared0)",
+            "(take_image satellite1 star4 instrument1 thermograph2)",
+            "(take_image satellite1 star4 instrument1 infrared1)",
+            "(turn_to satellite0 star0 phenomenon9)",
+            "(turn_to satellite1 planet3 star4)",
+            "(take_image satellite1 planet3 instrument1 thermograph2)",
+            "(take_image satellite1 planet3 instrument1 infrared1)",
+            "(turn_to satellite1 star6 planet3)",
+            "(turn_to satellite0 phenomenon8 star0)",
+            "(take_image satellite1 star6 instrument1 thermograph2)",
+            "(take_image satellite1 star6 instrument1 infrared1)",
+            "(take_image satellite0 phenomenon8 instrument0 thermograph2)",
+            "(turn_to satellite1 planet5 star6)",
+            "(turn_to satellite0 star7 phenomenon8)",
+            "(take_image satellite0 star7 instrument0 thermograph2)",
+            "(take_image satellite0 star7 instrument0 infrared0)",
+            "(take_image satellite1 planet5 instrument1 infrared0)",
+            "(take_image satellite1 planet5 instrument1 thermograph2)",
+            "(switch_off instrument0 satellite0)",
+            "(turn_to satellite0 star6 star7)",
+            "(switch_off instrument1 satellite1)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/satellite/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/satellite/p04-pfile4.pddl"
+    }
+}

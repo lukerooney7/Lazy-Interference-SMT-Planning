@@ -1,0 +1,75 @@
+{
+    "task-info": {
+        "domain": "depot",
+        "instance": 16,
+        "ipc-year": "2002"
+    },
+    "planner-info": {
+        "planner-tag": "forall-noprop",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "forall-noprop",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.13049030303955078,
+            "planning-time": 823.6147975921631
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(drive truck0 depot0 distributor1)",
+            "(lift hoist1 crate4 crate3 distributor0)",
+            "(lift hoist2 crate5 crate2 distributor1)",
+            "(load hoist1 crate4 truck1 distributor0)",
+            "(load hoist2 crate5 truck0 distributor1)",
+            "(drive truck0 distributor1 depot0)",
+            "(lift hoist0 crate1 pallet0 depot0)",
+            "(lift hoist1 crate3 crate0 distributor0)",
+            "(lift hoist2 crate2 pallet2 distributor1)",
+            "(load hoist0 crate1 truck0 depot0)",
+            "(load hoist1 crate3 truck1 distributor0)",
+            "(drive truck0 depot0 distributor1)",
+            "(lift hoist1 crate0 pallet1 distributor0)",
+            "(load hoist1 crate0 truck1 distributor0)",
+            "(load hoist2 crate2 truck0 distributor1)",
+            "(unload hoist1 crate4 truck1 distributor0)",
+            "(unload hoist2 crate1 truck0 distributor1)",
+            "(drive truck0 distributor1 depot0)",
+            "(drive truck1 distributor0 distributor1)",
+            "(drop hoist1 crate4 pallet1 distributor0)",
+            "(drop hoist2 crate1 pallet2 distributor1)",
+            "(unload hoist0 crate2 truck0 depot0)",
+            "(unload hoist2 crate0 truck1 distributor1)",
+            "(drive truck0 depot0 distributor1)",
+            "(drive truck1 distributor1 depot0)",
+            "(drop hoist0 crate2 pallet0 depot0)",
+            "(drop hoist2 crate0 crate1 distributor1)",
+            "(unload hoist0 crate3 truck1 depot0)",
+            "(unload hoist2 crate5 truck0 distributor1)",
+            "(drop hoist0 crate3 crate2 depot0)",
+            "(drop hoist2 crate5 crate0 distributor1)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/depot/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/depot/pfile3.pddl"
+    }
+}

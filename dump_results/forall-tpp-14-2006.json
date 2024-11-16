@@ -1,0 +1,125 @@
+{
+    "task-info": {
+        "domain": "tpp",
+        "instance": 14,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "forall",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "forall",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.19966983795166016,
+            "planning-time": 1273.2600266933441
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(drive truck1 depot1 market1)",
+            "(drive truck2 depot2 market2)",
+            "(drive truck3 depot2 market2)",
+            "(drive truck4 depot1 market1)",
+            "(drive truck1 market1 market4)",
+            "(drive truck2 market2 market3)",
+            "(buy truck3 goods5 market2 level1 level2 level0 level1)",
+            "(buy truck3 goods6 market2 level0 level1 level0 level1)",
+            "(buy truck3 goods7 market2 level1 level2 level0 level1)",
+            "(buy truck3 goods9 market2 level0 level1 level0 level1)",
+            "(buy truck4 goods2 market1 level0 level1 level0 level1)",
+            "(buy truck4 goods5 market1 level0 level1 level0 level1)",
+            "(drive truck4 market1 market2)",
+            "(load goods5 truck3 market2 level0 level1 level0 level1)",
+            "(load goods6 truck3 market2 level0 level1 level0 level1)",
+            "(load goods7 truck3 market2 level0 level1 level0 level1)",
+            "(load goods9 truck3 market2 level0 level1 level0 level1)",
+            "(buy truck1 goods4 market4 level1 level2 level0 level1)",
+            "(buy truck1 goods6 market4 level1 level2 level0 level1)",
+            "(buy truck1 goods8 market4 level0 level1 level0 level1)",
+            "(buy truck2 goods8 market3 level1 level2 level0 level1)",
+            "(buy truck2 goods9 market3 level1 level2 level0 level1)",
+            "(buy truck3 goods1 market2 level1 level2 level0 level1)",
+            "(drive truck1 market4 market3)",
+            "(drive truck3 market2 market4)",
+            "(load goods1 truck4 market2 level0 level1 level0 level1)",
+            "(load goods8 truck2 market3 level0 level1 level0 level1)",
+            "(load goods9 truck2 market3 level0 level1 level0 level1)",
+            "(buy truck4 goods2 market2 level1 level2 level0 level1)",
+            "(buy truck4 goods3 market2 level0 level1 level0 level1)",
+            "(buy truck4 goods5 market2 level0 level1 level0 level1)",
+            "(buy truck4 goods7 market2 level0 level1 level0 level1)",
+            "(drive truck2 market3 market4)",
+            "(load goods2 truck4 market2 level0 level1 level0 level1)",
+            "(load goods5 truck4 market2 level0 level1 level0 level1)",
+            "(load goods6 truck3 market4 level0 level1 level1 level2)",
+            "(load goods7 truck4 market2 level0 level1 level0 level1)",
+            "(load goods8 truck3 market4 level0 level1 level0 level1)",
+            "(buy truck1 goods3 market3 level0 level1 level0 level1)",
+            "(buy truck1 goods9 market3 level0 level1 level0 level1)",
+            "(buy truck3 goods4 market4 level0 level1 level1 level2)",
+            "(buy truck3 goods7 market4 level0 level1 level0 level1)",
+            "(buy truck4 goods1 market2 level0 level1 level0 level1)",
+            "(drive truck3 market4 market2)",
+            "(drive truck4 market2 market1)",
+            "(load goods3 truck1 market3 level0 level1 level0 level1)",
+            "(load goods7 truck2 market4 level0 level1 level0 level1)",
+            "(load goods9 truck1 market3 level0 level1 level0 level1)",
+            "(buy truck2 goods6 market4 level0 level1 level0 level1)",
+            "(drive truck1 market3 market2)",
+            "(drive truck3 market2 depot2)",
+            "(load goods2 truck4 market1 level0 level1 level1 level2)",
+            "(load goods4 truck2 market4 level1 level2 level0 level1)",
+            "(load goods5 truck4 market1 level0 level1 level1 level2)",
+            "(load goods6 truck2 market4 level0 level1 level0 level1)",
+            "(buy truck2 goods1 market4 level0 level1 level0 level1)",
+            "(buy truck4 goods3 market1 level0 level1 level0 level1)",
+            "(drive truck1 market2 depot2)",
+            "(drive truck2 market4 market1)",
+            "(drive truck4 market1 depot1)",
+            "(unload goods5 truck3 depot2 level0 level1 level0 level1)",
+            "(unload goods6 truck3 depot2 level1 level2 level0 level1)",
+            "(unload goods7 truck3 depot2 level0 level1 level0 level1)",
+            "(unload goods8 truck3 depot2 level0 level1 level0 level1)",
+            "(unload goods9 truck3 depot2 level0 level1 level0 level1)",
+            "(drive truck2 market1 depot1)",
+            "(unload goods1 truck4 depot1 level0 level1 level0 level1)",
+            "(unload goods2 truck4 depot1 level1 level2 level0 level1)",
+            "(unload goods5 truck4 depot1 level1 level2 level1 level2)",
+            "(unload goods6 truck3 depot2 level0 level1 level1 level2)",
+            "(unload goods7 truck4 depot1 level0 level1 level1 level2)",
+            "(unload goods9 truck1 depot2 level0 level1 level1 level2)",
+            "(drive truck3 depot2 market2)",
+            "(unload goods2 truck4 depot1 level0 level1 level1 level2)",
+            "(unload goods3 truck1 depot2 level0 level1 level0 level1)",
+            "(unload goods4 truck2 depot1 level0 level1 level0 level1)",
+            "(unload goods5 truck4 depot1 level0 level1 level2 level3)",
+            "(unload goods6 truck2 depot1 level0 level1 level2 level3)",
+            "(unload goods7 truck2 depot1 level0 level1 level2 level3)",
+            "(unload goods8 truck2 depot1 level0 level1 level1 level2)",
+            "(unload goods9 truck2 depot1 level0 level1 level2 level3)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/tpp/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/tpp/p14.pddl"
+    }
+}

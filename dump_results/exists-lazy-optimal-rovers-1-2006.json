@@ -1,0 +1,56 @@
+{
+    "task-info": {
+        "domain": "rovers",
+        "instance": 1,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "exists-lazy-optimal",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists-lazy-optimal",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.16615009307861328,
+            "planning-time": 1.2333762645721436
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(calibrate rover0 camera0 objective1 waypoint3)",
+            "(take_image rover0 waypoint3 objective1 camera0 high_res)",
+            "(sample_rock rover0 rover0store waypoint3)",
+            "(navigate rover0 waypoint3 waypoint1)",
+            "(communicate_image_data rover0 general objective1 high_res waypoint1 waypoint0)",
+            "(navigate rover0 waypoint1 waypoint2)",
+            "(drop rover0 rover0store)",
+            "(communicate_rock_data rover0 general waypoint3 waypoint2 waypoint0)",
+            "(calibrate rover0 camera0 objective1 waypoint2)",
+            "(sample_soil rover0 rover0store waypoint2)",
+            "(take_image rover0 waypoint2 objective0 camera0 high_res)",
+            "(communicate_soil_data rover0 general waypoint2 waypoint2 waypoint0)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/rovers/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/rovers/p01.pddl"
+    }
+}

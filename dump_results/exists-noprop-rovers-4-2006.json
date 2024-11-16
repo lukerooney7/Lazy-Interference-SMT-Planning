@@ -1,0 +1,54 @@
+{
+    "task-info": {
+        "domain": "rovers",
+        "instance": 4,
+        "ipc-year": "2006"
+    },
+    "planner-info": {
+        "planner-tag": "exists-noprop",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists-noprop",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.17163705825805664,
+            "planning-time": 3.671342372894287
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(sample_soil rover0 rover0store waypoint3)",
+            "(navigate rover1 waypoint2 waypoint1)",
+            "(communicate_soil_data rover0 general waypoint3 waypoint3 waypoint2)",
+            "(calibrate rover1 camera0 objective0 waypoint1)",
+            "(sample_rock rover1 rover1store waypoint1)",
+            "(communicate_rock_data rover1 general waypoint1 waypoint1 waypoint2)",
+            "(take_image rover1 waypoint1 objective0 camera0 high_res)",
+            "(drop rover0 rover0store)",
+            "(drop rover1 rover1store)",
+            "(communicate_image_data rover1 general objective0 high_res waypoint1 waypoint2)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/rovers/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/rovers/p04.pddl"
+    }
+}

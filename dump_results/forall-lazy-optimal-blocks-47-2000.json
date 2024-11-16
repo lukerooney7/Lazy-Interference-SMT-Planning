@@ -1,0 +1,56 @@
+{
+    "task-info": {
+        "domain": "blocks",
+        "instance": 47,
+        "ipc-year": "2000"
+    },
+    "planner-info": {
+        "planner-tag": "forall-lazy-optimal",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "forall-lazy-optimal",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.04780220985412598,
+            "planning-time": 2.5726094245910645
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(unstack d a)",
+            "(put-down d)",
+            "(unstack f e)",
+            "(stack f d)",
+            "(unstack e b)",
+            "(stack e f)",
+            "(unstack a c)",
+            "(stack a e)",
+            "(pick-up b)",
+            "(stack b a)",
+            "(pick-up c)",
+            "(stack c b)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/blocks/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/blocks/probBLOCKS-6-0.pddl"
+    }
+}

@@ -27,8 +27,8 @@
     },
     "task-result": {
         "timings": {
-            "pddl-parse-time": 2.1485791206359863,
-            "planning-time": 229.4708125591278
+            "pddl-parse-time": 0.22002172470092773,
+            "planning-time": 45.28037166595459
         },
         "summary": {
             "status": "SOLVED_SATISFICING",
@@ -94,7 +94,7 @@
         ]
     },
     "debug-info": {
-        "domain-file": "/home/lr225/Documents/parallel-sat-test/classical-domains/classical/rovers/domain.pddl",
-        "problem-file": "/home/lr225/Documents/parallel-sat-test/classical-domains/classical/rovers/p09.pddl"
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/rovers/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/rovers/p09.pddl"
     }
 }

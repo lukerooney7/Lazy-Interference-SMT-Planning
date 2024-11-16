@@ -1,0 +1,70 @@
+{
+    "task-info": {
+        "domain": "blocks",
+        "instance": 60,
+        "ipc-year": "2000"
+    },
+    "planner-info": {
+        "planner-tag": "exists",
+        "planner-name": "SMTPlanner",
+        "planner-params": {
+            "encoder": "EncoderParallelSMT",
+            "upper-bound": 1000,
+            "search-strategy": "SMTSearch",
+            "configuration": "exists",
+            "run-validation": true,
+            "compliation-list": [
+                [
+                    "up_quantifiers_remover",
+                    "QUANTIFIERS_REMOVING"
+                ],
+                [
+                    "fast-downward-reachability-grounder",
+                    "GROUNDING"
+                ]
+            ]
+        }
+    },
+    "task-result": {
+        "timings": {
+            "pddl-parse-time": 0.06718683242797852,
+            "planning-time": 1698.655989408493
+        },
+        "summary": {
+            "status": "SOLVED_SATISFICING",
+            "log_messages": []
+        },
+        "plan": [
+            "(unstack h a)",
+            "(put-down h)",
+            "(unstack a d)",
+            "(put-down a)",
+            "(unstack d e)",
+            "(put-down d)",
+            "(unstack e c)",
+            "(put-down e)",
+            "(unstack c i)",
+            "(stack c a)",
+            "(unstack i b)",
+            "(stack i f)",
+            "(unstack b g)",
+            "(stack b c)",
+            "(pick-up e)",
+            "(stack e b)",
+            "(unstack i f)",
+            "(stack i e)",
+            "(pick-up d)",
+            "(stack d i)",
+            "(pick-up h)",
+            "(stack h d)",
+            "(pick-up g)",
+            "(stack g h)",
+            "(pick-up f)",
+            "(stack f g)"
+        ]
+    },
+    "debug-info": {
+        "domain-file": "/home/lr225/user-prop-run-1/domains/classical/blocks/domain.pddl",
+        "problem-file": "/home/lr225/user-prop-run-1/domains/classical/blocks/probBLOCKS-9-2.pddl"
+    }
+}
