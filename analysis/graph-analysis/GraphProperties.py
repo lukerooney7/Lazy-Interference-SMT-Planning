@@ -30,26 +30,25 @@ def analyze_graph(G, domain_name, instance_name):
     return properties
 
 
-compilation_list = [
-    ('up_quantifiers_remover', CompilationKind.QUANTIFIERS_REMOVING),
-    ('up_disjunctive_conditions_remover', CompilationKind.DISJUNCTIVE_CONDITIONS_REMOVING),
-    ('up_grounder', CompilationKind.GROUNDING)
-]
-domains = {"rovers", "tsp", "tpp"}
+
+domains = {"rovers-classical"}
 
 results = []
 
-def get_properties(directory_path, numeric, max_instance):
+def get_properties(directory_path, max_instance):
     for item in os.listdir(directory_path):
         if item in domains:
             item_path = os.path.join(directory_path, item)
             domain_file = os.path.join(item_path, "domain.pddl")
-            if numeric:
-                item_path += "/instances"
             for file in os.listdir(item_path):
                 if file != "domain.pddl" and file.endswith(".pddl"):
                     instance = re.sub(r'\D', '', file)
                     if int(instance) < max_instance:
+                        compilation_list = [
+                            ('up_quantifiers_remover', CompilationKind.QUANTIFIERS_REMOVING),
+                            ('up_disjunctive_conditions_remover', CompilationKind.DISJUNCTIVE_CONDITIONS_REMOVING),
+                            ('up_grounder', CompilationKind.GROUNDING)
+                        ]
                         # Mimic the solver calling the modifier
                         problem_file = os.path.join(item_path, file)
                         task = PDDLReader().parse_problem(domain_file, problem_file)
@@ -61,7 +60,8 @@ def get_properties(directory_path, numeric, max_instance):
                         results.append(properties)
 
 
-get_properties("/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical", False, 10 )
+get_properties("domains/classical", 20 )
+# get_properties("../../domains/numeric", 10 )
 results_df = pd.DataFrame(results)
 results_df = results_df.sort_values(by=['Instance'])
 results_df.to_csv("graph_properties.csv", index=False)
