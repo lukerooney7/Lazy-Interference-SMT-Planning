@@ -1,7 +1,6 @@
 import z3
 import time
 
-from matplotlib import pyplot as plt
 from unified_planning.model.walkers.free_vars import FreeVarsExtractor
 from z3 import BoolVal
 
@@ -9,8 +8,6 @@ from pypmt.utilities import log
 from pypmt.modifiers.base import Modifier
 
 import networkx as nx
-# import matplotlib.pyplot as plt
-
 class ParallelModifier(Modifier):
     """
     Parallel modifier, contains method to implement parallel execution semantics.
