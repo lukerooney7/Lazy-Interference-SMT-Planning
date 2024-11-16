@@ -5,12 +5,12 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 
-# folder_path = '/Users/lukeroooney/Desktop/Dissertation/parallelSAT/dump_results'
-folder_path = '/Users/lukeroooney/developer/pyPMTEvalToolkit/sandbox-dir/dump_results'
-classical_domains = {"rovers", "tpp", "tsp", "trucks"}
-numerical_domains = {"zenotravel", "satellites", "tpp-numeric", "markettrader", "counters"}
+# folder_path = '/Users/lukeroooney/Desktop/Dissertation/parallelSAT/dump_results2'
+folder_path = '/Users/lukeroooney/Desktop/Dissertation/parallelSAT/dump_results'
+classical_domains = {"rovers", "tpp-numeric", "tsp", "trucks"}
+numerical_domains = {"zenotravel", "satellites", "tpp-numeric-numeric", "markettrader", "counters"}
 
-def get_data():
+def get_data(folder_path):
     data_list = []
     for file_name in os.listdir(folder_path):
         if file_name.endswith('.json'):
@@ -56,7 +56,7 @@ def cactus_plot(df, domain, encoding, log, min_instance, max_instance, timeout, 
 
 
     plt.figure(figsize=(12, 8))
-    plt.hlines(timeout_penalty, xmin=1, xmax=max_instance, colors='red', linestyles='--', label='Timeout Threshold', linewidth=2)
+    plt.hlines(timeout_penalty, xmin=min_instance, xmax=max_instance, colors='red', linestyles='--', label='Timeout Threshold', linewidth=2)
 
     if log:
         plt.yscale('log')
@@ -65,7 +65,7 @@ def cactus_plot(df, domain, encoding, log, min_instance, max_instance, timeout, 
         planner_data = df[df['planner_tag'] == planner_tag]
         instances = []
         times = []
-        for instance in range(1, max_instance + 1):
+        for instance in range(min_instance, max_instance + 1):
             if instance in planner_data['instance'].values:
                 time = planner_data.loc[planner_data['instance'] == instance, 'planning_time'].values[0]
             else:
@@ -186,9 +186,11 @@ def compare_pars(df, domain, min_instance, max_instance, timeout, par):
 
 
 def display_data(df):
-    scatter_plot(df, True,"exists-lazy-optimal", "test", 1,10, 5)
-    # cactus_plot(df, "rovers", "tsp", True, 0, 10, 1, 1)
-    # compare_pars(df, "rovers",0, 10, 10, 2)
+    # scatter_plot(df, True,"exists", "forall", 1,20, 60)
+    cactus_plot(df, "tsp", "tsp", False, 1, 20, 30, 1)
+    # compare_pars(df, "tpp",0, 20, 30, 2)
 
-df = get_data()
+
+df = get_data(folder_path)
+df = df[(df['planner_tag'] != "forall-noprop") & (df['planner_tag'] != "exists-noprop")]
 display_data(df)

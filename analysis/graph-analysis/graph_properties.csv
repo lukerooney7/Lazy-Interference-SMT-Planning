@@ -1,0 +1,27 @@
+domain,instance,Number of nodes,Number of edges,Graph density,Max no. Edges Possible,Node with highest degree,Highest degree,Average degree
+rovers,1,77,2726,0.46582365003417636,2926.0,communicate_image_data_rover0_general_objective0_colour_waypoint1_waypoint0,96,70.8051948051948
+tpp,1,5,12,0.6,10.0,load_goods1_truck1_market1_level0_level1_level0_level1,6,4.8
+tpp,2,8,22,0.39285714285714285,28.0,drive_truck1_market1_depot1,8,5.5
+rovers,2,77,2572,0.4395078605604921,2926.0,communicate_image_data_rover0_general_objective1_high_res_waypoint0_waypoint1,100,66.8051948051948
+tsp,2,4,9,0.75,6.0,move_p1_p2,6,4.5
+rovers,3,132,8177,0.4728776312745778,8646.0,communicate_image_data_rover1_general_objective0_colour_waypoint3_waypoint0,178,123.89393939393939
+tsp,3,9,42,0.5833333333333334,36.0,move_p2_p3,12,9.333333333333334
+tpp,3,11,32,0.2909090909090909,55.0,drive_truck1_market1_depot1,11,5.818181818181818
+tpp,4,14,42,0.23076923076923078,91.0,drive_truck1_market1_depot1,14,6.0
+rovers,4,145,6364,0.3047892720306513,10440.0,communicate_image_data_rover1_general_objective0_colour_waypoint1_waypoint2,148,87.77931034482759
+tsp,4,16,114,0.475,120.0,move_p3_p4,18,14.25
+tpp,5,58,348,0.10526315789473684,1653.0,drive_truck1_market2_market1,25,12.0
+rovers,5,201,13670,0.3400497512437811,20100.0,communicate_image_data_rover1_general_objective0_high_res_waypoint1_waypoint3,222,136.01990049751242
+tsp,5,25,240,0.4,300.0,move_p4_p5,24,19.2
+tsp,6,36,435,0.34523809523809523,630.0,move_p5_p6,30,24.166666666666668
+rovers,6,276,36568,0.4817918313570487,37950.0,communicate_image_data_rover0_general_objective0_colour_waypoint0_waypoint3,388,264.9855072463768
+tpp,6,248,4290,0.0700339558573854,30628.0,drive_truck1_market2_market1,101,34.596774193548384
+tpp,7,288,5002,0.060515873015873016,41328.0,drive_truck1_market2_market1,117,34.736111111111114
+tsp,7,49,714,0.30357142857142855,1176.0,move_p6_p7,36,29.142857142857142
+rovers,7,261,29894,0.44052460949012673,33930.0,communicate_image_data_rover0_general_objective0_colour_waypoint2_waypoint3,345,229.0727969348659
+rovers,8,494,120046,0.49291703279105864,121771.0,communicate_image_data_rover3_general_objective0_colour_waypoint3_waypoint0,692,486.0161943319838
+tpp,8,328,5714,0.0532744088908779,53628.0,drive_truck1_market2_market1,133,34.84146341463415
+tsp,8,64,1092,0.2708333333333333,2016.0,move_p7_p8,42,34.125
+tpp,9,774,20082,0.03356498891863975,299151.0,drive_truck1_market2_market3,151,51.89147286821706
+tsp,9,81,1584,0.24444444444444444,3240.0,move_p8_p9,48,39.111111111111114
+rovers,9,519,87873,0.32685741067243956,134421.0,communicate_image_data_rover0_general_objective2_colour_waypoint1_waypoint4,575,338.6242774566474
