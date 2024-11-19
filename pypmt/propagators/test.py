@@ -11,20 +11,23 @@ class TestPropagator(z3.UserPropagateBase):
         self.current = [set()]
         self.stack = []
         self.nots = defaultdict(dict)
-        self.consistent = True
+        self.false = set()
+        self.falseStack = []
 
     def push(self):
         new = []
         for graph in self.current:
             new.append(graph.copy())
         self.stack.append(new)
+        self.falseStack.append(self.false.copy())
 
     def pop(self, n):
         for _ in range(n):
             self.current = self.stack.pop()
-        self.consistent = True
+            self.false = self.falseStack.pop()
+
     def _fixed(self, action, value):
-        if value and self.consistent:
+        if value:
             actions = str(action).split('_')
             step = int(actions[-1])
             action_name = '_'.join(actions[:-1])
@@ -33,12 +36,8 @@ class TestPropagator(z3.UserPropagateBase):
             literals = set()
             new_mutexes = set()
             for source, dest in list(self.graph.edges(action_name)):
-                if not self.consistent:
-                    break
                 if dest in self.current[step]:
-
                     literals.add(self.encoder.get_action_var(dest, step))
-                    self.consistent = False
                     for i in range(0, len(self.current)):
                         new_mutexes.add(z3.Not(z3.And(self.encoder.get_action_var(source, i),
                                                       self.encoder.get_action_var(dest, i))))
@@ -46,18 +45,12 @@ class TestPropagator(z3.UserPropagateBase):
                 else:
                     if dest not in self.nots[step]:
                         self.nots[step][dest] = z3.Not(self.encoder.get_action_var(dest, step))
-                    self.propagate(
-                        e=self.nots[step][dest],
-                        ids=[action],
-                        eqs=[(action, self.encoder.get_action_var(dest, step))]
-                    )
+                    if dest not in self.false:
+                        self.propagate(e=self.nots[step][dest], ids=[], eqs=[])
             if not literals:
                 for source, dest in list(self.graph.in_edges(action_name)):
-                    if not self.consistent:
-                        break
                     if source in self.current[step]:
                         literals.add(self.encoder.get_action_var(source, step))
-                        self.consistent = False
                         for i in range(0, len(self.current)):
                             new_mutexes.add(z3.Not(z3.And(self.encoder.get_action_var(source, i),
                                                           self.encoder.get_action_var(dest, i))))
@@ -65,11 +58,8 @@ class TestPropagator(z3.UserPropagateBase):
                     else:
                         if source not in self.nots[step]:
                             self.nots[step][source] = z3.Not(self.encoder.get_action_var(source, step))
-                        self.propagate(
-                            e=self.nots[step][source],
-                            ids=[action],
-                            eqs=[(action, self.encoder.get_action_var(source, step))]
-                        )
+                        if source not in self.false:s
+                            self.propagate(e=self.nots[step][source], ids=[], eqs=[])
             if literals:
                 self.solver.add(new_mutexes)
                 literals.add(action)
