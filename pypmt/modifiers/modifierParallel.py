@@ -1,6 +1,7 @@
 import z3
 import time
 
+from matplotlib import pyplot as plt
 from unified_planning.model.walkers.free_vars import FreeVarsExtractor
 from z3 import BoolVal
 
@@ -95,8 +96,8 @@ class ParallelModifier(Modifier):
 
         # Iterate over actions to identify mutex pairs
         for i, action_1 in enumerate(actions):
+            add_a1, del_a1, num_1, pre_1 = data_actions[action_1]
             for action_2 in actions[i+1:]:
-                add_a1, del_a1, num_1, pre_1 = data_actions[action_1]
                 add_a2, del_a2, num_2, pre_2 = data_actions[action_2]
 
                 # Condition 1: Can a1 prohibit the execution of a2 or vice-versa?
@@ -104,7 +105,6 @@ class ParallelModifier(Modifier):
                     add_edge(action_1, action_2)
                 if len(pre_1.intersection(set.union(*[add_a2, del_a2, num_2]))) > 0:
                     add_edge(action_2, action_1)
-                    continue
 
                 # Condition 2: Do the effects of a1 and a2 interfere?
                 if len(add_a1.intersection(del_a2)) > 0 or \
@@ -112,8 +112,6 @@ class ParallelModifier(Modifier):
                         len(num_1.intersection(num_2)) > 0:
                     add_edge(action_1, action_2)
                     add_edge(action_2, action_1)
-                    continue
-
 
         mutexes = set()
         def generate_for_all():
@@ -146,5 +144,9 @@ class ParallelModifier(Modifier):
             else:
                 generate_exists()
         end_time = time.time()
+
+        nx.draw(self.graph, with_labels=True)
+
+        plt.show()
         log(f'computed {len(mutexes)} mutexes took {end_time - start_time:.2f}s', 2)
         return mutexes
