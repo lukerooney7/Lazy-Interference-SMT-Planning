@@ -5,9 +5,9 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 
-# folder_path = '/Users/lukeroooney/Desktop/Dissertation/parallelSAT/dump_results2'
+# folder_path = '/Users/lukeroooney/developer/pyPMTEvalToolkit/sandbox-dir/dump_results'
 folder_path = '/Users/lukeroooney/Desktop/Dissertation/parallelSAT/dump_results'
-classical_domains = {"rovers", "tpp-numeric", "tsp", "trucks"}
+classical_domains = {"rovers", "tpp-numeric", "tsp", "trucks", "depot", "tpp", "satellite"}
 numerical_domains = {"zenotravel", "satellites", "tpp-numeric-numeric", "markettrader", "counters"}
 
 def get_data(folder_path):
@@ -54,7 +54,6 @@ def cactus_plot(df, domain, encoding, log, min_instance, max_instance, timeout, 
     df = df[df['status'] == "SOLVED_SATISFICING"]
     df = df[(df['instance'] >= min_instance) & (df['instance'] <= max_instance)]
 
-
     plt.figure(figsize=(12, 8))
     plt.hlines(timeout_penalty, xmin=min_instance, xmax=max_instance, colors='red', linestyles='--', label='Timeout Threshold', linewidth=2)
 
@@ -73,10 +72,12 @@ def cactus_plot(df, domain, encoding, log, min_instance, max_instance, timeout, 
 
             instances.append(instance)
             times.append(time)
-        plt.plot(instances, times, label=planner_tag, marker='o', markersize=8, linestyle='-', linewidth=2)
+        times.sort()
+        x_values = list(range(1, len(times) + 1))
+        plt.plot(x_values, times, label=planner_tag, marker='o', markersize=6, linestyle='-', linewidth=2)
 
     plt.title(f'Planning Time Comparison for {domain} Domain Encodings', fontsize=18)
-    plt.xlabel('Instance', fontsize=14)
+    plt.xlabel('Number of Instances Solved', fontsize=14)
     plt.ylabel('Planning Time (s)', fontsize=14)
     plt.legend(title='Planner Tag', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12)
     plt.grid(which='both', linestyle='--', linewidth=0.5)
@@ -130,7 +131,6 @@ def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
                                     markeredgecolor='black', markersize=10, label=domain))
 
     plt.legend(custom_legend, unique_domains, title='Domain', fontsize=12)
-    # plt.colorbar(label='Instance Number')
     sm_blue = plt.cm.ScalarMappable(cmap='Blues', norm=Normalize(vmin=df_filtered['instance'].min(),
                                                                  vmax=df_filtered['instance'].max()))
     sm_red = plt.cm.ScalarMappable(cmap='Reds', norm=Normalize(vmin=df_filtered['instance'].min(),
@@ -139,7 +139,7 @@ def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
     sm_red._A = []  # Dummy array for colorbar
     fig = plt.gcf()
     plt.colorbar(sm_blue, ax=fig.gca(),label='Instance Number (Classical Domains)')
-    plt.colorbar(sm_red, ax=fig.gca(),label='Instance Number (Numerical Domains)')
+    # plt.colorbar(sm_red, ax=fig.gca(),label='Instance Number (Numerical Domains)')
 
     plt.tight_layout()
     plt.show()
@@ -186,11 +186,11 @@ def compare_pars(df, domain, min_instance, max_instance, timeout, par):
 
 
 def display_data(df):
-    # scatter_plot(df, True,"exists", "forall", 1,20, 60)
-    cactus_plot(df, "tsp", "tsp", False, 1, 20, 30, 1)
-    # compare_pars(df, "tpp",0, 20, 30, 2)
+    # scatter_plot(df, True, "forall-lazy-optimal","forall", 1,20, 60)
+    cactus_plot(df, "rovers", "tsp", True, 1, 20, 30, 1)
+    # compare_pars(df, "rovers",0, 20, 30, 2)
 
 
 df = get_data(folder_path)
-df = df[(df['planner_tag'] != "forall-noprop") & (df['planner_tag'] != "exists-noprop")]
+df = df[(df['planner_tag'] != "exists-noprop") & (df['planner_tag'] != "exists")]
 display_data(df)
