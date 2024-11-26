@@ -183,12 +183,40 @@ def compare_pars(df, domain, min_instance, max_instance, timeout, par):
     plt.show()
 
 
+def cactus_all(df, log, total_instances, timeout, par):
+    timeout_penalty = timeout * 60 * par
+    df = df[df['status'] == "SOLVED_SATISFICING"]
+    plt.figure(figsize=(12, 8))
+    plt.hlines(timeout_penalty, xmin=0, xmax=total_instances, colors='red', linestyles='--', label='Timeout Threshold', linewidth=2)
+
+    if log:
+        plt.yscale('log')
+
+    for planner_tag in df['planner_tag'].unique():
+        planner_data = df[df['planner_tag'] == planner_tag]
+        times = []
+        times += list(planner_data['planning_time'])
+        for i in range(len(planner_data), total_instances + 1):
+            times.append(timeout_penalty)
+        times.sort()
+        x_values = list(range(1, len(times) + 1))
+        plt.plot(x_values, times, label=planner_tag, marker='o', markersize=6, linestyle='-', linewidth=2)
+
+    plt.title(f'Planning Time Comparison for All Domain Encodings', fontsize=18)
+    plt.xlabel('Number of Instances Solved', fontsize=14)
+    plt.ylabel('Planning Time (s)', fontsize=14)
+    plt.legend(title='Planner Tag', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12)
+    plt.grid(which='both', linestyle='--', linewidth=0.5)
+    plt.gca().set_aspect('auto')
+    plt.tight_layout()
+    plt.show()
 
 
 def display_data(df):
-    # scatter_plot(df, True, "forall-lazy-optimal","forall", 1,20, 60)
-    cactus_plot(df, "rovers", "tsp", True, 1, 20, 30, 1)
+    # scatter_plot(df, True, "forall-lazy-optimal","test", 1,10, 5)
+    # cactus_plot(df, "tpp", "tsp", True, 1, 20, 30, 1)
     # compare_pars(df, "rovers",0, 20, 30, 2)
+    cactus_all(df, True, 85, 30, 1)
 
 
 df = get_data(folder_path)
