@@ -1,8 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Load the data into a DataFrame
-csv_file = "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/analysis/stats.csv"  # Replace with your CSV file name
+csv_file = "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/analysis/stats.csv"
 df = pd.read_csv(csv_file)
 
 
@@ -10,7 +9,7 @@ df = pd.read_csv(csv_file)
 
 
 def show_propagations():
-    # Filter data for a specific domain (e.g., 'rovers')
+    # Filter data for a specific domain
     domain = "rovers"
     domain_data = df[df['domain'] == domain]
 
@@ -41,7 +40,6 @@ def show_mutexes(df):
     df_forall = df[df['propagator'] == 'forall']
     df_lazy_optimal = df[df['propagator'] == 'forall-lazy']
 
-    # Merge the two DataFrames on 'instance'
     merged_df = pd.merge(df_forall, df_lazy_optimal, on='instance', suffixes=('_forall', '_lazy'))
     merged_df = merged_df.sort_values(by='instance')
     # Calculate the ratio
@@ -58,7 +56,47 @@ def show_mutexes(df):
     plt.grid(True)
     plt.show()
 
+def num_steps(df):
+    grouped = df.groupby(['instance', 'propagator'])['steps'].sum().reset_index()
+    pivoted = grouped.pivot(index='instance', columns='propagator', values='steps')
+    pivoted.plot(kind='bar', figsize=(12, 6), width=0.8)
+
+    # Customize the plot
+    plt.title('Number of Steps for Each Propagator by Instance')
+    plt.xlabel('Instance')
+    plt.ylabel('Steps')
+    plt.legend(title='Propagator')
+    plt.xticks(rotation=0)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.show()
+
+def parallelism(df):
+    df['length_to_steps_ratio'] = df['length'] / df['steps']
+
+    # Group by instance and propagator
+    grouped = df.groupby(['instance', 'propagator'])['length_to_steps_ratio'].mean().reset_index()
+
+    # Pivot the table to have propagators as columns for easier plotting
+    pivoted = grouped.pivot(index='instance', columns='propagator', values='length_to_steps_ratio')
+
+    # Plot the data as a grouped bar chart
+    pivoted.plot(kind='bar', figsize=(12, 6), width=0.8)
+
+    # Customize the plot
+    plt.title('Parallelism of Propagators for Rovers Domain')
+    plt.xlabel('Instance')
+    plt.ylabel('Actions per Step')
+    plt.legend(title='Propagator')
+    plt.xticks(rotation=0)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.tight_layout()
+
+    # Show the plot
+    plt.show()
 
 
-show_mutexes(df)
 
+num_steps(df)
+# show_mutexes(df)
+# parallelism(df)

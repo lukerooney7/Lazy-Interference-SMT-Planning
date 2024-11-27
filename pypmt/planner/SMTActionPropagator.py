@@ -1,6 +1,6 @@
 import time
 import z3
-
+from pypmt.solveStats import save_stats
 from pypmt.planner.utilities import dumpProblem
 from pypmt.utilities import log
 from pypmt.planner.base import Search
@@ -22,6 +22,13 @@ class SMTSearchActionPropagator(Search):
             context    = self.encoder.ctx
 
             if not self.solver:
+
+                # z3.set_param('trace', True)
+                # z3.set_param('verbose', 4)
+                # z3.enable_trace("user_propagate")
+                # z3.enable_trace("mk_th_axiom")
+                # z3.enable_trace("mk_clause")
+                # z3.enable_trace("simplify_aux_clause_literals")
                 self.solver = z3.Solver(ctx=context) if 'objective' not in formula else z3.Optimize(ctx=context)
             if not self.propagator:
                 # If we did not instantiate the propagator, we do it here and 
@@ -66,11 +73,12 @@ class SMTSearchActionPropagator(Search):
             end_time = time.time()
             solving_time = end_time - start_time
             total_time = total_time + solving_time + encoding_time
-            # log(f'Step {horizon+1}/{(self.scheduler[-1]+1)} encoding: {encoding_time:.2f}s, solving: {solving_time:.2f}s', 2)
+            log(f'Step {horizon+1}/{(self.scheduler[-1]+1)} encoding: {encoding_time:.2f}s, solving: {solving_time:.2f}s', 2)
             if res == z3.sat:
                 log(f'Satisfiable model found. Took:{total_time:.2f}s', 3)
                 log(f'Z3 statistics:\n{self.solver.statistics()}', 4)
                 self.solution = self.encoder.extract_plan(self.propagator, self.solver.model(), self.horizon)
+                # save_stats(self)
                 break
         return self.solution
 
