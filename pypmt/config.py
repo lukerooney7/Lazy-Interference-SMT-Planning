@@ -114,7 +114,7 @@ class Config:
         },
         "exists": {
             "encoder": EncoderExists,
-            "search": SMTSearch,
+            "search": SMTSearchActionPropagator,
             "compilationlist": grounded_encoders_default_compilation_list,
             "propagator": BasePropagator
         },
