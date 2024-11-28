@@ -1,9 +1,7 @@
 import z3
 import time
 
-from matplotlib import pyplot as plt
 from unified_planning.model.walkers.free_vars import FreeVarsExtractor
-from z3 import BoolVal
 
 from pypmt.utilities import log
 from pypmt.modifiers.base import Modifier
@@ -18,6 +16,7 @@ class ParallelModifier(Modifier):
         self.graph = nx.DiGraph()
         self.forall = forall
         self.lazy = lazy
+        self.mutexes = set()
     
     def encode(self, encoder, actions):
         """!
@@ -113,7 +112,7 @@ class ParallelModifier(Modifier):
                     add_edge(action_1, action_2)
                     add_edge(action_2, action_1)
 
-        mutexes = set()
+
         def generate_for_all():
             for edge in self.graph.edges():
                 a1, a2 = edge
@@ -121,8 +120,8 @@ class ParallelModifier(Modifier):
                 a2 = encoder.get_action_var(a2, 0)
                 m1 = z3.Not(z3.And(a1, a2))
                 m2 = z3.Not(z3.And(a2, a1))
-                if m1 not in mutexes and m2 not in mutexes:
-                    mutexes.add(m1)
+                if m1 not in self.mutexes and m2 not in self.mutexes:
+                    self.mutexes.add(m1)
         def generate_exists():
             components = nx.strongly_connected_components(self.graph)
             for c in components:
@@ -136,8 +135,8 @@ class ParallelModifier(Modifier):
                         if numbers[act_1] <= numbers[act_2]:
                             m1 = z3.Not(z3.And(a1, a2))
                             m2 = z3.Not(z3.And(a2, a1))
-                            if m1 not in mutexes and m2 not in mutexes:
-                                mutexes.add(m1)
+                            if m1 not in self.mutexes and m2 not in self.mutexes:
+                                self.mutexes.add(m1)
         if not self.lazy:
             if self.forall:
                 generate_for_all()
@@ -145,8 +144,8 @@ class ParallelModifier(Modifier):
                 generate_exists()
         end_time = time.time()
 
-        nx.draw(self.graph, with_labels=True)
-
-        plt.show()
-        log(f'computed {len(mutexes)} mutexes took {end_time - start_time:.2f}s', 2)
-        return mutexes
+        # nx.draw(self.graph, with_labels=True)
+        #
+        # plt.show()
+        log(f'computed {len(self.mutexes)} mutexes took {end_time - start_time:.2f}s', 2)
+        return self.mutexes
