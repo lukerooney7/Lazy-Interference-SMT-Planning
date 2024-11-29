@@ -31,6 +31,31 @@ class ExistsIncrementalCyclePropagator(z3.UserPropagateBase):
             self.descendants = self.stackD.pop()
         self.consistent = True
 
+
+    def incremental_cycle(self, source, dest, step):
+        to_explore = [dest] # Initially only check the connected node (this will be updated)
+        # Search connected nodes for cycles
+        while len(to_explore) > 0:
+            node = to_explore.pop()
+            # Check if node connects back to existing path (makes cycle)
+            if source == node or node in self.ancestors[source]:
+                self.consistent = False
+                # Throw conflict on edge if cycle found
+                self.conflict(deps=[self.encoder.get_action_var(source, step),
+                                    self.encoder.get_action_var(dest, step)], eqs=[])
+            elif source in self.ancestors[node]:
+                pass
+            # Check if S*-equivalent
+            elif (not len(self.ancestors[source]) == len(self.ancestors[node])
+                  and not len(self.descendants[source]) == len(self.descendants[node])):
+                pass
+            else:
+                self.ancestors[node].add(source)
+                self.descendants[source].add(node)
+                for neighbour in self.graph.neighbors(node):
+                    if neighbour in self.current[step]:
+                        to_explore.append(neighbour)
+
     def _fixed(self, action, value):
         if value and self.consistent:
             # Parse action name and step
@@ -44,50 +69,15 @@ class ExistsIncrementalCyclePropagator(z3.UserPropagateBase):
                 # Initialise ancestors/descendants if new node
                 self.ancestors[action_name] = set()
                 self.descendants[action_name] = set()
-            # Incremental Cycle Detection
+            # Incremental Cycle Detection for Inwards edges
             for source, _ in self.graph.in_edges(action_name):
+                if not self.consistent:
+                    return
                 if source in self.current[step]:
-                    to_explore = [action_name]
-                    while len(to_explore) > 0:
-                        node = to_explore.pop()
-                        if source == node or node in self.ancestors[source]:
-                            self.consistent = False
-                            self.conflict(deps=[self.encoder.get_action_var(source, step), action], eqs=[])
-                            return
-                        elif source in self.ancestors[node]:
-                            pass
-                        elif (not len(self.ancestors[source]) == len(self.ancestors[action_name])
-                              and not len(self.descendants[source]) == len(self.descendants[action_name])):
-                            pass
-                        else:
-                            self.ancestors[node].add(source)
-                            self.descendants[source].add(node)
-                            for neighbour, _ in self.graph.in_edges(node):
-                                if neighbour in self.current[step]:
-                                    to_explore.append(neighbour)
-                            for _, neighbour in self.graph.edges(node):
-                                if neighbour in self.current[step]:
-                                    to_explore.append(neighbour)
+                    self.incremental_cycle(source, action_name, step)
+            # Incremental Cycle Detection for outwards edges
             for _, dest in set(self.graph.edges(action_name)):
+                if not self.consistent:
+                    return
                 if dest in self.current[step]:
-                    to_explore = [dest]
-                    while len(to_explore) > 0:
-                        node = to_explore.pop()
-                        if dest == node or node in self.ancestors[dest]:
-                            self.consistent = False
-                            self.conflict(deps=[self.encoder.get_action_var(dest, step), action], eqs=[])
-                            return
-                        elif dest in self.ancestors[node]:
-                            pass
-                        elif (not len(self.ancestors[dest]) == len(self.ancestors[action_name])
-                              and not len(self.descendants[dest]) == len(self.descendants[action_name])):
-                            pass
-                        else:
-                            self.ancestors[node].add(dest)
-                            self.descendants[dest].add(node)
-                            for neighbour, _ in self.graph.in_edges(node):
-                                if neighbour in self.current[step]:
-                                    to_explore.append(neighbour)
-                            for _, neighbour in self.graph.edges(node):
-                                if neighbour in self.current[step]:
-                                    to_explore.append(neighbour)
+                    self.incremental_cycle(action_name, dest, step)
