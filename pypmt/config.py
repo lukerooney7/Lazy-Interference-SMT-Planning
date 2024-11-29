@@ -15,6 +15,7 @@ from pypmt.planner.QFUF import QFUFSearch
 from pypmt.planner.OMT import OMTSearch
 from pypmt.propagators.base import BasePropagator
 from pypmt.propagators.exists.basic import ExistsBasicPropagator
+from pypmt.propagators.exists.incrementalCycleInitial import ExistsIncrementalCyclePropagator
 from pypmt.propagators.exists.optimal import ExistsOptimalPropagator
 # from pypmt.propagators.exists.ghostNode import ExistsOptimalUserPropagator
 from pypmt.propagators.forall.basic import ForallBasicPropagator
@@ -124,6 +125,12 @@ class Config:
             "compilationlist": grounded_encoders_default_compilation_list,
             "propagator": ExistsBasicPropagator
         },
+        "exists-cycle": {
+            "encoder": EncoderExistsLazy,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": ExistsIncrementalCyclePropagator
+        },
         "exists-lazy-optimal": {
             "encoder": EncoderExistsLazy,
             "search": SMTSearchActionPropagator,
@@ -166,6 +173,7 @@ class Config:
         "exists": "Use the eager parallel SMT encoding with exists-step semantics and empty propagator",
         "exists-noprop": "Use the eager parallel SMT encoding with exists-step semantics without a propagator",
         "exists-lazy": "Use the lazy original parallel SMT encoding with exists-step semantics",
+        "exists-cycle": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-lazy-optimal": "Use the lazy optimised parallel SMT encoding with exists-step semantics",
         "test": "Use propagator for comparing to existing implementations",
         "r2e": "Use the R2E encoding",

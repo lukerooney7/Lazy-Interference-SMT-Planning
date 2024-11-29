@@ -8,12 +8,13 @@ class ExistsIncrementalCycleUserPropagator(z3.UserPropagateBase):
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.encoder = e
         self.graph = self.encoder.modifier.graph
-        self.current = [nx.DiGraph()]
+        self.current = [set()]
         self.ancestors = {}
         self.descendants = {}
         self.stackA = []
         self.stackD = []
         self.stack = []
+        self.consistent = True
 
     def push(self):
         new = []
@@ -28,39 +29,65 @@ class ExistsIncrementalCycleUserPropagator(z3.UserPropagateBase):
             self.current = self.stack.pop()
             self.ancestors = self.stackA.pop()
             self.descendants = self.stackD.pop()
+        self.consistent = True
 
     def _fixed(self, action, value):
-        if value:
+        if value and self.consistent:
             # Parse action name and step
             actions = str(action).split('_')
             step = int(actions[-1])
             action_name = '_'.join(actions[:-1])
             while step >= len(self.current):
-                self.current.append(nx.DiGraph())
-            self.current[step].add_node(action_name)
-            edges = list(self.graph.in_edges(action_name)) + list(self.graph.edges(action_name))
-            if action_name not in self.ancestors:
+                self.current.append(set())
+            self.current[step].add(action)
+            if action not in self.ancestors:
                 # Initialise ancestors/descendants if new node
-                self.ancestors[action_name] = set()
-                self.descendants[action_name] = set()
+                self.ancestors[action] = set()
+                self.descendants[action] = set()
             # Incremental Cycle Detection
-            for source, dest in edges:
-                if source in self.current[step] and dest in self.current[step]:
-                    self.current[step].add_edge(source, dest)
-                    to_explore = [dest]
+            for source, _ in self.graph.in_edges(action):
+                if source in self.current[step]:
+                    to_explore = [action]
                     while len(to_explore) > 0:
                         node = to_explore.pop()
                         if source == node or node in self.ancestors[source]:
-                            self.conflict(deps=[self.encoder.get_action_var(source, step),
-                                                self.encoder.get_action_var(dest, step)], eqs=[])
-                            break
+                            self.consistent = False
+                            self.conflict(deps=[source, action], eqs=[])
+                            return
                         elif source in self.ancestors[node]:
                             pass
-                        elif (not len(self.ancestors[source]) == len(self.ancestors[dest])
-                              and not len(self.descendants[source]) == len(self.descendants[dest])):
+                        elif (not len(self.ancestors[source]) == len(self.ancestors[action_name])
+                              and not len(self.descendants[source]) == len(self.descendants[action_name])):
                             pass
                         else:
                             self.ancestors[node].add(source)
                             self.descendants[source].add(node)
-                            for node, neighbour in self.current[step].edges:
-                                to_explore.append(neighbour)
+                            for neighbour, _ in self.graph.in_edges(node):
+                                if neighbour in self.current[step]:
+                                    to_explore.append(neighbour)
+                            for _, neighbour in self.graph.edges(node):
+                                if neighbour in self.current[step]:
+                                    to_explore.append(neighbour)
+            for _, dest in set(self.graph.edges(action_name)):
+                if dest in self.current[step]:
+                    to_explore = [dest]
+                    while len(to_explore) > 0:
+                        node = to_explore.pop()
+                        if dest == node or node in self.ancestors[dest]:
+                            self.consistent = False
+                            self.conflict(deps=[dest, action], eqs=[])
+                            return
+                        elif dest in self.ancestors[node]:
+                            pass
+                        elif (not len(self.ancestors[dest]) == len(self.ancestors[action_name])
+                              and not len(self.descendants[dest]) == len(self.descendants[action_name])):
+                            pass
+                        else:
+                            self.ancestors[node].add(dest)
+                            self.descendants[dest].add(node)
+                            for neighbour, _ in self.graph.in_edges(node):
+                                if neighbour in self.current[step]:
+                                    to_explore.append(neighbour)
+                            for _, neighbour in self.graph.edges(node):
+                                if neighbour in self.current[step]:
+                                    to_explore.append(neighbour)
