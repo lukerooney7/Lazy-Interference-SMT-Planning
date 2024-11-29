@@ -15,7 +15,7 @@ from pypmt.planner.QFUF import QFUFSearch
 from pypmt.planner.OMT import OMTSearch
 from pypmt.propagators.base import BasePropagator
 from pypmt.propagators.exists.basic import ExistsBasicPropagator
-from pypmt.propagators.exists.incrementalCycleInitial import ExistsIncrementalCyclePropagator
+from pypmt.propagators.exists.incrementalCycle import ExistsIncrementalCyclePropagator
 from pypmt.propagators.exists.optimal import ExistsOptimalPropagator
 # from pypmt.propagators.exists.ghostNode import ExistsOptimalUserPropagator
 from pypmt.propagators.forall.basic import ForallBasicPropagator

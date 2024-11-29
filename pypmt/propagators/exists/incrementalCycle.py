@@ -2,7 +2,7 @@ import networkx as nx
 import z3
 
 
-class ExistsIncrementalCycleUserPropagator(z3.UserPropagateBase):
+class ExistsIncrementalCyclePropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
@@ -39,20 +39,20 @@ class ExistsIncrementalCycleUserPropagator(z3.UserPropagateBase):
             action_name = '_'.join(actions[:-1])
             while step >= len(self.current):
                 self.current.append(set())
-            self.current[step].add(action)
-            if action not in self.ancestors:
+            self.current[step].add(action_name)
+            if action_name not in self.ancestors:
                 # Initialise ancestors/descendants if new node
-                self.ancestors[action] = set()
-                self.descendants[action] = set()
+                self.ancestors[action_name] = set()
+                self.descendants[action_name] = set()
             # Incremental Cycle Detection
-            for source, _ in self.graph.in_edges(action):
+            for source, _ in self.graph.in_edges(action_name):
                 if source in self.current[step]:
-                    to_explore = [action]
+                    to_explore = [action_name]
                     while len(to_explore) > 0:
                         node = to_explore.pop()
                         if source == node or node in self.ancestors[source]:
                             self.consistent = False
-                            self.conflict(deps=[source, action], eqs=[])
+                            self.conflict(deps=[self.encoder.get_action_var(source, step), action], eqs=[])
                             return
                         elif source in self.ancestors[node]:
                             pass
@@ -75,7 +75,7 @@ class ExistsIncrementalCycleUserPropagator(z3.UserPropagateBase):
                         node = to_explore.pop()
                         if dest == node or node in self.ancestors[dest]:
                             self.consistent = False
-                            self.conflict(deps=[dest, action], eqs=[])
+                            self.conflict(deps=[self.encoder.get_action_var(dest, step), action], eqs=[])
                             return
                         elif dest in self.ancestors[node]:
                             pass
