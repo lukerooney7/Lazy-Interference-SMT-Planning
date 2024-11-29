@@ -19,6 +19,7 @@ from pypmt.propagators.exists.incrementalCycle import ExistsIncrementalCycleProp
 from pypmt.propagators.exists.optimal import ExistsOptimalPropagator
 # from pypmt.propagators.exists.ghostNode import ExistsOptimalUserPropagator
 from pypmt.propagators.forall.basic import ForallBasicPropagator
+from pypmt.propagators.forall.codeOptimised import ForallCodePropagator
 from pypmt.propagators.forall.optimal import ForallOptimalPropagator
 from pypmt.propagators.test import TestPropagator
 
@@ -101,6 +102,12 @@ class Config:
             "compilationlist": grounded_encoders_default_compilation_list,
             "propagator": ForallBasicPropagator
         },
+        "forall-code": {
+            "encoder": EncoderForallLazy,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": ForallCodePropagator
+        },
         "forall-lazy-optimal": {
             "encoder": EncoderForallLazy,
             "search": SMTSearchActionPropagator,
@@ -167,6 +174,7 @@ class Config:
         "seq": "Use the sequential SMT encoding",
         "seqProp": "A sequential SMT encoding with the Base propagator",
         "forall": "Use the eager parallel SMT encoding with forall-step semantics and empty propagator",
+        "forall-code": "Use the eager parallel SMT encoding with forall-step semantics and empty propagator",
         "forall-noprop": "Use the eager parallel SMT encoding with forall-step semantics without a propagator",
         "forall-lazy": "Use the lazy original parallel SMT encoding with forall-step semantics",
         "forall-lazy-optimal": "Use the lazy optimised parallel SMT encoding with forall-step semantics",

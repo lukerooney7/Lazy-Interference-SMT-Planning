@@ -150,11 +150,15 @@ def main(args=None):
 
 if __name__ == '__main__':
     main(["solve",
-          "-p",
-          "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/p03.pddl",
           "-d",
-          "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/classical-domains/classical/rovers/domain.pddl",
+          "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/domains/classical/rovers-classical/domain.pddl",
+          # "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/domains/classical/tsp/domain.pddl",
+          # "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/domains/numeric/zenotravel-numeric/domain.pddl",
+          "-p",
+          "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/domains/classical/rovers-classical/p04.pddl",
+          # "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/domains/numeric/zenotravel-numeric/instances/pfile1.pddl",
+          # "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/domains/numeric/satellite-numeric/instances/pfile1.pddl",
           "-e"
-          "exists-lazy-optimal",
+          "forall-code",
           "-v",
-          "1"])
+          "4"])
