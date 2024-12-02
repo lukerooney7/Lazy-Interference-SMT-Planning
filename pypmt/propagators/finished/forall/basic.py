@@ -10,6 +10,8 @@ class ForallBasicPropagator(z3.UserPropagateBase):
         self.graph = self.encoder.modifier.graph
         self.current = [nx.DiGraph()]
         self.stack = []
+        self.mutexes = 0
+        self.name = "forall-lazy"
 
     def push(self):
         new = []
@@ -36,11 +38,13 @@ class ForallBasicPropagator(z3.UserPropagateBase):
                 if dest in self.current[step]:
                     self.current[step].add_edge(source, dest)
                     literals.add(self.encoder.get_action_var(dest, step))
+                    self.mutexes += 1
             # Checking and adding in edges
             for source, dest in list(self.graph.in_edges(action_name)):
                 if source in self.current[step]:
                     self.current[step].add_edge(source, dest)
                     literals.add(self.encoder.get_action_var(source, step))
+                    self.mutexes += 1
             # Check if anything has caused interference
             if literals:
                 literals.add(action) # New action itself is only added once

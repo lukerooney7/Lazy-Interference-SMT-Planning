@@ -2,7 +2,7 @@ import networkx as nx
 import z3
 
 
-class ForallNeighboursUserPropagator(z3.UserPropagateBase):
+class ForallPropIdPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
@@ -10,16 +10,20 @@ class ForallNeighboursUserPropagator(z3.UserPropagateBase):
         self.graph = self.encoder.modifier.graph
         self.current = [nx.DiGraph()]
         self.stack = []
+        self.propagated = set()
+        self.propagatedStack = []
 
     def push(self):
         new = []
         for graph in self.current:
             new.append(graph.copy())
         self.stack.append(new)
+        self.propagatedStack.append(self.propagated.copy())
 
     def pop(self, n):
         for _ in range(n):
             self.current = self.stack.pop()
+            self.propagated = self.propagatedStack.pop()
 
     def _fixed(self, action, value):
         if value:
@@ -31,31 +35,33 @@ class ForallNeighboursUserPropagator(z3.UserPropagateBase):
                 self.current.append(nx.DiGraph())
             literals = set()
             self.current[step].add_node(action_name)
-            disallowed_actions = set()
             # Check out edges
-            for source, dest in list(self.graph.edges(action_name)):
+            for _, dest in self.graph.edges(action_name):
                 if dest in self.current[step]:
-                    self.current[step].add_edge(source, dest)
                     literals.add(self.encoder.get_action_var(dest, step))
-                else:
+                elif (dest, action_name) not in self.propagated:
                     # Neighbouring actions must be false
-                    disallowed_actions.add(self.encoder.get_action_var(dest, step))
+                    self.propagate(
+                        e=z3.Not(self.encoder.get_action_var(dest, step)),
+                        ids=[action, action],
+                        eqs=[]
+                    )
+                    self.propagated.add((dest, action_name))
+                    self.propagated.add((action_name, dest))
             # Check in edges
-            for source, dest in list(self.graph.in_edges(action_name)):
+            for source, _ in self.graph.in_edges(action_name):
                 if source in self.current[step]:
-                    self.current[step].add_edge(source, dest)
                     literals.add(self.encoder.get_action_var(source, step))
-                else:
+                elif (source, action_name) not in self.propagated:
                     # Neighbouring actions must be false
-                    disallowed_actions.add(self.encoder.get_action_var(source, step))
+                    self.propagate(
+                        e=z3.Not(self.encoder.get_action_var(source, step)),
+                        ids=[action, action],
+                        eqs=[]
+                    )
+                    self.propagated.add((source, action_name))
+                    self.propagated.add((action_name, source))
             # Check if anything has caused interference
             if literals:
                 literals.add(action)
                 self.conflict(deps=list(literals), eqs=[])
-            else:
-                # Propagate neighbouring nodes to false
-                clause = set()
-                for a in disallowed_actions:
-                    if not a == action:
-                        clause.add(z3.Not(a))
-                self.propagate(e=z3.And(clause), ids=[], eqs=[])

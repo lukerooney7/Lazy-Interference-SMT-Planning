@@ -13,14 +13,20 @@ from pypmt.planner.SMTActionPropagator import SMTSearchActionPropagator
 from pypmt.planner.lifted import LiftedSearch
 from pypmt.planner.QFUF import QFUFSearch
 from pypmt.planner.OMT import OMTSearch
-from pypmt.propagators.base import BasePropagator
-from pypmt.propagators.exists.basic import ExistsBasicPropagator
+from pypmt.propagators.finished.base import BasePropagator
+from pypmt.propagators.finished.exists.basic import ExistsBasicPropagator
 from pypmt.propagators.exists.incrementalCycle import ExistsIncrementalCyclePropagator
 from pypmt.propagators.exists.optimal import ExistsOptimalPropagator
+from pypmt.propagators.exists.stepShare import ExistsStepSharePropagator
+from pypmt.propagators.finished.exists.propClause import ExistsPropClausePropagator
+from pypmt.propagators.finished.exists.propIds import ExistsPropIdPropagator
 # from pypmt.propagators.exists.ghostNode import ExistsOptimalUserPropagator
-from pypmt.propagators.forall.basic import ForallBasicPropagator
-from pypmt.propagators.forall.codeOptimised import ForallCodePropagator
+from pypmt.propagators.finished.forall.basic import ForallBasicPropagator
+from pypmt.propagators.finished.forall.codeOptimised import ForallCodePropagator
+from pypmt.propagators.finished.forall.propClause import ForallPropClausePropagator
+from pypmt.propagators.finished.forall.propIds import ForallPropIdPropagator
 from pypmt.propagators.forall.optimal import ForallOptimalPropagator
+from pypmt.propagators.forall.stepShare import ForallStepSharePropagator
 from pypmt.propagators.test import TestPropagator
 
 
@@ -108,6 +114,24 @@ class Config:
             "compilationlist": grounded_encoders_default_compilation_list,
             "propagator": ForallCodePropagator
         },
+        "forall-stepshare": {
+            "encoder": EncoderForallLazy,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": ForallStepSharePropagator
+        },
+        "forall-prop-clause": {
+            "encoder": EncoderForallLazy,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": ForallPropClausePropagator
+        },
+        "forall-prop-id": {
+            "encoder": EncoderForallLazy,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": ForallPropIdPropagator
+        },
         "forall-lazy-optimal": {
             "encoder": EncoderForallLazy,
             "search": SMTSearchActionPropagator,
@@ -137,6 +161,24 @@ class Config:
             "search": SMTSearchActionPropagator,
             "compilationlist": grounded_encoders_default_compilation_list,
             "propagator": ExistsIncrementalCyclePropagator
+        },
+        "exists-stepshare": {
+            "encoder": EncoderExistsLazy,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": ExistsStepSharePropagator
+        },
+        "exists-prop-clause": {
+            "encoder": EncoderExistsLazy,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": ExistsPropClausePropagator
+        },
+        "exists-prop-id": {
+            "encoder": EncoderExistsLazy,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": ExistsPropIdPropagator
         },
         "exists-lazy-optimal": {
             "encoder": EncoderExistsLazy,
@@ -177,11 +219,17 @@ class Config:
         "forall-code": "Use the eager parallel SMT encoding with forall-step semantics and empty propagator",
         "forall-noprop": "Use the eager parallel SMT encoding with forall-step semantics without a propagator",
         "forall-lazy": "Use the lazy original parallel SMT encoding with forall-step semantics",
+        "forall-stepshare": "Use the lazy original parallel SMT encoding with forall-step semantics",
+        "forall-prop-clause": "Use the lazy original parallel SMT encoding with forall-step semantics",
+        "forall-prop-id": "Use the lazy original parallel SMT encoding with forall-step semantics",
         "forall-lazy-optimal": "Use the lazy optimised parallel SMT encoding with forall-step semantics",
         "exists": "Use the eager parallel SMT encoding with exists-step semantics and empty propagator",
         "exists-noprop": "Use the eager parallel SMT encoding with exists-step semantics without a propagator",
         "exists-lazy": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-cycle": "Use the lazy original parallel SMT encoding with exists-step semantics",
+        "exists-stepshare": "Use the lazy original parallel SMT encoding with exists-step semantics",
+        "exists-prop-clause": "Use the lazy original parallel SMT encoding with exists-step semantics",
+        "exists-prop-id": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-lazy-optimal": "Use the lazy optimised parallel SMT encoding with exists-step semantics",
         "test": "Use propagator for comparing to existing implementations",
         "r2e": "Use the R2E encoding",
