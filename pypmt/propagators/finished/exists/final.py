@@ -2,7 +2,7 @@ import networkx as nx
 import z3
 
 
-class FinalPropagator(z3.UserPropagateBase):
+class ExistsFinalPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
@@ -52,29 +52,30 @@ class FinalPropagator(z3.UserPropagateBase):
                 self.current.append(nx.DiGraph())
                 self.conflict_edges.append(set())
             self.current[step].add_node(action_name)
-            edges = list(self.graph.in_edges(action_name)) + list(self.graph.edges(action_name))
             if action_name not in self.ancestors:
                 # Initialise ancestors/descendants if new node
                 self.ancestors[action_name] = set()
                 self.descendants[action_name] = set()
             # Incremental Cycle Detection
-            for source, dest in edges:
+            for source, dest in set(self.graph.in_edges(action_name)) | set(self.graph.edges(action_name)):
+                source_var = self.encoder.get_action_var(source, step)
+                dest_var = self.encoder.get_action_var(dest, step)
                 if source in self.current[step] and dest in self.current[step]:
                     if self.current[step].has_edge(dest, source):
                         self.conflict_edges[step].add((
-                            self.encoder.get_action_var(source, step),
-                            self.encoder.get_action_var(dest, step)
+                            source_var,
+                            dest_var
                         ))
                         continue
-
                     self.current[step].add_edge(source, dest)
                     to_explore = [dest]
+                    visited = set(dest)
                     while len(to_explore) > 0:
                         node = to_explore.pop()
                         if source == node or node in self.ancestors[source] or node in self.descendants[source]:
                             self.conflict_edges[step].add((
-                                self.encoder.get_action_var(source, step),
-                                self.encoder.get_action_var(dest, step)
+                                source_var,
+                                dest_var
                             ))
                         elif source in self.ancestors[node]:
                             pass
@@ -85,4 +86,6 @@ class FinalPropagator(z3.UserPropagateBase):
                             self.ancestors[node].add(source)
                             self.descendants[source].add(node)
                             for node, neighbour in self.current[step].edges:
-                                to_explore.append(neighbour)
+                                if neighbour not in visited:
+                                    visited.add(neighbour)
+                                    to_explore.append(neighbour)
