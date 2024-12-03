@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-csv_file = "/Users/lukeroooney/Desktop/Dissertation/parallelSAT/analysis/stats.csv"
+csv_file = "/cs/home/lr225/Documents/Lazy-Interference-SMT-Planning/stats.csv"
 df = pd.read_csv(csv_file)
 
 
@@ -10,28 +10,32 @@ df = pd.read_csv(csv_file)
 
 def show_propagations():
     # Filter data for a specific domain
-    domain = "rovers"
+    domain = "tpp"
     domain_data = df[df['domain'] == domain]
 
     # Convert instance numbers to integers for sorting
     domain_data['instance'] = domain_data['instance'].astype(int)
     domain_data = domain_data.sort_values('instance')
-
-    # Plot propagations against instance numbers
     plt.figure(figsize=(10, 6))
-    plt.plot(domain_data['instance'], domain_data['propagations'], marker='o', label='Propagations')
-    plt.plot(domain_data['instance'], domain_data['conflicts'], marker='o', label='Conflicts')
-    plt.plot(domain_data['instance'], domain_data['decisions'], marker='o', label='Decisions')
+    for propagator, group_data in domain_data.groupby('propagator'):
+        if "forall" in propagator:
+            # Plot propagations against instance numbers
+            plt.plot(group_data['instance'], group_data['propagations'], marker='o', label=f"{propagator} Propagations")
+            # plt.plot(group_data['instance'], group_data['conflicts'], marker='o', label=f"{propagator} Conflicts")
+
+            # plt.plot(group_data['instance'], group_data['decisions'], marker='o', label=f"{propagator} Decisions")
+
+            # plt.plot(domain_data['instance'], domain_data['conflicts'], marker='o', label='Conflicts')
+            # plt.plot(domain_data['instance'], domain_data['decisions'], marker='o', label='Decisions')
 
     # Adding labels and title
     plt.xlabel("Instance Number", fontsize=12)
     plt.ylabel("Count", fontsize=12)
-    plt.yscale('log')
-    plt.title(f"Analysis of Domain '{domain}'", fontsize=14)
+    # plt.yscale('log')
+    plt.title(f"Number of Propagations of Domain '{domain}'", fontsize=14)
     plt.legend()
     plt.grid(True)
 
-    # Save or display the plot
     plt.tight_layout()
     plt.show()
 
@@ -97,6 +101,7 @@ def parallelism(df):
 
 
 
-num_steps(df)
+# num_steps(df)
 # show_mutexes(df)
 # parallelism(df)
+show_propagations()
