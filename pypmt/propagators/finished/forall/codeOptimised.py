@@ -30,15 +30,13 @@ class ForallCodePropagator(z3.UserPropagateBase):
             literals = set()
             self.current[step].add(action_name)
             # Checking and adding out nodes
-            for _, dest in list(self.graph.edges(action_name)):
-                if dest in self.current[step]:
-                    literals.add(self.encoder.get_action_var(dest, step))
-                    self.consistent = False
+            for dest in self.current[step] & set(self.graph.neighbors(action_name)):
+                literals.add(self.encoder.get_action_var(dest, step))
+                self.consistent = False
             # Checking and adding in nodes
-            for source, _ in list(self.graph.in_edges(action_name)):
-                if source in self.current[step]:
-                    literals.add(self.encoder.get_action_var(source, step))
-                    self.consistent = False
+            for source in self.current[step] & set(self.graph.predecessors(action_name)):
+                literals.add(self.encoder.get_action_var(source, step))
+                self.consistent = False
             # Check if anything has caused interference
             if literals:
                 literals.add(action)  # New action itself is only added once
