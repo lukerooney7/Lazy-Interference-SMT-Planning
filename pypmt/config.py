@@ -20,6 +20,7 @@ from pypmt.propagators.exists.optimal import ExistsOptimalPropagator
 from pypmt.propagators.exists.stepShare import ExistsStepSharePropagator
 from pypmt.propagators.finished.exists.propClause import ExistsPropClausePropagator
 from pypmt.propagators.finished.exists.propIds import ExistsPropIdPropagator
+from pypmt.propagators.finished.exists.ghost2 import ExistsGhost2Propagator
 # from pypmt.propagators.exists.ghostNode import ExistsOptimalUserPropagator
 from pypmt.propagators.finished.forall.basic import ForallBasicPropagator
 from pypmt.propagators.finished.forall.codeOptimised import ForallCodePropagator
@@ -180,6 +181,12 @@ class Config:
             "compilationlist": grounded_encoders_default_compilation_list,
             "propagator": ExistsPropIdPropagator
         },
+        "exists-ghost-2": {
+            "encoder": EncoderExistsLazy,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": ExistsGhost2Propagator
+        },
         "exists-lazy-optimal": {
             "encoder": EncoderExistsLazy,
             "search": SMTSearchActionPropagator,
@@ -230,6 +237,7 @@ class Config:
         "exists-stepshare": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-prop-clause": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-prop-id": "Use the lazy original parallel SMT encoding with exists-step semantics",
+        "exists-ghost-2": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-lazy-optimal": "Use the lazy optimised parallel SMT encoding with exists-step semantics",
         "test": "Use propagator for comparing to existing implementations",
         "r2e": "Use the R2E encoding",
