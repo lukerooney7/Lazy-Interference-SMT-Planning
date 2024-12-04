@@ -25,8 +25,12 @@ class ForallCodePropagator(z3.UserPropagateBase):
             actions = str(action).split('_')
             step = int(actions[-1])
             action_name = '_'.join(actions[:-1])
-            while step >= len(self.current):
-                self.current.append(set())
+            if step >= len(self.current):
+                while step >= len(self.current):
+                    self.current.append(set())
+                self.current[step].add(action_name)
+                # There cannot be any interference: no other actions in step are True
+                return
             literals = set()
             self.current[step].add(action_name)
             # Checking and adding out nodes
