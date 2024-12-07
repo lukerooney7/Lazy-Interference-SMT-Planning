@@ -15,9 +15,8 @@ class ForallCodePropagator(z3.UserPropagateBase):
         self.stack.append([graph.copy() for graph in self.current])
 
     def pop(self, n):
-        if n > 0:
-            self.current = self.stack[-n]
-            del self.stack[-n:]
+        for _ in range(n):
+            self.current = self.stack.pop()
         self.consistent = True
     def _fixed(self, action, value):
         if value and self.consistent:
@@ -33,11 +32,11 @@ class ForallCodePropagator(z3.UserPropagateBase):
                 return
             literals = set()
             self.current[step].add(action_name)
-            # Checking and adding out nodes
+            # Checking and adding out nodes using set intersection
             for dest in self.current[step] & set(self.graph.neighbors(action_name)):
                 literals.add(self.encoder.get_action_var(dest, step))
                 self.consistent = False
-            # Checking and adding in nodes
+            # Checking and adding in nodes using set intersection
             for source in self.current[step] & set(self.graph.predecessors(action_name)):
                 literals.add(self.encoder.get_action_var(source, step))
                 self.consistent = False
