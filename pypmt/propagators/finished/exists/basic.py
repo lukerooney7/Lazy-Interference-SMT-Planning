@@ -10,6 +10,7 @@ class ExistsBasicPropagator(z3.UserPropagateBase):
         self.encoder = e
         self.graph = self.encoder.modifier.graph
         self.current = [nx.DiGraph()]
+        self.name = "exists-lazy"
         self.stack = []
 
     def push(self):
