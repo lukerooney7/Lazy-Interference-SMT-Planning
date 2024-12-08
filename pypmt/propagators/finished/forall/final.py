@@ -1,17 +1,18 @@
 import networkx as nx
 import z3
-from pypmt.utilities import log
 
 
-class ForallEdgeCacheUserPropagator(z3.UserPropagateBase):
+class ForallFinalPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
+        self.add_final(lambda : self._final())
         self.encoder = e
         self.graph = self.encoder.modifier.graph
         self.current = [nx.DiGraph()]
         self.stack = []
-        self.edges = {}
+        self.mutexes = 0
+        self.name = "forall-lazy"
 
     def push(self):
         new = []
@@ -23,6 +24,11 @@ class ForallEdgeCacheUserPropagator(z3.UserPropagateBase):
         for _ in range(n):
             self.current = self.stack.pop()
 
+    def _final(self):
+        for i, step in enumerate(self.current):
+            for source, dest in step.edges:
+                self.conflict(deps=[self.encoder.get_action_var(source, i), self.encoder.get_action_var(dest, i)], eqs=[])
+
     def _fixed(self, action, value):
         if value:
             # Parse action name and step
@@ -31,18 +37,11 @@ class ForallEdgeCacheUserPropagator(z3.UserPropagateBase):
             action_name = '_'.join(actions[:-1])
             while step >= len(self.current):
                 self.current.append(nx.DiGraph())
-            literals = set()
             self.current[step].add_node(action_name)
-            # Retrieve edges from cache or add them if not cached yet
-            edges = self.edges.get(action_name)
-            if edges is None:
-                edges = list(self.graph.edges(action_name)) + list(self.graph.in_edges(action_name))
-                self.edges[action_name] = edges
-            # Check all edges
-            for source, dest in edges:
-                if source in self.current[step] and dest in self.current[step]:
+            # Checking and adding out edges
+            for source, dest in list(self.graph.edges(action_name)):
+                if dest in self.current[step]:
+                    self.current[step].add_edge(source, dest)            # Checking and adding in edges
+            for source, dest in list(self.graph.in_edges(action_name)):
+                if source in self.current[step]:
                     self.current[step].add_edge(source, dest)
-                    literals.add(self.encoder.get_action_var(source, step))
-                    literals.add(self.encoder.get_action_var(dest, step))
-            if literals:
-                self.conflict(deps=list(literals), eqs=[])
