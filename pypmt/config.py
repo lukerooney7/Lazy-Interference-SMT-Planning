@@ -3,7 +3,8 @@ import logging
 
 from unified_planning.shortcuts import CompilationKind
 from pypmt.encoders.R2E import EncoderRelaxed2Exists
-from pypmt.encoders.basic import EncoderForall, EncoderSequential, EncoderForallLazy, EncoderExists, EncoderExistsLazy
+from pypmt.encoders.basic import EncoderForall, EncoderSequential, EncoderForallLazy, EncoderExists, EncoderExistsLazy, \
+    EncoderForallFrame, EncoderExistsFrame
 from pypmt.encoders.SequentialLifted import EncoderSequentialLifted
 from pypmt.encoders.SequentialQFUF import EncoderSequentialQFUF
 from pypmt.encoders.OMT import EncoderSequentialOMT
@@ -28,6 +29,7 @@ from pypmt.propagators.finished.forall.codeOptimised import ForallCodePropagator
 from pypmt.propagators.finished.forall.final import ForallFinalPropagator
 from pypmt.propagators.finished.forall.propClause import ForallPropClausePropagator
 from pypmt.propagators.finished.forall.propIds import ForallPropIdPropagator
+from pypmt.propagators.frame import FramePropagator
 from pypmt.propagators.forall.optimal import ForallOptimalPropagator
 from pypmt.propagators.forall.stepShare import ForallStepSharePropagator
 from pypmt.propagators.test import TestPropagator
@@ -141,6 +143,12 @@ class Config:
             "compilationlist": grounded_encoders_default_compilation_list,
             "propagator": ForallFinalPropagator
         },
+        "forall-frame": {
+            "encoder": EncoderForallFrame,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": FramePropagator
+        },
         "forall-lazy-optimal": {
             "encoder": EncoderForallLazy,
             "search": SMTSearchActionPropagator,
@@ -201,6 +209,12 @@ class Config:
             "compilationlist": grounded_encoders_default_compilation_list,
             "propagator": ExistsFinalPropagator
         },
+        "exists-frame": {
+            "encoder": EncoderExistsFrame,
+            "search": SMTSearchActionPropagator,
+            "compilationlist": grounded_encoders_default_compilation_list,
+            "propagator": FramePropagator
+        },
         "exists-lazy-optimal": {
             "encoder": EncoderExistsLazy,
             "search": SMTSearchActionPropagator,
@@ -245,6 +259,7 @@ class Config:
         "forall-prop-id": "Use the lazy original parallel SMT encoding with forall-step semantics",
         "forall-final": "Use the lazy original parallel SMT encoding with forall-step semantics",
         "forall-lazy-optimal": "Use the lazy optimised parallel SMT encoding with forall-step semantics",
+        "forall-frame": "Use the lazy optimised parallel SMT encoding with forall-step semantics",
         "exists": "Use the eager parallel SMT encoding with exists-step semantics and empty propagator",
         "exists-noprop": "Use the eager parallel SMT encoding with exists-step semantics without a propagator",
         "exists-lazy": "Use the lazy original parallel SMT encoding with exists-step semantics",
@@ -254,6 +269,7 @@ class Config:
         "exists-prop-id": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-ghost-2": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-final": "Use the lazy original parallel SMT encoding with exists-step semantics",
+        "exists-frame": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-lazy-optimal": "Use the lazy optimised parallel SMT encoding with exists-step semantics",
         "test": "Use propagator for comparing to existing implementations",
         "r2e": "Use the R2E encoding",
