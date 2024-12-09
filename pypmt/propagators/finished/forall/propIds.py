@@ -8,6 +8,7 @@ class ForallPropIdPropagator(z3.UserPropagateBase):
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.encoder = e
         self.graph = self.encoder.modifier.graph
+        self.name = "forall-prop-id"
         self.current = [nx.DiGraph()]
         self.stack = []
         self.propagated = set()

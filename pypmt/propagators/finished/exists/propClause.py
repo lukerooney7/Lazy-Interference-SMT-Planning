@@ -7,6 +7,7 @@ class ExistsPropClausePropagator(z3.UserPropagateBase):
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.encoder = e
         self.graph = self.encoder.modifier.graph
+        self.name = "exists-prop-clause"
         self.current = [nx.DiGraph()]
         self.ancestors = {}
         self.descendants = {}
