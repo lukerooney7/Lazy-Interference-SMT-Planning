@@ -39,7 +39,34 @@ def get_data(folder_path):
     df.sort_values(by='instance', inplace=True)
     return df
 
-folder = "/Users/lukeroooney/Desktop/saved-data/raw-results/numeric-comparison"
-df = get_data(folder)
 
-df.to_csv("/Users/lukeroooney/Desktop/saved-data/solve-data/numeric-comparison.csv", index=False)
+
+def file_to_csv():
+    folder = "/Users/lukeroooney/Desktop/saved-data/raw-results/numeric-final"
+    df = get_data(folder)
+
+    df.to_csv("/Users/lukeroooney/Desktop/saved-data/solve-data/numeric-final.csv", index=False)
+
+
+def combine_csvs():
+    folder_path = "/Users/lukeroooney/Desktop/saved-data/solve-data/"
+    dfs = []
+
+    for file_name in os.listdir(folder_path):
+        if file_name.endswith('.csv'):
+            file_path = os.path.join(folder_path, file_name)
+            df = pd.read_csv(file_path)
+
+            if 'classical' in file_name:
+                suffix = '_cls'
+            elif 'numeric' in file_name:
+                suffix = '_num'
+            else:
+                continue
+            df['domain'] = df['domain'] + suffix
+            dfs.append(df)
+
+    combined_df = pd.concat(dfs, ignore_index=True)
+    combined_df.to_csv("/Users/lukeroooney/Desktop/saved-data/solve-data/all.csv", index=False)
+
+combine_csvs()
