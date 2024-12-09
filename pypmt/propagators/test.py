@@ -58,7 +58,7 @@ class TestPropagator(z3.UserPropagateBase):
                     else:
                         if source not in self.nots[step]:
                             self.nots[step][source] = z3.Not(self.encoder.get_action_var(source, step))
-                        if source not in self.false:s
+                        if source not in self.false:
                             self.propagate(e=self.nots[step][source], ids=[], eqs=[])
             if literals:
                 self.solver.add(new_mutexes)

@@ -39,7 +39,6 @@ class FramePropagator(z3.UserPropagateBase):
             if not or_actions:
                 self.conflict(deps=[action], eqs=[])
                 return
-            up_actions = self.encoder.up_actions_to_z3
             false = [self.encoder.up_actions_to_z3[a][step] for a in or_actions if a in self.false[step]]
 
             if len(false) == len(or_actions):
@@ -65,3 +64,4 @@ class FramePropagator(z3.UserPropagateBase):
     def ensure_false_size(self, step):
         while step >= len(self.false):
             self.false.append(set())
+
