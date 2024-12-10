@@ -30,12 +30,14 @@ class ForallDecidePropagator(z3.UserPropagateBase):
             self.current = self.stack.pop()
 
     def _decide(self, t, idx, phase):
+        if phase != 1:
+            return
         step, action_name = split_action(t)
-        while step >= len(self.current):
-            self.current.append(set())
+        if step >= len(self.current):
+            self.next_split(t=t, idx=idx, phase=1)
+            return
         # Checking if this action has an edge to any that are already True
-        if (set(self.graph.successors(action_name)) & self.current[step]
-                or set(self.graph.predecessors(action_name)) & self.current[step]):
+        if set(self.graph.successors(action_name)) | set(self.graph.predecessors(action_name)) & self.current[step]:
             self.next_split(t=t, idx=idx, phase=-1)
         else:
             self.next_split(t=t, idx=idx, phase=1)
