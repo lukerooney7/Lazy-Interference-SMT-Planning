@@ -17,14 +17,13 @@ from pypmt.planner.OMT import OMTSearch
 from pypmt.propagators.exists.decide import ExistsDecidePropagator
 from pypmt.propagators.finished.base import BasePropagator
 from pypmt.propagators.finished.exists.basic import ExistsBasicPropagator
-from pypmt.propagators.exists.incrementalCycle import ExistsIncrementalCyclePropagator
 from pypmt.propagators.exists.optimal import ExistsOptimalPropagator
 from pypmt.propagators.exists.stepShare import ExistsStepSharePropagator
+from pypmt.propagators.finished.exists.codeOptimised import ExistsCodePropagator
 from pypmt.propagators.finished.exists.final import ExistsFinalPropagator
 from pypmt.propagators.finished.exists.propClause import ExistsPropClausePropagator
 from pypmt.propagators.finished.exists.propIds import ExistsPropIdPropagator
 from pypmt.propagators.finished.exists.ghost2 import ExistsGhost2Propagator
-# from pypmt.propagators.exists.ghostNode import ExistsOptimalUserPropagator
 from pypmt.propagators.finished.forall.basic import ForallBasicPropagator
 from pypmt.propagators.finished.forall.codeOptimised import ForallCodePropagator
 from pypmt.propagators.finished.forall.final import ForallFinalPropagator
@@ -181,11 +180,11 @@ class Config:
             "compilationlist": grounded_encoders_default_compilation_list,
             "propagator": ExistsBasicPropagator
         },
-        "exists-cycle": {
+        "exists-code": {
             "encoder": EncoderExistsLazy,
             "search": SMTSearchActionPropagator,
             "compilationlist": grounded_encoders_default_compilation_list,
-            "propagator": ExistsIncrementalCyclePropagator
+            "propagator": ExistsCodePropagator
         },
         "exists-stepshare": {
             "encoder": EncoderExistsLazy,
