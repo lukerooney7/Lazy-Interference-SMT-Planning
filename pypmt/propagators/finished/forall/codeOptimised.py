@@ -1,7 +1,7 @@
 import z3
 
 
-class TestPropagator(z3.UserPropagateBase):
+class ForallCodePropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
