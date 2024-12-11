@@ -277,7 +277,7 @@ class Config:
         "exists": "Use the eager parallel SMT encoding with exists-step semantics and empty propagator",
         "exists-noprop": "Use the eager parallel SMT encoding with exists-step semantics without a propagator",
         "exists-lazy": "Use the lazy original parallel SMT encoding with exists-step semantics",
-        "exists-cycle": "Use the lazy original parallel SMT encoding with exists-step semantics",
+        "exists-code": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-stepshare": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-prop-clause": "Use the lazy original parallel SMT encoding with exists-step semantics",
         "exists-prop-id": "Use the lazy original parallel SMT encoding with exists-step semantics",
