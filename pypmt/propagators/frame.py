@@ -11,15 +11,25 @@ class FramePropagator(z3.UserPropagateBase):
         self.encoder = e
         self.mutexes = 0
         self.false = [set()]
-        self.fStack = []
+        self.clauses = set()
         self.name = "forall-frame"
+        self.trail = []
+        self.levels = []
+
 
     def push(self):
-        self.fStack.append([g.copy() for g in self.false])
+        self.levels.append(len(self.trail))
 
     def pop(self, n):
         for _ in range(n):
-            self.false = self.fStack.pop()
+            if self.levels:
+                # Find the start of the current decision level
+                level_start = self.levels.pop()
+                # Undo all changes recorded after this level
+                while len(self.trail) > level_start:
+                    step, action = self.trail.pop()
+                    self.false[step].remove(action)
+
 
     def _fixed(self, action, value):
         if value:
@@ -54,6 +64,7 @@ class FramePropagator(z3.UserPropagateBase):
         action_name, step = self.extract_key_step(action_str)
         self.ensure_false_size(step)
         self.false[step].add(action_name)
+        self.trail.append((step, action_name))
 
     def extract_key_step(self, action_str):
         parts = action_str.split('_')
