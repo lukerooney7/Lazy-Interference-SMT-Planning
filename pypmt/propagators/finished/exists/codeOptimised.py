@@ -37,7 +37,7 @@ class ExistsCodePropagator(z3.UserPropagateBase):
                     step, action, descendant = self.trail_descendants.pop()
                     self.ancestors[step][action].discard(descendant)
 
-    def iterative_cycle(self, step, source, dest):
+    def incremental_cycle(self, step, source, dest):
         self.current[step].add_edge(source, dest)
         to_explore = [dest]
         while len(to_explore) > 0:
@@ -49,9 +49,9 @@ class ExistsCodePropagator(z3.UserPropagateBase):
                 break
             elif source in self.ancestors[step][node]:
                 pass
-            elif (not len(self.ancestors[step][source]) == len(self.ancestors[step][dest])
-                  and not len(self.descendants[step][source]) == len(self.descendants[step][dest])):
-                pass
+            # elif (not len(self.ancestors[step][source]) == len(self.ancestors[step][dest])
+            #       and not len(self.descendants[step][source]) == len(self.descendants[step][dest])):
+            #     pass
             else:
                 self.ancestors[step][node].add(source)
                 self.trail_ancestors.append((step, node, source))
@@ -87,7 +87,7 @@ class ExistsCodePropagator(z3.UserPropagateBase):
             # Incremental Cycle Detection
             for source, _ in self.graph.in_edges(action_name):
                 if source in self.current[step]:
-                    self.iterative_cycle(step, source, action_name)
+                    self.incremental_cycle(step, source, action_name)
             for _, dest in self.graph.edges(action_name):
                 if dest in self.current[step]:
-                    self.iterative_cycle(step, action_name, dest)
+                    self.incremental_cycle(step, action_name, dest)
