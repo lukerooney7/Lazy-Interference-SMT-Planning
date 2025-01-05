@@ -30,20 +30,19 @@ class ForallStepSharePropagator(z3.UserPropagateBase):
         self.consistent = True
 
     def step_share(self, source, dest, step):
-        current_mutex = max(self.mutexes[(source, dest)], self.mutexes[(dest, source)])
+        current_mutex = self.mutexes[(source, dest)]
 
-        if step <= current_mutex:
+        if step <= current_mutex or step < 1:
             return
 
         # Loop from step to the current mutex value (decrement)
-        for i in range(step, current_mutex, -1):
+        for i in range(step, max(current_mutex, step-5), -1):
             dest_var = self.encoder.get_action_var(dest, i)
             source_var = self.encoder.get_action_var(source, i)
             self.propagate(z3.Not(dest_var), [source_var, source_var])
 
-        new_mutex_value = max(current_mutex, step)
-        self.mutexes[(source, dest)] = new_mutex_value
-        self.mutexes[(dest, source)] = new_mutex_value
+        # new_mutex_value = max(current_mutex, step)
+        self.mutexes[(source, dest)] = step
 
     def _fixed(self, action, value):
         if value and self.consistent:
