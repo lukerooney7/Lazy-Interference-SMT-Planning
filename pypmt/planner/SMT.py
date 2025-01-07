@@ -58,7 +58,7 @@ class SMTSearch(Search):
             if res == z3.sat:
                 log(f'Satisfiable model found. Took:{total_time:.2f}s', 3)
                 log(f'Z3 statistics:\n{self.solver.statistics()}', 4)
-                self.solution = self.encoder.extract_plan(None, self.solver.model(), self.horizon)
+                self.solution = self.encoder.extract_plan(self.solver.model(), self.horizon)
                 break
         return self.solution
 

@@ -57,13 +57,14 @@ class SMTSearchActionPropagator(Search):
                 for a in self.encoder.task.actions:
                     action = self.encoder.get_action_var(a.name, horizon)
                     self.propagator.add(action)
-                for v, _ in self.encoder.task.initial_values.items():
-                    key = str_repr(v)
-                    var_t = self.encoder.up_fluent_to_z3[key][horizon]
-                    var_t1 = self.encoder.up_fluent_to_z3[key][horizon + 1]
-                    a = z3.Bool(f'{var_t}:{var_t1}', context)
-                    self.solver.add(a == (var_t == var_t1))
-                    self.propagator.add(a)
+                if self.encoder.lazyFrame:
+                    for v, _ in self.encoder.task.initial_values.items():
+                        key = str_repr(v)
+                        var_t = self.encoder.up_fluent_to_z3[key][horizon]
+                        var_t1 = self.encoder.up_fluent_to_z3[key][horizon + 1]
+                        a = z3.Bool(f'{var_t}:{var_t1}', context)
+                        self.solver.add(a == (var_t == var_t1))
+                        self.propagator.add(a)
 
             # deal with the initial state
             if self.horizon == 0:
@@ -99,7 +100,7 @@ class SMTSearchActionPropagator(Search):
             if res == z3.sat:
                 log(f'Satisfiable model found. Took:{total_time:.2f}s', 3)
                 log(f'Z3 statistics:\n{self.solver.statistics()}', 4)
-                self.solution = self.encoder.extract_plan(self.propagator, self.solver.model(), self.horizon)
+                self.solution = self.encoder.extract_plan(self.solver.model(), self.horizon)
                 # save_stats(self)
                 break
         return self.solution
