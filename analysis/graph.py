@@ -6,51 +6,98 @@ from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 
 # folder_path = '/Users/lukeroooney/developer/pyPMTEvalToolkit/sandbox-dir/dump_results'
-folder_path = '/Users/lukeroooney/Desktop/saved-data/solve-data/numeric-comparison.csv'
-classical_domains = {"rovers", "tpp-numeric", "tsp", "trucks", "depot", "tpp", "satellite", "parcprinter", "airport"}
-numerical_domains = {"zenotravel", "satellites", "tpp-numeric-numeric", "markettrader", "counters"}
+folder_path = '/Users/lukeroooney/Desktop/Dissertation/data/csvs/all.csv'
+
+cls_domains = {
+    "airport", "airport-adl", "assembly", "blocks", "blocks-3op", "briefcaseworld",
+    "cavediving", "cybersec", "depot", "driverlog", "elevators-00-adl", "elevators-00-full",
+    "elevators-00-strips", "ferry", "freecell", "fridge", "grid", "gripper", "hanoi",
+    "logistics", "miconic", "miconic-fulladl", "miconic-simpleadl",
+    "movie", "mystery", "no-mprime", "no-mystery", "openstacks", "openstacks-strips",
+    "parcprinter-08-strips", "pathways", "pathways-noneg", "pegsol", "pipesworld-06",
+    "pipesworld-notankage", "pipesworld-tankage", "psr-small", "rovers", "rovers-02",
+    "scanalyzer", "schedule", "tpp", "trucks", "trucks-strips", "tsp", "elevators", "parcprinter"
+}
+
+num_domains = {
+    "block-grouping", "counters", "delivery", "depots", "drone", "expedition",
+    "ext-plant-watering", "farmland", "fo-counters", "fo-farmland", "fo-sailing",
+    "hydropower", "markettrader", "mprime", "pathwaysmetric", "petrobras",
+    "plant-watering", "rover", "rover-linear", "sailing", "satellite", "sec_clearance",
+    "settlers", "sugar", "tpp", "tpp-metric", "zenotravel"
+}
+
+
+
 color_map = {
-    'Eager ∀-Step Encoding': '#00b5e2',   # Bright Blue
-    'Lazy ∀-Step Encoding (': '#ff7f0e',    # Orange
-    'Eager ∃-Step Encoding': '#2ca02c',   # Green
-    'Lazy ∃-Step Encoding': '#d62728',    # Red
-    'Lazy Incremental Cycle ∃-Step': '#9467bd', # Purple
-    'Lazy Optimised Code ∀-Step': '#17becf' # Brown
+    'Eager ∀ (No Propagator)': 'black',
+    'Eager ∀': 'yellow',
+    'Naive Lazy ∀': 'salmon',
+    'Code-Optimised Lazy ∀': 'orange',
+    'Final Conflict ∀': 'red',
+    'Stepsharing ∀': 'red',
+    'Neighbours ∀': 'red',
+    'Eager ∃ (No Propagator)': 'black',
+    'Eager ∃': 'blue',
+    'Naive Lazy ∃': 'teal',
+    'Code-Optimised Lazy ∃': 'cyan',
+    'Final Conflict ∃': 'purple',
+    'Stepsharing ∃': 'purple',
+    'Ghost Node ∃': 'purple',
 }
 
 total_instances = {
-    "ext-plant-watering": 20,
+    "airport": 50,
+    "block-grouping": 25,
+    "blocks": 15,
+    "blocks-3op": 12,
+    "briefcaseworld": 1,
+    "counters": 54,
+    "delivery": 1,
+    "depot": 8,
+    "depots": 10,
+    "driverlog": 12,
+    "drone": 3,
+    "elevators": 33,
+    "expedition": 2,
+    "ferry": 26,
+    "fo-counters": 3,
+    "fo-farmland": 6,
+    "fo-sailing": 1,
+    "gripper": 4,
+    "hanoi": 4,
+    "hydropower": 2,
+    "miconic": 33,
+    "movie": 30,
     "mprime": 30,
-    "satellite": 20,
-    "block-grouping": 192,
-    "farmland": 50,
-    "pathwaysmetric": 30,
-    "sec_clearance": 40,
-    "counters": 55,
-    "fo-counters": 20,
-    "petrobras": 10,
-    "delivery": 20,
-    "fo-farmland": 25,
-    "plant-watering": 51,
-    "sugar": 20,
-    "depots": 20,
-    "fo-sailing": 20,
-    "rover": 20,
-    "tpp": 40,
-    "drone": 20,
-    "hydropower": 30,
-    "rover-linear": 10,
-    "tpp-metric": 10,
-    "expedition": 20,
-    "markettrader": 20,
-    "sailing": 40,
-    "zenotravel": 23
+    "openstacks": 5,
+    "parcprinter": 28,
+    "pathways": 4,
+    "pathways-noneg": 4,
+    "logistics":10,
+    "pathwaysmetric": 1,
+    "pegsol": 8,
+    "petrobras": 15,
+    "pipesworld-notankage": 11,
+    "plant-watering": 1,
+    "psr-small": 49,
+    "rover": 15,
+    "rover-linear": 9,
+    "rovers": 15,
+    "satellite": 7,
+    "scanalyzer": 3,
+    "schedule": 1,
+    "sugar": 19,
+    "tpp":20,
+    "tpp-metric": 5,
+    "trucks": 10,
+    "tsp": 9,
+    "zenotravel": 15
 }
-
 
 def cactus_plot(df, domain, encoding, log, max_instance, timeout, par):
     df = df[df['domain'] == domain]
-    timeout_penalty = timeout * 60 * par
+    timeout_penalty = timeout * par
     # df = df[df['planner_tag'].str.contains(encoding, na=False)]
     df = df[df['status'] == "SOLVED_SATISFICING"]
     plt.figure(figsize=(12, 8))
@@ -78,15 +125,17 @@ def cactus_plot(df, domain, encoding, log, max_instance, timeout, par):
     plt.tight_layout()
     plt.show()
 
-def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
-    df_filtered = df[(df['planner_tag'].isin([x, y])) &
-                     (df['instance'] >= min_instance) &
-                     (df['instance'] <= max_instance)]
-    timeout_penalty = timeout * 60
+def scatter_plot(df, log, x, y, timeout_penalty):
+    df_filtered = df[(df['planner_tag'].isin([x, y]))]
     unique_domains = df_filtered['domain'].unique()
-    markers = ['o', 's', '^', 'D', 'v', 'p', '*', 'X']  #
+    markers = [
+        'o', 's', '^', 'D', 'v', 'p', '*', 'X',  # Basic shapes
+        'H', 'h', '8', 'P', 'd',  # More shapes
+        '>', '<', '1', '2', '3', '4',  # Triangular markers and others
+        '8', 'p', 'H', 'h', 'v',  # More variation in markers
+                ]
     domain_marker_map = {domain: markers[i % len(markers)] for i, domain in enumerate(unique_domains)}
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(16, 8))
     plt.axhline(y=timeout_penalty, color='red', linestyle='--', linewidth=1.5, label='Timeout Limit', zorder=0)
     plt.axvline(x=timeout_penalty, color='red', linestyle='--', linewidth=1.5, zorder=0)
     if log:
@@ -106,8 +155,7 @@ def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
         graph_data['y'] = merged_data['planning_time_y']
         graph_data['c'] = merged_data['instance']
         graph_data = graph_data.fillna(timeout_penalty)
-        cmap = 'Blues' if domain in classical_domains else 'Reds' if domain in numerical_domains else 'Greys'
-        # print(graph_data)
+        cmap = 'Blues' if domain in cls_domains else 'Reds' if domain in num_domains else 'Greys'
         plt.scatter(
             graph_data['x'], graph_data['y'],
             s=100, marker=domain_marker_map[domain], c=graph_data['c'], cmap=cmap,
@@ -118,14 +166,33 @@ def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
     plt.ylabel(f'{y} Planning Time (s)', fontsize=14)
 
     plt.gca().set_aspect('equal', adjustable='box')
-    custom_legend = []
-    for domain in unique_domains:
-        color = 'blue' if domain in classical_domains else 'red' if domain in numerical_domains else 'grey'
-        marker = domain_marker_map[domain]
-        custom_legend.append(Line2D([0], [0], marker=marker, color='w', markerfacecolor=color,
-                                    markeredgecolor='black', markersize=10, label=domain))
+    blue_legend = []
+    red_legend = []
+    grey_legend = []
 
-    plt.legend(custom_legend, unique_domains, title='Domain', fontsize=12)
+    # Create the custom legend for blue, red, and grey domains
+    for domain in unique_domains:
+        color = 'blue' if domain in cls_domains else 'red' if domain in num_domains else 'grey'
+        marker = domain_marker_map[domain]
+
+        # Depending on the color, add to the respective list
+        if color == 'blue':
+            blue_legend.append(Line2D([0], [0], marker=marker, color='w', markerfacecolor=color,
+                                      markeredgecolor='black', markersize=10, label=domain))
+        elif color == 'red':
+            red_legend.append(Line2D([0], [0], marker=marker, color='w', markerfacecolor=color,
+                                     markeredgecolor='black', markersize=10, label=domain))
+        else:
+            grey_legend.append(Line2D([0], [0], marker=marker, color='w', markerfacecolor=color,
+                                      markeredgecolor='black', markersize=10, label=domain))
+
+    # Combine the lists to ensure blue domains are first, followed by red and grey
+    custom_legend = blue_legend + red_legend + grey_legend
+
+    # Plot the legend with the blue ones first, followed by the red ones
+    plt.legend(custom_legend, [line.get_label() for line in blue_legend + red_legend + grey_legend],
+               title='Domain', fontsize=12, loc='upper right', bbox_to_anchor=(-0.1, 1), ncol=2)
+
     sm_blue = plt.cm.ScalarMappable(cmap='Blues', norm=Normalize(vmin=df_filtered['instance'].min(),
                                                                  vmax=df_filtered['instance'].max()))
     sm_red = plt.cm.ScalarMappable(cmap='Reds', norm=Normalize(vmin=df_filtered['instance'].min(),
@@ -133,29 +200,38 @@ def scatter_plot(df, log, x, y, min_instance, max_instance, timeout):
     sm_blue._A = []
     sm_red._A = []
     fig = plt.gcf()
-    plt.colorbar(sm_blue, ax=fig.gca(),label='Instance Number (Classical Domains)')
-    plt.colorbar(sm_red, ax=fig.gca(),label='Instance Number (Numerical Domains)')
+    cax1 = fig.add_axes([0.8, 0.1, 0.03, 0.8])  # Adjust the position [left, bottom, width, height]
+    sm_blue = plt.cm.ScalarMappable(cmap='Blues', norm=Normalize(vmin=df_filtered['instance'].min(),
+                                                                 vmax=df_filtered['instance'].max()))
+    sm_blue._A = []
+    plt.colorbar(sm_blue, cax=cax1, label='Instance Number (Classical Domains)')
 
+    # Create the second color bar (Numerical Domains)
+    cax2 = fig.add_axes([0.87, 0.1, 0.03, 0.8])  # Adjust the position [left, bottom, width, height]
+    sm_red = plt.cm.ScalarMappable(cmap='Reds', norm=Normalize(vmin=df_filtered['instance'].min(),
+                                                               vmax=df_filtered['instance'].max()))
+    sm_red._A = []
+    plt.colorbar(sm_red, cax=cax2, label='Instance Number (Numerical Domains)')
+
+    # Adjust layout for better space utilization
     plt.tight_layout()
+
     plt.show()
 
 
 def compare_pars(df, domain, min_instance, max_instance, timeout, par):
-    # df = df[df['domain'] == domain]
-    timeout_penalty = timeout * par * 60
+    df = df[df['domain'] == domain]
+    timeout_penalty = timeout * par
     total_times = {}
 
     for planner_tag in df['planner_tag'].unique():
         planner_data = df[df['planner_tag'] == planner_tag]
         total_time = 0
 
-        for instance in range(1, max_instance + 1):
-            instance_time = planner_data[planner_data['instance'] == instance]['planning_time']
-
-            if not instance_time.empty:
-                total_time += instance_time.iloc[0]
-            else:
-                total_time += timeout_penalty
+        for time in planner_data['planning_time']:
+            total_time += time
+        for i in range(len(planner_data), max_instance):
+            total_time += timeout_penalty
 
         total_times[planner_tag] = total_time
 
@@ -195,13 +271,15 @@ def cactus_all(df, log, total_instances, timeout, par):
             times.append(timeout_penalty)
         times.sort()
         x_values = list(range(1, len(times) + 1))
-        plt.plot(x_values, times, label=planner_tag, marker='o', markersize=6, linestyle='-', linewidth=2)
+        plt.plot(x_values, times, label=planner_tag, c=color_map[planner_tag],  marker='o', markersize=6, linestyle='-', linewidth=2)
 
-    plt.title(f'Planning Time Comparison for All Domain Encodings', fontsize=18)
-    plt.xlabel('Number of Instances Solved', fontsize=14)
-    plt.ylabel('Planning Time (minutes)', fontsize=14)
-    plt.legend(title='Approach', loc='upper left', fontsize=12)
+    plt.title(f'Time to Solve Instances for All Domains', fontsize=20)
+    plt.xlabel('Number of Instances Solved', fontsize=18)
+    plt.ylabel('Planning Time (minutes)', fontsize=18)
+    plt.legend(title='Approach', loc='upper left', fontsize=16)
     plt.grid(which='both', linestyle='--', linewidth=0.5)
+    plt.tick_params(axis='both', which='major', labelsize=14)  # Adjust 'labelsize' as needed
+    plt.tick_params(axis='both', which='minor', labelsize=14)
     plt.gca().set_aspect('auto')
     plt.tight_layout()
     plt.show()
@@ -222,8 +300,13 @@ def par_all(df, total_instances, timeout, par):
 
     total_times_series = pd.Series(total_times).sort_values()
 
+    colors = total_times_series.index.map(
+        lambda x: 'orange' if '∀' in x else ('blue' if '∃' in x else 'steelblue')
+    )
+
+    # Plot with the specified colors
     plt.figure(figsize=(10, 6))
-    ax = total_times_series.plot(kind='barh', color='steelblue', edgecolor='black')
+    ax = total_times_series.plot(kind='barh', color=colors, edgecolor='black')
 
     ax.set_title(f'Par {par} comparison for {timeout}m Time Limit on {total_instances} Instances', fontsize=16, fontweight='bold',
                  pad=20)
@@ -241,9 +324,9 @@ def par_all(df, total_instances, timeout, par):
 
 
 def compare_domains(df, p1, p2, timeout, par):
+    df = df[~df['domain'].str.contains("sailing", na=False)]
     timeout_penalty = timeout * par
     df = df[df['planner_tag'].isin([p1, p2])]
-    df['domain'] = df['domain'].str.replace(r'sec_clear_\d+_\d+-linear', 'sec_clearance', regex=True)
     domain_ratios = {}
     for domain in df['domain'].unique():
         domain_data = df[df['domain'] == domain]
@@ -255,12 +338,12 @@ def compare_domains(df, p1, p2, timeout, par):
         domain_ratios[domain] = ratio
     sorted_domains = sorted(domain_ratios.items(), key=lambda x: x[1])
     domains, ratios = zip(*sorted_domains)
-    # Plotting the horizontal bar chart
+    colors = ['blue' if domain in cls_domains else 'red' for domain in domains]
     plt.figure(figsize=(12, 8))
-    plt.barh(domains, ratios, color='skyblue', edgecolor='black')
+    plt.barh(domains, ratios, color=colors, edgecolor='black')
     plt.axvline(1, color='red', linestyle='--', label='Equal Performance (Ratio = 1)')
-    plt.xlabel(f'Time Ratio ({p1}/{p2})')
-    plt.ylabel('Domains')
+    plt.xlabel(f'PAR-2 Time Ratio ({p1}/{p2})')
+    plt.ylabel('Domain')
     plt.title(f'Comparison of {p1} and {p2} Across Domains')
     plt.legend()
     plt.tight_layout()
@@ -268,45 +351,71 @@ def compare_domains(df, p1, p2, timeout, par):
 
 
 
+def include_data(df, planner):
+    df = df[df['planner_tag'].isin(planner)]
+    return df
 
+
+def replace_names(df):
+    df['planner_tag'] = df['planner_tag'].replace('forall-noprop', 'Eager ∀ (No Propagator)')
+    df['planner_tag'] = df['planner_tag'].replace('forall', 'Eager ∀')
+    df['planner_tag'] = df['planner_tag'].replace('forall-lazy', 'Naive Lazy ∀')
+    df['planner_tag'] = df['planner_tag'].replace('forall-code', 'Code-Optimised Lazy ∀')
+    df['planner_tag'] = df['planner_tag'].replace('forall-final', 'Final Conflict ∀')
+    df['planner_tag'] = df['planner_tag'].replace('forall-stepshare', 'Stepsharing ∀')
+    df['planner_tag'] = df['planner_tag'].replace('forall-prop', 'Neighbours ∀')
+
+    df['planner_tag'] = df['planner_tag'].replace('exists-noprop', 'Eager ∃ (No Propagator)')
+    df['planner_tag'] = df['planner_tag'].replace('exists', 'Eager ∃')
+    df['planner_tag'] = df['planner_tag'].replace('exists-lazy', 'Naive Lazy ∃')
+    df['planner_tag'] = df['planner_tag'].replace('exists-code', 'Code-Optimised Lazy ∃')
+    df['planner_tag'] = df['planner_tag'].replace('exists-final', 'Final Conflict ∃')
+    df['planner_tag'] = df['planner_tag'].replace('exists-stepshare', 'Stepsharing ∃')
+    df['planner_tag'] = df['planner_tag'].replace('exists-prop', 'Ghost Node ∃')
+    return df
 
 
 
 
 def display_data(df):
-    # df = df[df['planner_tag'].str.contains("forall", na=False)]
-    # df['planner_tag'] = df['planner_tag'].replace('forall', 'Eager ∀-Step Encoding')
-    # df['planner_tag'] = df['planner_tag'].replace('forall-lazy', 'Lazy ∀-Step Encoding')
-    # df['planner_tag'] = df['planner_tag'].replace('forall-lazy', 'Lazy ∀ (No Propagation)')
-    # df['planner_tag'] = df['planner_tag'].replace('forall-code', 'Lazy ∀-Step Encoding\n(Optimised Code)')
-    # df['planner_tag'] = df['planner_tag'].replace('exists', 'Eager ∃-Step Encoding')
-    # # df['planner_tag'] = df['planner_tag'].replace('exists-lazy', 'Lazy ∃-Step Encoding')
-    # df['planner_tag'] = df['planner_tag'].replace('exists-lazy', 'Lazy ∃ (No Propagation)')
-    # df['planner_tag'] = df['planner_tag'].replace('exists-cycle', 'Lazy Incremental Cycle ∃-Step')
-    # df['planner_tag'] = df['planner_tag'].replace('forall-prop-id', 'Lazy ∀ (e=Not(B) ids=[A, A])')
-    # df['planner_tag'] = df['planner_tag'].replace('exists-prop-id', 'Lazy ∃ (e=Not(B) ids=[A, A])')
-    # df['planner_tag'] = df['planner_tag'].replace('exists-prop-clause', 'Lazy ∃ (e=Not(B) or Not(A))')
-    # df['planner_tag'] = df['planner_tag'].replace('forall-prop-clause', 'Lazy ∀ (e=Not(B) or Not(A))')
-    # df['planner_tag'] = df['planner_tag'].replace('exists-cycle', 'Lazy Incremental Cycle ∃-Step')
-    # df['planner_tag'] = df['planner_tag'].replace('exists-cycle', 'Lazy Incremental Cycle ∃-Step')
+    # df = include_data(df, ['forall-code', 'forall-prop', 'exists-code', 'exists-prop'])
+    df = replace_names(df)
     df['planning_time'] = df['planning_time'] / 60
-    # df = df
-    # [(df['planner_tag'] == 'forall-lazy') | (df['planner_tag'] == 'forall-code')]
-    # scatter_plot(df, True, "exists","exists-lazy", 1,30, 30)
-    # cactus_plot(df, "fo-counters", "tsp", False,  total_instances['petrobras'], 30/60, 1)
-    # compare_pars(df, "rovers",0, 10, 30, 2)
-    # cactus_all(df, False, 200, 30, 1)
-    # par_all(df, 200, 30, 2)
-    compare_domains(df, "exists-lazy", "exists", 30, 2)
-
+#     # [(df['planner_tag'] == 'forall-lazy') | (df['planner_tag'] == 'forall-code')]
+#     # scatter_plot(df, True, "Lazy ∃-Step","Eager ∃-Step", 30)
+#     # scatter_plot(df, True, "Lazy ∀-Step","Eager ∀-Step", 30)
+#     cactus_plot(df, "rovers", "tsp", False,  18, 30, 1)
+#     compare_pars(df, "rovers",0, 20, 30, 2)
+#     cactus_all(df, False, 650, 30, 1)
+    par_all(df, 650, 30, 2)
+#     compare_domains(df,  "forall-prop", "forall-code",30, 2)
 
 
 
 # df = pd.concat([get_data(folder_path), get_data("/Users/lukeroooney/Desktop/saved-data/dump_results2")], ignore_index=True)
-# df = df.drop_duplicates(subset=['instance', 'domain', 'planner_tag'], keep='first')
 df =  pd.read_csv(folder_path)
+# df['domain'] = df['domain'].str.replace(r'sec_clear_\d+_\d+-linear', 'sec_clearance', regex=True)
+# df = df.drop_duplicates(subset=['instance', 'domain', 'planner_tag'], keep='first')
+#
+df = df[~df['domain'].str.contains("elevators", na=False)]
+# df = df[~df['domain'].str.contains("logistics", na=False)]
+# df = df[~df['domain'].str.contains("schedule", na=False)]
+# df = df[~df['domain'].str.contains("plant-watering", na=False)]
+# df = df[~df['domain'].str.contains("counters", na=False)]
+# df = df[~df['domain'].str.contains("tpp", na=False)]
 
-df = df[df['domain'] != 'counters']
+# df = df[df['planner_tag'].str.contains("lazy", na=False)]
+# df = df[df['planner_tag'].str.contains("forall", na=False)]
 
-# df = df[(df['planner_tag'] != "forall-lazy-optimal") & (df['planner_tag'] != "exists-lazy-optimal")& (df['planner_tag'] != "exists-noprop")& (df['planner_tag'] != "forall-noprop")]
+# df = df[~df['domain'].str.contains("num", na=False)]
+# df['domain'] = df['domain'].str.replace(r'sec_clear_\d+_\d+-linear', 'sec_clearance', regex=True)
+
+# df = df[(df['planner_tag'] == "forall") | (df['planner_tag'] == "forall-lazy") | (df['planner_tag'] == "exists") |(df['planner_tag'] == "exists-lazy")]
+# df = df[(df['planner_tag'] == "exists-code") ]
+
 display_data(df)
+
+# step_count(df, "counters")
+
+
+
