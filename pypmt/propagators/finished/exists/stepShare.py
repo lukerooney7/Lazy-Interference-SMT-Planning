@@ -19,6 +19,7 @@ class ExistsStepSharePropagator(z3.UserPropagateBase):
         self.levels = []
         self.consistent = True
         self.mutexes = defaultdict(int)
+        self.nots = defaultdict(dict)
 
     def push(self):
         self.levels.append((len(self.trail_current), len(self.trail_ancestors), len(self.trail_descendants)))
@@ -40,29 +41,22 @@ class ExistsStepSharePropagator(z3.UserPropagateBase):
                     step, action, descendant = self.trail_descendants.pop()
                     self.ancestors[step][action].discard(descendant)
 
-    def step_share(self, source, dest, step):
-        current_mutex = self.mutexes[(source, dest)]
 
+    def step_share(self, action_name, node, step):
+        current_mutex = self.mutexes[(action_name, node)]
         if step <= current_mutex or step < 1:
             return
 
-        # Loop from step back to the last stepshare
-        for i in range(step, max(current_mutex, step-5), -1):
-            dest_var = self.encoder.get_action_var(dest, i)
-            source_var = self.encoder.get_action_var(source, i)
-            self.propagate(z3.Not(dest_var), [source_var, source_var])
+        # Loop from step to the current mutex value (decrement)
+        for i in range(step, current_mutex, -1):
+            justification = self.encoder.get_action_var(action_name, i)
+            if node not in self.nots[i]:
+                self.nots[i][node] = z3.Not(self.encoder.get_action_var(node, i))
+            self.propagate(self.nots[i][node], [justification, justification])
 
-        self.mutexes[(source, dest)] = step
+        self.mutexes[(action_name, node)] = step
 
     def incremental_cycle(self, step, source, dest):
-        self.current[step].add_edge(source, dest)
-        if self.current[step].has_edge(dest, source):
-            self.step_share(source, dest, step)
-            self.conflict(deps=[self.encoder.get_action_var(source, step),
-                                self.encoder.get_action_var(dest, step)], eqs=[])
-            self.consistent = False
-            return
-
         to_explore = [dest]
         while len(to_explore) > 0:
             node = to_explore.pop()
@@ -108,7 +102,20 @@ class ExistsStepSharePropagator(z3.UserPropagateBase):
             # Incremental Cycle Detection
             for source, _ in self.graph.in_edges(action_name):
                 if source in self.current[step]:
-                    self.incremental_cycle(step, source, action_name)
+                    self.current[step].add_edge(source, action_name)
+                    if self.current[step].has_edge(action_name, source):
+                        self.step_share(action_name, source, step)
+                        self.conflict(deps=[self.encoder.get_action_var(source, step), action], eqs=[])
+                        self.consistent = False
+                        return
+                    else:
+                        self.incremental_cycle(step, source, action_name)
             for _, dest in self.graph.edges(action_name):
                 if dest in self.current[step]:
-                    self.incremental_cycle(step, action_name, dest)
+                    if self.current[step].has_edge(dest, action_name):
+                        self.step_share(action_name, dest, step)
+                        self.conflict(deps=[self.encoder.get_action_var(dest, step), action], eqs=[])
+                        self.consistent = False
+                        return
+                    else:
+                        self.incremental_cycle(step, action_name, dest)

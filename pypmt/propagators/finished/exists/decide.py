@@ -1,24 +1,29 @@
 from collections import defaultdict
+
 import networkx as nx
 import z3
 
 
-class ExistsPropPropagator(z3.UserPropagateBase):
+def split_action(action):
+    actions = str(action).split('_')
+    return int(actions[-1]), '_'.join(actions[:-1])
+
+
+class ExistsDecidePropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.add_fixed(lambda x, v: self._fixed(x, v))
+        self.add_decide(lambda t, idx, phase: self._decide(t, idx))
         self.encoder = e
         self.graph = self.encoder.modifier.graph
         self.current = [nx.DiGraph()]
-        self.ancestors = [{}]
-        self.descendants = [{}]
+        self.ancestors = [defaultdict(set)]
+        self.descendants = [defaultdict(set)]
         self.trail_current = []
         self.trail_ancestors = []
         self.trail_descendants = []
         self.levels = []
         self.consistent = True
-        self.propagated = defaultdict(set)
-        self.nots = defaultdict(dict)
 
     def push(self):
         self.levels.append((len(self.trail_current), len(self.trail_ancestors), len(self.trail_descendants)))
@@ -39,6 +44,25 @@ class ExistsPropPropagator(z3.UserPropagateBase):
                 while len(self.trail_descendants) > anc_idx:
                     step, action, descendant = self.trail_descendants.pop()
                     self.ancestors[step][action].discard(descendant)
+
+    def _decide(self, t, idx):
+        step, action_name = split_action(t)
+        if step >= len(self.current) or not self.current[step]:
+            self.next_split(t=t, idx=idx, phase=1)
+            return
+
+        nodes = set(self.current[step].nodes)
+        descendents = (self.descendants[step][action_name])
+        ancestors = (self.ancestors[step][action_name])
+        for a in set(self.graph.predecessors(action_name)) & nodes:
+            if set(self.graph.predecessors(a)) & descendents:
+                self.next_split(t=t, idx=idx, phase=-1)
+                return
+        for a in set(self.graph.successors(action_name)) & nodes:
+            if set(self.graph.neighbors(a)) & ancestors:
+                self.next_split(t=t, idx=idx, phase=-1)
+                return
+        self.next_split(t=t, idx=idx, phase=0)
 
     def incremental_cycle(self, step, source, dest):
         self.current[step].add_edge(source, dest)
@@ -69,8 +93,8 @@ class ExistsPropPropagator(z3.UserPropagateBase):
             if step >= len(self.current):
                 while step >= len(self.current):
                     self.current.append(nx.DiGraph())
-                    self.ancestors.append({})
-                    self.descendants.append({})
+                    self.ancestors.append(defaultdict(set))
+                    self.descendants.append(defaultdict(set))
                 self.current[step].add_node(action_name)
                 if action_name not in self.ancestors[step]:
                     # Initialise ancestors/descendants if new node
@@ -85,33 +109,9 @@ class ExistsPropPropagator(z3.UserPropagateBase):
                 self.ancestors[step][action_name] = set()
                 self.descendants[step][action_name] = set()
             # Incremental Cycle Detection
-            descendents = (self.descendants[step][action_name] | {action_name})
-            for source in self.graph.predecessors(action_name):
+            for source, _ in self.graph.in_edges(action_name):
                 if source in self.current[step]:
                     self.incremental_cycle(step, source, action_name)
-                elif (set(self.graph.predecessors(source)) & descendents
-                      and (source, action_name) not in self.propagated[step]):
-                    if source not in self.nots[step]:
-                        self.nots[step][source] = z3.Not(self.encoder.get_action_var(source, step))
-                    self.propagate(
-                        e=self.nots[step][source],
-                        ids=[action, action],
-                        eqs=[]
-                    )
-                    self.propagated[step].add((source, action_name))
-                    self.propagated[step].add((action_name, source))
-            ancestors = (self.ancestors[step][action_name] | {action_name})
-            for dest in self.graph.neighbors(action_name):
+            for _, dest in self.graph.edges(action_name):
                 if dest in self.current[step]:
                     self.incremental_cycle(step, action_name, dest)
-                elif (set(self.graph.neighbors(dest)) & ancestors
-                      and (action_name, dest) not in self.propagated[step]):
-                    if dest not in self.nots[step]:
-                        self.nots[step][dest] = z3.Not(self.encoder.get_action_var(dest, step))
-                    self.propagate(
-                        e=self.nots[step][dest],
-                        ids=[action, action],
-                        eqs=[]
-                    )
-                    self.propagated[step].add((dest, action_name))
-                    self.propagated[step].add((action_name, dest))

@@ -14,6 +14,7 @@ class ForallStepSharePropagator(z3.UserPropagateBase):
         self.levels = []
         self.consistent = True
         self.mutexes = defaultdict(int)
+        self.nots = defaultdict(dict)
 
     def push(self):
         self.levels.append(len(self.trail))
@@ -29,20 +30,19 @@ class ForallStepSharePropagator(z3.UserPropagateBase):
                     self.current[step].remove(action)
         self.consistent = True
 
-    def step_share(self, source, dest, step):
-        current_mutex = self.mutexes[(source, dest)]
-
+    def step_share(self, action_name, node, step):
+        current_mutex = self.mutexes[(action_name, node)]
         if step <= current_mutex or step < 1:
             return
 
         # Loop from step to the current mutex value (decrement)
-        for i in range(step, max(current_mutex, step-5), -1):
-            dest_var = self.encoder.get_action_var(dest, i)
-            source_var = self.encoder.get_action_var(source, i)
-            self.propagate(z3.Not(dest_var), [source_var, source_var])
+        for i in range(step, current_mutex, -1):
+            justification = self.encoder.get_action_var(action_name, i)
+            if node not in self.nots[i]:
+                self.nots[i][node] = z3.Not(self.encoder.get_action_var(node, i))
+            self.propagate(self.nots[i][node], [justification, justification])
 
-        # new_mutex_value = max(current_mutex, step)
-        self.mutexes[(source, dest)] = step
+        self.mutexes[(action_name, node)] = step
 
     def _fixed(self, action, value):
         if value and self.consistent:
