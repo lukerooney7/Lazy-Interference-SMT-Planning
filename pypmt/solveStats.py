@@ -26,7 +26,7 @@ def save_stats(planner):
     stats_dict['problem'] = name
     stats_dict['length'] = len(planner.solution)
     stats_dict['steps'] = planner.horizon + 1
-    # stats_dict['mutexes'] = len(planner.encoder.modifier.mutexes) + planner.propagator.mutexes
+    stats_dict['mutexes'] = len(planner.encoder.modifier.mutexes) + planner.propagator.mutexes
     # stats_dict['instance'] = instance
     stats_dict['propagator'] = planner.propagator.name
     # fieldnames = ['domain', 'length', 'steps', 'mutexes', 'instance', 'propagator']  # Predefined field names

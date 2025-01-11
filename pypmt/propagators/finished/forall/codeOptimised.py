@@ -5,6 +5,7 @@ class ForallCodePropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.name = "forall-code"
+        self.mutexes = 0
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.encoder = e
         self.graph = self.encoder.modifier.graph
@@ -45,10 +46,12 @@ class ForallCodePropagator(z3.UserPropagateBase):
             for dest in self.current[step] & set(self.graph.neighbors(action_name)):
                 literals.add(self.encoder.get_action_var(dest, step))
                 self.consistent = False
+                self.mutexes += 1
             # Checking and adding in nodes using set intersection
             for source in self.current[step] & set(self.graph.predecessors(action_name)):
                 literals.add(self.encoder.get_action_var(source, step))
                 self.consistent = False
+                self.mutexes += 1
             # Check if anything has caused interference
             if literals:
                 literals.add(action)  # New action itself is only added once

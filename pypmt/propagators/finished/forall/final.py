@@ -28,7 +28,7 @@ class ForallFinalPropagator(z3.UserPropagateBase):
         for i, step in enumerate(self.current):
             for source, dest in step.edges:
                 self.conflict(deps=[self.encoder.get_action_var(source, i), self.encoder.get_action_var(dest, i)], eqs=[])
-
+                self.mutexes += 1
     def _fixed(self, action, value):
         if value:
             # Parse action name and step

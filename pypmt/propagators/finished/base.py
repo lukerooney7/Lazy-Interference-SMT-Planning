@@ -10,7 +10,7 @@ class BasePropagator(z3.UserPropagateBase):
     def __init__(self, e=None, s=None, ctx=None):
         # We need to call the parent constructor for Z3 to do its magic.
         super().__init__(s, ctx)
-        self.name = "exists"
+        self.name = "forall"
         self.mutexes = 0
 
         # The encoder holds the semantic mappings between UP and Z3 variables.

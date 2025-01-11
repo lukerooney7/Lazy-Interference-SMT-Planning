@@ -11,6 +11,7 @@ class ExistsBasicPropagator(z3.UserPropagateBase):
         self.graph = self.encoder.modifier.graph
         self.current = [nx.DiGraph()]
         self.name = "exists-lazy"
+        self.mutexes = 0
         self.stack = []
 
     def push(self):
@@ -44,6 +45,7 @@ class ExistsBasicPropagator(z3.UserPropagateBase):
                 if cycle:
                     for source, _ in cycle:
                         literals.add(self.encoder.get_action_var(source, step))
+                        self.mutexes += 1
             except NetworkXNoCycle:
                 pass
             # If interference throw conflict

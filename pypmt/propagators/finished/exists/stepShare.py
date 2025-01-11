@@ -8,6 +8,7 @@ class ExistsStepSharePropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.name = "exists-stepshare"
+        self.mutexes = 0
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.encoder = e
         self.graph = self.encoder.modifier.graph
@@ -47,13 +48,13 @@ class ExistsStepSharePropagator(z3.UserPropagateBase):
         current_mutex = self.mutexes[(action_name, node)]
         if step <= current_mutex or step < 1:
             return
-
         # Loop from step to the current mutex value (decrement)
         for i in range(step, current_mutex, -1):
             justification = self.encoder.get_action_var(action_name, i)
             if node not in self.nots[i]:
                 self.nots[i][node] = z3.Not(self.encoder.get_action_var(node, i))
             self.propagate(self.nots[i][node], [justification, justification])
+            self.mutexes += 1
 
         self.mutexes[(action_name, node)] = step
 
@@ -65,6 +66,7 @@ class ExistsStepSharePropagator(z3.UserPropagateBase):
                 self.conflict(deps=[self.encoder.get_action_var(source, step),
                                     self.encoder.get_action_var(dest, step)], eqs=[])
                 self.consistent = False
+                self.mutexes += 1
                 break
             elif source in self.ancestors[step][node]:
                 pass

@@ -6,6 +6,7 @@ class ExistsFinalPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.name = "exists-final"
+        self.mutexes = 0
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.add_final(lambda: self._final())
         self.encoder = e
@@ -42,6 +43,7 @@ class ExistsFinalPropagator(z3.UserPropagateBase):
         for step in self.conflict_edges:
             for source, dest in step:
                 self.conflict(deps=[source, dest], eqs=[])
+                self.mutexes += 1
 
     def _fixed(self, action, value):
         if value:

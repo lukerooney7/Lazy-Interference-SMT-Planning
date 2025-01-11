@@ -7,6 +7,7 @@ class ExistsPropPropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
         self.name = "exists-prop"
+        self.mutexes = 0
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.encoder = e
         self.graph = self.encoder.modifier.graph
@@ -50,6 +51,7 @@ class ExistsPropPropagator(z3.UserPropagateBase):
                 self.conflict(deps=[self.encoder.get_action_var(source, step),
                                     self.encoder.get_action_var(dest, step)], eqs=[])
                 self.consistent = False
+                self.mutexes += 1
                 break
             elif source in self.ancestors[step][node]:
                 pass
@@ -101,6 +103,7 @@ class ExistsPropPropagator(z3.UserPropagateBase):
                     )
                     self.propagated[step].add((source, action_name))
                     self.propagated[step].add((action_name, source))
+                    self.mutexes += 1
             ancestors = (self.ancestors[step][action_name] | {action_name})
             for dest in self.graph.neighbors(action_name):
                 if dest in self.current[step]:
@@ -116,3 +119,4 @@ class ExistsPropPropagator(z3.UserPropagateBase):
                     )
                     self.propagated[step].add((dest, action_name))
                     self.propagated[step].add((action_name, dest))
+                    self.mutexes += 1
