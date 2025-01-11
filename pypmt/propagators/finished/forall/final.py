@@ -12,7 +12,7 @@ class ForallFinalPropagator(z3.UserPropagateBase):
         self.current = [nx.DiGraph()]
         self.stack = []
         self.mutexes = 0
-        self.name = "forall-lazy"
+        self.name = "forall-final"
 
     def push(self):
         new = []

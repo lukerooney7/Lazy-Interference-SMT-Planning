@@ -15,7 +15,9 @@ from pypmt.planner.lifted import LiftedSearch
 from pypmt.planner.QFUF import QFUFSearch
 from pypmt.planner.OMT import OMTSearch
 from pypmt.propagators.finished.exists.decide import ExistsDecidePropagator
+from pypmt.propagators.finished.forall.base import ForallBasePropagator
 from pypmt.propagators.finished.base import BasePropagator
+from pypmt.propagators.finished.exists.base import ExistsBasePropagator
 from pypmt.propagators.finished.exists.basic import ExistsBasicPropagator
 from pypmt.propagators.finished.exists.stepShare import ExistsStepSharePropagator
 from pypmt.propagators.finished.exists.codeOptimised import ExistsCodePropagator
@@ -104,7 +106,7 @@ class Config:
             "encoder": EncoderForall,
             "search": SMTSearchActionPropagator,
             "compilationlist": grounded_encoders_default_compilation_list,
-            "propagator": BasePropagator
+            "propagator": ForallBasePropagator
         },
         "forall-lazy": {
             "encoder": EncoderForallLazy,
@@ -164,7 +166,7 @@ class Config:
             "encoder": EncoderExists,
             "search": SMTSearchActionPropagator,
             "compilationlist": grounded_encoders_default_compilation_list,
-            "propagator": BasePropagator
+            "propagator": ExistsBasePropagator
         },
         "exists-lazy": {
             "encoder": EncoderExistsLazy,

@@ -5,6 +5,7 @@ import z3
 class ExistsCodePropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
+        self.name = "exists-code"
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.encoder = e
         self.graph = self.encoder.modifier.graph

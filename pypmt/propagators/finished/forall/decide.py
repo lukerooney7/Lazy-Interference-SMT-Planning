@@ -9,6 +9,7 @@ def split_action(action):
 class ForallDecidePropagator(z3.UserPropagateBase):
     def __init__(self, s, ctx=None, e=None):
         z3.UserPropagateBase.__init__(self, s, ctx)
+        self.name = "forall-decide"
         self.add_fixed(lambda x, v: self._fixed(x, v))
         self.add_decide(lambda t, idx, phase: self._decide(t, idx))
         self.encoder = e
