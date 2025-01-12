@@ -27,13 +27,12 @@ def save_stats(planner):
     stats_dict['length'] = len(planner.solution)
     stats_dict['steps'] = planner.horizon + 1
     stats_dict['mutexes'] = len(planner.encoder.modifier.mutexes) + planner.propagator.mutexes
-    # stats_dict['instance'] = instance
     stats_dict['propagator'] = planner.propagator.name
-    # fieldnames = ['domain', 'length', 'steps', 'mutexes', 'instance', 'propagator']  # Predefined field names
-    # for field in fieldnames:
-    
+    fieldnames = ['decisions', 'propagations', 'conflicts', 'user-propagations', 'final-checks', 'problem', 'length', 'steps', 'mutexes', 'propagator']  # Predefined field names
+
     with open(output_file, mode="a", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=stats_dict.keys())
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
         if not file_exists:
             writer.writeheader()
-        writer.writerow(stats_dict)
+        reordered_stats_dict = {key: stats_dict.get(key, '') for key in fieldnames}
+        writer.writerow(reordered_stats_dict)
