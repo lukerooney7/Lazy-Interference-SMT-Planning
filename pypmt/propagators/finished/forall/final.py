@@ -38,10 +38,11 @@ class ForallFinalPropagator(z3.UserPropagateBase):
             while step >= len(self.current):
                 self.current.append(nx.DiGraph())
             self.current[step].add_node(action_name)
-            # Checking and adding out edges
+            # Adding outwards edges (do not check for interference)
             for source, dest in list(self.graph.edges(action_name)):
                 if dest in self.current[step]:
-                    self.current[step].add_edge(source, dest)            # Checking and adding in edges
+                    self.current[step].add_edge(source, dest)
+            # Adding inwards edges (do not check for interference)
             for source, dest in list(self.graph.in_edges(action_name)):
                 if source in self.current[step]:
                     self.current[step].add_edge(source, dest)

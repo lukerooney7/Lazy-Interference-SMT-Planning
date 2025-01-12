@@ -19,8 +19,8 @@ class ExistsPropPropagator(z3.UserPropagateBase):
         self.trail_descendants = []
         self.levels = []
         self.consistent = True
-        self.propagated = defaultdict(set)
-        self.nots = defaultdict(dict)
+        self.propagated = defaultdict(set)  # Tracks propagated clauses to prevent repropagatio
+        self.nots = defaultdict(dict) # Stores negated actions for Not-Caching
 
     def push(self):
         self.levels.append((len(self.trail_current), len(self.trail_ancestors), len(self.trail_descendants)))

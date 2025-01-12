@@ -16,11 +16,13 @@ class ExistsBasicPropagator(z3.UserPropagateBase):
 
     def push(self):
         new = []
+        # Add a copy of the graph at each step to the stack, in case it needs to be backtracked to
         for graph in self.current:
             new.append(graph.copy())
         self.stack.append(new)
 
     def pop(self, n):
+        # Backtrack n decision levels to restore to a consistent state
         for _ in range(n):
             self.current = self.stack.pop()
 
@@ -48,6 +50,6 @@ class ExistsBasicPropagator(z3.UserPropagateBase):
                         self.mutexes += 1
             except NetworkXNoCycle:
                 pass
-            # If interference throw conflict
+            # If interference detected, throw conflict on the cycle
             if literals:
                 self.conflict(deps=list(literals), eqs=[])

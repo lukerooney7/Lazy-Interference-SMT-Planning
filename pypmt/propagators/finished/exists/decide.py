@@ -50,21 +50,25 @@ class ExistsDecidePropagator(z3.UserPropagateBase):
     def _decide(self, t, idx):
         step, action_name = split_action(t)
         if step >= len(self.current) or not self.current[step]:
+            # A new step or empty step will never cause interference
             self.next_split(t=t, idx=idx, phase=1)
             return
 
         nodes = set(self.current[step].nodes)
         descendents = (self.descendants[step][action_name])
         ancestors = (self.ancestors[step][action_name])
+        # Check if node is a ghost node of an inward neighbour (overlapping ancestors and decendents)
         for a in set(self.graph.predecessors(action_name)) & nodes:
             if set(self.graph.predecessors(a)) & descendents:
                 self.next_split(t=t, idx=idx, phase=-1)
                 return
+        # Check if node is a ghost node of an outward neighbour (overlapping ancestors and decendents)
         for a in set(self.graph.successors(action_name)) & nodes:
             if set(self.graph.neighbors(a)) & ancestors:
                 self.next_split(t=t, idx=idx, phase=-1)
                 return
-        self.next_split(t=t, idx=idx, phase=0)
+        # No interference was detected so should add the node
+        self.next_split(t=t, idx=idx, phase=1)
 
     def incremental_cycle(self, step, source, dest):
         self.current[step].add_edge(source, dest)

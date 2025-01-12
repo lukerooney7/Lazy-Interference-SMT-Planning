@@ -15,8 +15,8 @@ class ForallPropPropagator(z3.UserPropagateBase):
         self.trail = []  # Trail to record changes
         self.levels = []
         self.consistent = True
-        self.propagated = defaultdict(set)
-        self.nots = defaultdict(dict)
+        self.propagated = defaultdict(set) # Tracks propagated clauses to prevent repropagation
+        self.nots = defaultdict(dict) # Stores negated actions for Not-Caching
 
     def push(self):
         self.levels.append(len(self.trail))

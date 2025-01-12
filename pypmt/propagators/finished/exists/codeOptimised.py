@@ -39,6 +39,7 @@ class ExistsCodePropagator(z3.UserPropagateBase):
                     step, action, descendant = self.trail_descendants.pop()
                     self.ancestors[step][action].discard(descendant)
 
+    # Adapted from Incremental Cycle Detection Algorithm: https://api.semanticscholar.org/CorpusID:52255478
     def incremental_cycle(self, step, source, dest):
         self.current[step].add_edge(source, dest)
         to_explore = [dest]

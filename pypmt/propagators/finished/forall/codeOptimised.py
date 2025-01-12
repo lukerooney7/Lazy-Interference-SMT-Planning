@@ -11,8 +11,8 @@ class ForallCodePropagator(z3.UserPropagateBase):
         self.graph = self.encoder.modifier.graph
         self.current = [set()]  # Use a set instead of a NetworkX graph
         self.trail = []  # Trail to record changes
-        self.levels = []
-        self.consistent = True
+        self.levels = [] # Decision levels track where to backtrack to
+        self.consistent = True # Ensures that state is still consistent and does not contain interference
 
     def push(self):
         self.levels.append(len(self.trail))
@@ -26,9 +26,12 @@ class ForallCodePropagator(z3.UserPropagateBase):
                 while len(self.trail) > level_start:
                     step, action = self.trail.pop()
                     self.current[step].remove(action)
+        # Popping returns to a consistent state, so will never have interference
         self.consistent = True
+
     def _fixed(self, action, value):
-        if value and self.consistent:
+
+        if value and self.consistent: # Only carry out logic if state is consistent
             # Parse action name and step
             actions = str(action).split('_')
             step = int(actions[-1])
@@ -42,12 +45,13 @@ class ForallCodePropagator(z3.UserPropagateBase):
                 return
             literals = set()
             self.trail.append((step, action_name))
-            self.current[step].add(action_name)
+            self.current[step].add(action_name) # Just add to the set (don't need graph)
+            # Checking and adding out nodes using set intersection (only loop valid nodes by set intersecting)
             for dest in self.current[step] & set(self.graph.neighbors(action_name)):
                 literals.add(self.encoder.get_action_var(dest, step))
                 self.consistent = False
                 self.mutexes += 1
-            # Checking and adding in nodes using set intersection
+            # Checking and adding in nodes using set intersection (only loop valid nodes by set intersecting)
             for source in self.current[step] & set(self.graph.predecessors(action_name)):
                 literals.add(self.encoder.get_action_var(source, step))
                 self.consistent = False

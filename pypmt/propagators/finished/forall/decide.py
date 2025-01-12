@@ -38,16 +38,18 @@ class ForallDecidePropagator(z3.UserPropagateBase):
     def _decide(self, t, idx):
         step, action_name = split_action(t)
         if step >= len(self.current) or not self.current[step]:
+            # A new step or empty step will never cause interference
             self.next_split(t=t, idx=idx, phase=1)
             return
-        # Checking if this action has an edge to any that are already True
+        # Caching neighbours
         if action_name not in self.neighbours:
             self.neighbours[action_name] = set(self.graph.successors(action_name)) | set(
                 self.graph.predecessors(action_name))
+        # Checking if this action has an edge to any that are already True via set-intersect
         if self.neighbours[action_name] & self.current[step]:
-            self.next_split(t=t, idx=idx, phase=-1)
+            self.next_split(t=t, idx=idx, phase=-1) # False if will cause interference
         else:
-            self.next_split(t=t, idx=idx, phase=1)
+            self.next_split(t=t, idx=idx, phase=1) # True otherwise
 
     def _fixed(self, action, value):
         if value and self.consistent:

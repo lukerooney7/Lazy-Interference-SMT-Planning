@@ -20,8 +20,8 @@ class ExistsStepSharePropagator(z3.UserPropagateBase):
         self.trail_descendants = []
         self.levels = []
         self.consistent = True
-        self.mutexes = defaultdict(int)
-        self.nots = defaultdict(dict)
+        self.last_steps = defaultdict(int)
+        self.nots = defaultdict(dict) # Stores negated actions for Not-Caching
 
     def push(self):
         self.levels.append((len(self.trail_current), len(self.trail_ancestors), len(self.trail_descendants)))
@@ -45,18 +45,18 @@ class ExistsStepSharePropagator(z3.UserPropagateBase):
 
 
     def step_share(self, action_name, node, step):
-        current_mutex = self.mutexes[(action_name, node)]
-        if step <= current_mutex or step < 1:
+        last_step = self.last_steps[(action_name, node)]
+        if step <= last_step or step < 1:
             return
         # Loop from step to the current mutex value (decrement)
-        for i in range(step, current_mutex, -1):
+        for i in range(step, last_step, -1):
             justification = self.encoder.get_action_var(action_name, i)
             if node not in self.nots[i]:
                 self.nots[i][node] = z3.Not(self.encoder.get_action_var(node, i))
             self.propagate(self.nots[i][node], [justification, justification])
             self.mutexes += 1
 
-        self.mutexes[(action_name, node)] = step
+        self.last_steps[(action_name, node)] = step
 
     def incremental_cycle(self, step, source, dest):
         to_explore = [dest]
