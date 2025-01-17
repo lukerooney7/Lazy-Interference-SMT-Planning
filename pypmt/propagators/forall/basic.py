@@ -14,7 +14,6 @@ class ForallBasicPropagator(z3.UserPropagateBase):
         self.name = "forall-lazy"
 
     def push(self):
-        print(f"Push")
         new = []
         # Add a copy of the graph at each step to the stack, in case it needs to be backtracked to
         for graph in self.current:
@@ -22,13 +21,12 @@ class ForallBasicPropagator(z3.UserPropagateBase):
         self.stack.append(new)
 
     def pop(self, n):
-        print(f"Pop")
+
         # Backtrack n decision levels to restore to a consistent state
         for _ in range(n):
             self.current = self.stack.pop()
 
     def _fixed(self, action, value):
-        print(f"Fixing {action}")
         if value:
             # Parse action name and step
             actions = str(action).split('_')

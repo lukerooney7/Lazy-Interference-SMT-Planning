@@ -41,11 +41,11 @@ def get_data(folder_path):
 
 
 
-def file_to_csv():
-    folder = "/Users/lukeroooney/Desktop/Dissertation/data/dump_files/stepshare2"
+def file_to_csv(file):
+    folder = f'/Users/lukeroooney/Desktop/Dissertation/data/dump_files/{file}'
     df = get_data(folder)
 
-    df.to_csv("/Users/lukeroooney/Desktop/Dissertation/data/csvs/stepshare2.csv", index=False)
+    df.to_csv(f'/Users/lukeroooney/Desktop/Dissertation/data/csvs/{file}.csv', index=False)
     print('created CSV')
 
 
@@ -54,23 +54,13 @@ def combine_csvs():
     dfs = []
 
     for file_name in os.listdir(folder_path):
-        if file_name == "stepshare.csv":
-            continue
         if file_name.endswith('.csv'):
             file_path = os.path.join(folder_path, file_name)
             df = pd.read_csv(file_path)
-
-            # if 'classical' in file_name:
-            #     suffix = '_cls'
-            # elif 'numeric' in file_name:
-            #     suffix = '_num'
-            # else:
-            #     continue
-            # df['domain'] = df['domain'] + suffix
             dfs.append(df)
 
     combined_df = pd.concat(dfs, ignore_index=True)
-    combined_df.to_csv("/Users/lukeroooney/Desktop/Dissertation/data/csvs/all.csv", index=False)
+    combined_df.to_csv("", index=False)
 
-# file_to_csv()
+file_to_csv("")
 combine_csvs()

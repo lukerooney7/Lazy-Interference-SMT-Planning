@@ -20,7 +20,17 @@ def extract_data(file_path):
 
 
 def create_bar_chart(data):
-    """Creates a bar chart of average plan length per domain."""
+    """
+    Creates a bar chart of average plan length per domain, formatted for academic presentation.
+
+    Parameters:
+        data (list of tuples): A list where each tuple contains a domain (str)
+                               and a plan length (int/float).
+    """
+    # Validate input data
+    if not data:
+        raise ValueError("The input data is empty. Please provide a non-empty dataset.")
+
     # Compute average plan length for each domain
     domain_totals = defaultdict(int)
     domain_counts = defaultdict(int)
@@ -29,20 +39,28 @@ def create_bar_chart(data):
         domain_totals[domain] += plan_length
         domain_counts[domain] += 1
 
+    # Calculate average plan lengths
     average_plan_lengths = {domain: domain_totals[domain] / domain_counts[domain] for domain in domain_totals}
 
-    # Sort domains alphabetically
+    # Sort domains by average plan length in descending order
     sorted_domains = sorted(average_plan_lengths.keys(), key=lambda d: average_plan_lengths[d], reverse=True)
     sorted_averages = [average_plan_lengths[domain] for domain in sorted_domains]
 
-    # Plot
+    # Plot configuration
     plt.figure(figsize=(12, 6))
-    plt.bar(sorted_domains, sorted_averages, color='skyblue')
-    plt.xlabel("Domain")
-    plt.ylabel("Average Plan Length")
-    plt.title("Average Plan Length by Domain")
-    plt.xticks(rotation=45, ha="right")  # Rotate domain names for readability
+    plt.bar(sorted_domains, sorted_averages, color='#4C72B0', edgecolor='black', alpha=0.8)
+
+
+    # Enhancing the visualization
+    plt.xlabel("Domain", fontsize=16, labelpad=10)
+    plt.ylabel("Average Plan Length", fontsize=16, labelpad=10)
+    plt.title("Average Plan Length by Domain", fontsize=18, pad=15)
+    plt.xticks(rotation=45, ha="right", fontsize=12)
+    plt.yticks(fontsize=13)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.tight_layout()
+
+    # Display the chart
     plt.show()
 
 
@@ -64,5 +82,5 @@ def main(folder_path):
         print("No valid data found.")
 
 
-folder_path = "/Users/lukeroooney/Desktop/Dissertation/data/dump_files/eager"
+folder_path = ""
 main(folder_path)

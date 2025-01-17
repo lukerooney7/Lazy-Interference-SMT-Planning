@@ -4,7 +4,8 @@ from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 import matplotlib.patches as mpatches
 
-folder_path = '/Users/lukeroooney/Desktop/Dissertation/data/csvs/all.csv'
+# all.csv contains solve times for all planners and all instances run on sturm
+folder_path = '../all.csv'
 
 cls_domains = {
     "airport", "airport-adl", "assembly", "blocks", "blocks-3op", "briefcaseworld",
@@ -28,22 +29,23 @@ num_domains = {
 color_map = {
     'Eager ∀ (No Propagator)': 'grey',
     'Eager ∀': 'orange',
-    'Naive Lazy ∀': 'red',
-    'Code-Optimised Lazy ∀': 'brown',
-    'Final Conflict ∀': 'brown',
-    'Stepsharing ∀': 'red',
-    'Neighbours ∀': 'red',
-    'Lazy ∀': 'red',
-    'Decide ∀': 'red',
+    'Naive Lazy ∀': 'purple',
+    'Code-Optimised Lazy ∀': 'green',
+    'Generate & Test ∀': 'brown',
+    'Step-sharing ∀': 'deepskyblue',
+    'Neighbours ∀': 'deepskyblue',
+    'Lazy ∀': 'deepskyblue',
+    'Decide ∀': 'deepskyblue',
     'Eager ∃ (No Propagator)': 'black',
     'Eager ∃': 'blue',
-    'Naive Lazy ∃': 'purple',
-    'Code-Optimised Lazy ∃': 'green',
-    'Lazy ∃': 'green',
-    'Final Conflict ∃': 'green',
-    'Stepsharing ∃': 'purple',
-    'Ghost Node ∃': 'purple',
-    'Decide ∃': 'purple',
+    'Naive Lazy ∃': 'gold',
+    'Code-Optimised Lazy ∃': 'red',
+    'Lazy ∃': 'red',
+    'Generate & Test ∃': 'green',
+    'Step-sharing ∃': 'mediumorchid',
+    'Ghost Node ∃': 'mediumorchid',
+    'Decide ∃': 'mediumorchid',
+    'Eager R²∃':'black'
 }
 
 total_instances = {
@@ -93,7 +95,7 @@ total_instances = {
     "tpp":20,
     "tpp-metric": 5,
     "trucks": 10,
-    "tsp": 9,
+    "tsp": 15,
     "zenotravel": 15
 }
 
@@ -105,7 +107,7 @@ def cactus_plot(df, domain, log, max_instance, timeout, par):
     df = df[df['domain'] == domain]
     timeout_penalty = timeout * par
     df = df[df['status'] == "SOLVED_SATISFICING"]
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(16, 8))
     plt.hlines(timeout_penalty, xmin=0, xmax=max_instance, colors='red', linestyles='--', label='Timeout Threshold', linewidth=2)
 
     if log:
@@ -119,13 +121,16 @@ def cactus_plot(df, domain, log, max_instance, timeout, par):
             times.append(timeout_penalty)
         times.sort()
         x_values = list(range(1, len(times) + 1))
-        plt.plot(x_values, times, label=planner_tag, marker='o', markersize=6, linestyle='-', linewidth=2)
+        plt.plot(x_values, times, label=planner_tag, marker='o', markersize=6, linestyle='-', linewidth=3)
 
-    plt.title(f'Camparing Planning Times of Approaches for {domain.upper()} Domain', fontsize=18)
-    plt.xlabel('Number of Instances Solved', fontsize=14)
-    plt.ylabel('Planning Time (minutes)', fontsize=14)
-    plt.legend(title='Approach', loc='upper left', fontsize=12)
+
+    plt.title(f'Comparing Planning Times of Approaches for {domain.upper()} Domain', fontsize=20)
+    plt.xlabel('Number of Instances Solved', fontsize=18)
+    plt.ylabel('Planning Time (minutes)', fontsize=18)
+    plt.legend(title='Approach', loc='upper left', fontsize=16)
     plt.grid(which='both', linestyle='--', linewidth=0.5)
+    plt.tick_params(axis='both', which='major', labelsize=14)
+    plt.tick_params(axis='both', which='minor', labelsize=14)
     plt.gca().set_aspect('auto')
     plt.tight_layout()
     plt.show()
@@ -148,6 +153,8 @@ def cactus_grid(df, domains, log, timeout, par):
             ax.set_yscale('log')
         for planner_tag in domain_df['planner_tag'].unique():
             planner_data = domain_df[domain_df['planner_tag'] == planner_tag]
+            if planner_tag == 'Eager R²∃' and domain == 'tsp':
+                planner_data = planner_data[planner_data['instance'] < total_instances[domain]]
             times = list(planner_data['planning_time'])
             for i in range(len(planner_data), total_instances[domain] + 1):
                 times.append(timeout_penalty)
@@ -162,15 +169,15 @@ def cactus_grid(df, domains, log, timeout, par):
         ax.grid(which='both', linestyle='--', linewidth=0.5)
 
     # Shared labels
-    fig.text(0.07, 0.5, 'Planning Time (minutes)', va='center', ha='center', rotation='vertical', fontsize=16)
-    fig.text(0.54, 0.07, 'Number of Instances Solved', va='center', ha='center', fontsize=16)
+    fig.text(0.07, 0.5, 'Planning Time (minutes)', va='center', ha='center', rotation='vertical', fontsize=18)
+    fig.text(0.54, 0.07, 'Number of Instances Solved', va='center', ha='center', fontsize=18)
 
     unique_handles_labels = {label: handle for handle, label in zip(handles, labels)}
     handles, labels = list(unique_handles_labels.values()), list(unique_handles_labels.keys())
     handles.append(threshold_line)
     labels.append('Timeout Threshold')
 
-    fig.legend(handles, labels, fontsize=16, loc='upper center', bbox_to_anchor=(0.54, 0.95), ncol=5)
+    fig.legend(handles, labels, fontsize=18, loc='upper center', bbox_to_anchor=(0.54, 0.97), ncol=3)
     plt.tight_layout(rect=[0.08, 0.08, 1, 0.9])
     plt.show()
 
@@ -180,6 +187,8 @@ def cactus_grid(df, domains, log, timeout, par):
     and the other on the y-axis.
 '''
 def scatter_plot(df, log, x, y, timeout_penalty):
+    xTotal = 0
+    yTotal = 0
     df_filtered = df[(df['planner_tag'].isin([x, y]))]
     unique_domains = df_filtered['domain'].unique()
     # Markers symbols gathered from https://matplotlib.org/stable/api/markers_api.html
@@ -204,7 +213,6 @@ def scatter_plot(df, log, x, y, timeout_penalty):
         Y = domain_data[domain_data['planner_tag'] == y][['instance', 'planning_time']]
 
         merged_data = X.merge(Y, on='instance', how='outer', suffixes=('_x', '_y'))
-
         graph_data = pd.DataFrame()
         graph_data['x'] = merged_data['planning_time_x']
         graph_data['y'] = merged_data['planning_time_y']
@@ -303,7 +311,7 @@ def compare_pars(df, domain, max_instance, timeout, par):
 def cactus_all(df, log, total_instances, timeout, par):
     timeout_penalty = timeout * par
     plt.figure(figsize=(16, 8))
-    plt.hlines(timeout_penalty, xmin=0, xmax=total_instances, colors='red', linestyles='--', label='Timeout Threshold', linewidth=2)
+    plt.hlines(timeout_penalty, xmin=300, xmax=total_instances, colors='red', linestyles='--', label='Timeout Threshold', linewidth=2)
 
     if log:
         plt.yscale('log')
@@ -316,7 +324,9 @@ def cactus_all(df, log, total_instances, timeout, par):
             times.append(timeout_penalty)
         times.sort()
         x_values = list(range(1, len(times) + 1))
-        plt.plot(x_values, times, label=planner_tag, c=color_map[planner_tag],  marker='o', markersize=6, linestyle='-', linewidth=2)
+
+        plt.plot(x_values[300:], times[300:], label=planner_tag, c=color_map[planner_tag],  marker='o', markersize=6, linestyle='-', linewidth=2)
+
 
     plt.title(f'Time to Solve Instances for All Domains', fontsize=20)
     plt.xlabel('Number of Instances Solved', fontsize=18)
@@ -349,12 +359,17 @@ def par_all(df, total_instances, timeout, par):
 
     total_times_series = pd.Series(total_times).sort_values()
     colors = total_times_series.index.map(
-        lambda x: 'orange' if '∀' in x else ('blue' if '∃' in x else 'steelblue')
+        lambda x: 'green' if 'R²' in x else ('blue' if '∃' in x else ('orange' if '∀' in x else 'steelblue'))
     )
     plt.figure(figsize=(10, 8))
     ax = total_times_series.plot(kind='barh', color=colors, edgecolor='black')
     ax.set_title(f'Par {par} comparison for {timeout}m Time Limit on {total_instances} Instances', fontsize=16, fontweight='bold',
                  pad=20)
+    for label in ax.get_yticklabels():
+        if 'Lazy ∀' == label.get_text() or 'Lazy ∃' == label.get_text():  # Replace 'condition' with your specific condition
+            label.set_fontweight('bold')
+        else:
+            label.set_fontweight('normal')
     ax.set_xlabel('Total Planning Time (minutes)', fontsize=14, labelpad=10)
     ax.set_ylabel('Approach', fontsize=14, labelpad=10)
     ax.tick_params(axis='both', which='major', labelsize=12)
@@ -365,6 +380,7 @@ def par_all(df, total_instances, timeout, par):
     legend_handles = [
         mpatches.Patch(color='orange', label='∀-Step'),
         mpatches.Patch(color='blue', label='∃-Step'),
+        mpatches.Patch(color='green', label='R²∃-Step'),
     ]
     plt.legend(handles=legend_handles, fontsize=12)
     plt.grid(visible=True, which='both', axis='x', linestyle='--', linewidth=0.5)
@@ -425,7 +441,7 @@ def replace_names(df):
     df['planner_tag'] = df['planner_tag'].replace('forall-lazy', 'Naive Lazy ∀')
     df['planner_tag'] = df['planner_tag'].replace('forall-code', 'Code-Optimised Lazy ∀')
     df['planner_tag'] = df['planner_tag'].replace('forall-final', 'Generate & Test ∀')
-    df['planner_tag'] = df['planner_tag'].replace('forall-stepshare', 'Stepsharing ∀')
+    df['planner_tag'] = df['planner_tag'].replace('forall-stepshare', 'Step-sharing ∀')
     # df['planner_tag'] = df['planner_tag'].replace('forall-prop', 'Neighbours ∀')
     df['planner_tag'] = df['planner_tag'].replace('forall-prop', 'Lazy ∀')
     df['planner_tag'] = df['planner_tag'].replace('forall-decide', 'Decide ∀')
@@ -433,12 +449,14 @@ def replace_names(df):
     df['planner_tag'] = df['planner_tag'].replace('exists-noprop', 'Eager ∃ (No Propagator)')
     df['planner_tag'] = df['planner_tag'].replace('exists', 'Eager ∃')
     df['planner_tag'] = df['planner_tag'].replace('exists-lazy', 'Naive Lazy ∃')
-    # df['planner_tag'] = df['planner_tag'].replace('exists-code', 'Code-Optimised Lazy ∃')
-    df['planner_tag'] = df['planner_tag'].replace('exists-code', 'Lazy ∃')
+    df['planner_tag'] = df['planner_tag'].replace('exists-code', 'Code-Optimised Lazy ∃')
+    # df['planner_tag'] = df['planner_tag'].replace('exists-code', 'Lazy ∃')
     df['planner_tag'] = df['planner_tag'].replace('exists-final', 'Generate & Test ∃')
-    df['planner_tag'] = df['planner_tag'].replace('exists-stepshare', 'Stepsharing ∃')
+    df['planner_tag'] = df['planner_tag'].replace('exists-stepshare', 'Step-sharing ∃')
     df['planner_tag'] = df['planner_tag'].replace('exists-prop', 'Ghost Node ∃')
     df['planner_tag'] = df['planner_tag'].replace('exists-decide', 'Decide ∃')
+
+    df['planner_tag'] = df['planner_tag'].replace('r2e', 'Eager R²∃')
     return df
 
 
@@ -453,25 +471,24 @@ def number_of_instances(df):
 
 
 def display_data(df):
-    df = include_data(df, ['forall-decide', 'exists-decide', 'exists-code', 'forall-code'])
+    df = include_data(df, ['forall-lazy', 'exists-lazy', 'exists-code', 'forall-code'])
     df = replace_names(df)
     total_instances_count = number_of_instances(df)
     df['planning_time'] = df['planning_time'] / 60 # Convert time to minutes from seconds
     # scatter_plot(df, True, "Lazy ∃-Step","Eager ∃-Step", 30)
-    # scatter_plot(df, True, "Lazy ∀-Step","Eager ∀-Step", 30)
-    # cactus_plot(df, "rovers", False,  18, 30, 1)
-    # cactus_grid(df, ["elevators", "miconic", "sugar", "tsp"], False,   30, 1)
-    # compare_pars(df, "rovers", 20, 30, 2)
-    cactus_all(df, False, total_instances_count, 30, 1)
+    # scatter_plot(df, True, "Eager ∀","Lazy ∀", 30)
+    cactus_plot(df, "counters", False,  55, 30, 1)
+    # cactus_grid(df, ["elevators", "rover", 'airport','blocks-3op'], False,   30, 1)
+    # compare_pars(df, "counters", 55, 30, 2)
+    # cactus_all(df, False, 649, 30, 1)
     # par_all(df, 649, 30, 2)
-    # compare_domains(df,  "Eager ∀", "Eager ∃",30, 2)
+    # compare_domains(df,   "Eager ∃","Lazy ∃",30, 2)
 
 
 
 
 df =  pd.read_csv(folder_path)
 df['domain'] = df['domain'].str.replace(r'sec_clear_\d+_\d+-linear', 'sec_clearance', regex=True)
-
 display_data(df)
 
 

@@ -1,6 +1,4 @@
-# pyPMT
-A Python library for Planning Modulo Theories using SMT
-
+# Lazy Interference Evaluation in Planning as SMT
 ## Installing pyPMT
 
 Install the package using `pip`:
@@ -8,40 +6,61 @@ Install the package using `pip`:
 python -m pip install .
 ```
 
-## Using pyPMT
+## Running Lazy Evaluation in pyPMT
 
-##### Getting help
-
-To see the list of input arguments, type
-
+Navigate to pyPMT folder:
 ```
-pypmtcli -h
+cd pypmt
 ```
-
-##### Running pyPMT
-
-To run pyPMT on a problem from the CLI, type, e.g.,
+To run pyPMT on a problem from the CLI, type:
 ```
-pypmtcli --seq --bound 3 --domain path_to_domain.pddl --problem path_to_problem.pddl
+ python3 pypmtcli.py 'solve', '-d', 'path_to_domain.pddl', '-p', 'path_to_problem.pddl', '-e', 'encoding_name' '-v' '4'
 ```
+encoding_name represents the configuration key, which can be any of the following:
 
-To produce an SMT-LIB encoding of the problem (instead of solving it), type, e.g.
+| ∀-step plans     | ∃-step plans     | Description                                                             |
+|------------------|------------------|-------------------------------------------------------------------------|
+| forall           | exists           | Eager implementation (invokes Python propagator)                        |
+| forall-lazy      | exists-lazy      | Naive Lazy implementation                                               |
+| forall-final     | exists-final     | Generate & Test lazy implementation                                     |
+| forall-code      | exists-code      | Code-optimised lazy implementation                                      |
+| forall-prop      | exists-prop      | Neighbours & Ghost Node propagation optimisation in lazy implementation |
+| forall-stepshare | exists-stepshare | Step-share propagation optimisation in lazy implementation              |
+| forall-decide    | exists-decide    | Overriding Decides() callback optimisation implementation               |
+| forall-noprop    | exists-noprop    | Eager implementation in C++                                             |
+| forall-frame     | exists-frame     | Attempt at lazy frame evaluation (NOT FINISHED!)                        |
 
+All domains and instances can be found in /domains folder, which are split into classical and numeric. For example, 
+run the above command with:
 ```
-pypmtcli --seq --bound 3 --domain path_to_domain.pddl --problem path_to_problem.pddl --dump output.smt2
+ -d = domains/classical/rovers/domain.pddl
+ -p = domains/classical/rovers/p01.pddl
 ```
+All instances in the domain folder were tested and evaluated in the dissertation report, however if running single
+instances on a PC, only attempt to run lower umber ones as they take a long time to solve. Some suggested examples,
+which are quick to validate correctness are:
+* Classical - airport/rovers/tpp
+* Numeric - counters/mprime/zenotravel
 
-pyPMT can be used as a library too. See [here](https://github.com/pyPMT/quick-start) for some examples.
+## Code Explanation
+All code for propagators is stored in pypmt/propagators
 
-## Documentation
+Changes made to other pyPMT files:
+* encoders/basic.py
+* modifiers/parallel modifier.py
+* config.py
+* planner/SMTActionPropagator.py
 
-Further documentation is available [here](https://github.com/pyPMT/pyPMT/blob/main/refman.pdf).
+The data collected displayed in this dissertation is stored in the following files:
+* all.csv (Planning  for all solved domain instances for all planners)
+* pypmt/stats.csv (Solve statistics for a sample set of instances including mutexes added, propagations, conflicts etc.)
 
+All visualisation code is in the /analysis folder:
+* visualisation.py
+* solveStatsVisualisations.py
+* stepCount.py
+* fileToCSV.py
 
-## Authors
+Code that was not used in the report, but just to visualise to help debugging, and explore graph properties is in the 
+/analysis/graph-analysis folder
 
-[Mustafa F Abdelwahed](https://github.com/MFaisalZaki)
-[Joan Espasa Arxer](https://joanespasa.github.io/)
-[Francesco Leofante](https://fraleo.github.io)
-
-Do not hesitate to contact us if you have problems using pyPMT, or if you find bugs :)

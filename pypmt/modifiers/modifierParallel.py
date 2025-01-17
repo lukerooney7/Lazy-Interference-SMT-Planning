@@ -143,9 +143,5 @@ class ParallelModifier(Modifier):
             else:
                 generate_exists()
         end_time = time.time()
-
-        # nx.draw(self.graph, with_labels=True)
-        #
-        # plt.show()
         log(f'computed {len(self.mutexes)} mutexes took {end_time - start_time:.2f}s', 2)
         return self.mutexes
